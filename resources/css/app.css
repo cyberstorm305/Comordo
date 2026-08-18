@@ -1,0 +1,54 @@
+@import "tailwindcss";
+
+@source "../js/**/*.vue";
+@source "../views/**/*.blade.php";
+@source "../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php";
+
+@theme {
+  --color-cream: #F8F6F1;
+  --color-navy: #1B2536;
+  --color-navy-light: #2A3650;
+  --color-copper: #B4702F;
+  --color-copper-dark: #8F5722;
+  --color-copper-light: #E2B188;
+  --color-copper-pale: #E7C9A8;
+  --color-slate: #4A5468;
+  --color-stone: #8A8474;
+  --color-mist: #9A937F;
+  --color-sand: #E7E2D6;
+  --color-sand-dark: #E0DACB;
+  --color-sand-light: #EEE9DD;
+  --color-hair: #F2EEE3;
+  --color-edge: #C9C2B2;
+  --color-rag-green: #178049;
+  --color-rag-amber: #C0760B;
+  --color-rag-red: #C42E22;
+  --font-display: "Satoshi", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+  --breakpoint-lg: 980px;
+}
+
+body {
+  @apply bg-cream text-navy font-display antialiased;
+}
+
+::selection {
+  background: var(--color-navy);
+  color: var(--color-cream);
+}
+
+@layer components {
+  .container-site { @apply max-w-[1240px] mx-auto px-5 sm:px-8; }
+  .eyebrow { @apply flex items-center gap-2.5 font-mono text-xs tracking-[0.1em] uppercase text-copper; }
+  .eyebrow::before { content: ""; @apply block w-6 h-px bg-copper; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-[15px] font-semibold text-cream bg-navy px-6 py-3.5 rounded-md transition-colors hover:bg-navy-light; }
+  .btn-outline { @apply inline-flex items-center justify-center whitespace-nowrap text-[15px] font-semibold text-navy px-6 py-3 border border-edge rounded-md transition-colors hover:border-navy hover:bg-white; }
+  .section-title { @apply text-[clamp(27px,4.5vw,36px)] font-bold leading-[1.15] tracking-[-0.02em] text-balance; }
+  .mock-card { @apply bg-white border border-sand-dark rounded-xl shadow-[0_20px_50px_rgba(27,37,54,0.10)] overflow-hidden; }
+  .pill { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 9999px; padding: 0.25rem 0.625rem; border-width: 1px; border-style: solid; }
+  .pill-green { color: var(--color-rag-green); background: #E9F4EE; border-color: #CBE3D4; }
+  .pill-amber { color: var(--color-rag-amber); background: #F9F1E6; border-color: #ECD9C2; }
+  .pill-red { color: var(--color-rag-red); background: #FAE2DE; border-color: #F1D4CF; }
+  .pill-muted { color: var(--color-mist); background: transparent; border-color: var(--color-sand-light); }
+  .field { @apply text-[15px] text-navy bg-white border border-[#DAD3C4] rounded-lg px-4 py-3 outline-none w-full transition focus:border-navy focus:shadow-[0_0_0_3px_rgba(27,37,54,0.08)]; }
+}
