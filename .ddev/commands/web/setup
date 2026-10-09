@@ -8,6 +8,7 @@ cd /var/www/html
 composer install
 grep -q '^APP_KEY=base64' .env || php artisan key:generate
 php artisan migrate --force
-npm install
+# npm ci installs exactly what the lock file pins and never rewrites it
+if [ -f package-lock.json ]; then npm ci; else npm install; fi
 npm run build
 echo "Marketing site ready at ${DDEV_PRIMARY_URL}"
