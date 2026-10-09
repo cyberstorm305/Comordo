@@ -1,8 +1,9 @@
 <script setup>
+import { identityBase } from '@/identity.js'
 import { ref } from 'vue'
 
-const identityDashboardHref = 'https://identity.comordo.com/dashboard'
-const identityLoginHref = 'https://identity.comordo.com/login'
+const identityDashboardHref = `${identityBase}/dashboard`
+const identityLoginHref = `${identityBase}/login`
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
 const compliRegistered = ref(true)
 const addClicked = ref(false)

@@ -1,10 +1,10 @@
 <script setup>
 import { ref } from 'vue'
-const identityBase = 'https://identity.comordo.com'
+import { identityBase } from '@/identity.js'
 defineProps({
   active: { type: String, default: '' },
   ctaLabel: { type: String, default: 'Get started' },
-  ctaHref: { type: String, default: 'https://identity.comordo.com/register' },
+  ctaHref: { type: String, default: () => `${identityBase}/register` },
 })
 const open = ref(false)
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href

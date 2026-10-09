@@ -1,5 +1,6 @@
 <script setup>
-const identityLoginHref = 'https://identity.comordo.com/login'
+import { identityBase } from '@/identity.js'
+const identityLoginHref = `${identityBase}/login`
 const logoSrc = new URL('../../../public/comordo-light.svg', import.meta.url).href
 </script>
 

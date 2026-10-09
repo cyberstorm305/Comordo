@@ -1,9 +1,10 @@
 <script setup>
+import { identityBase } from '@/identity.js'
 import { ref } from 'vue'
-import SiteNav from '../components/SiteNav.vue'
-import SiteFooter from '../components/SiteFooter.vue'
+import SiteNav from '../Components/SiteNav.vue'
+import SiteFooter from '../Components/SiteFooter.vue'
 
-const identityRegisterHref = 'https://identity.comordo.com/register'
+const identityRegisterHref = `${identityBase}/register`
 const previewUrl = ref('')
 const previewError = ref(false)
 const previewSent = ref(false)

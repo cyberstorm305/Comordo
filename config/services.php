@@ -35,4 +35,8 @@ return [
         ],
     ],
 
+    'comordo' => [
+        'identity_url' => rtrim(env('COMORDO_IDENTITY_URL', 'https://identity.comordo.com'), '/'),
+    ],
+
 ];

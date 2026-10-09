@@ -1,7 +1,8 @@
 <script setup>
+import { identityBase } from '@/identity.js'
 import { ref, computed } from 'vue'
 
-const identityRegisterHref = 'https://identity.comordo.com/register'
+const identityRegisterHref = `${identityBase}/register`
 const logoSrc = new URL('../../../public/comordo-light.svg', import.meta.url).href
 const step = ref('details') // details | connecting | payment | processing | done
 const trust = ref(''); const name = ref(''); const email = ref(''); const password = ref('')

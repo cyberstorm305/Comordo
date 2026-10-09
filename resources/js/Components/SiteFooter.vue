@@ -1,5 +1,5 @@
 <script setup>
-const identityBase = 'https://identity.comordo.com'
+import { identityBase } from '@/identity.js'
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
 </script>
 

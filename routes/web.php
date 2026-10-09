@@ -11,6 +11,6 @@ Route::get('/demo', fn () => Inertia::render('DemoPage'))->name('demo');
 Route::get('/privacy', fn () => Inertia::render('PrivacyPage'))->name('privacy');
 Route::get('/terms', fn () => Inertia::render('TermsPage'))->name('terms');
 
-Route::redirect('/login', 'https://identity.comordo.com/login')->name('login');
-Route::redirect('/signup', 'https://identity.comordo.com/register')->name('signup');
-Route::redirect('/account', 'https://identity.comordo.com/dashboard')->name('account');
+Route::redirect('/login', config('services.comordo.identity_url').'/login')->name('login');
+Route::redirect('/signup', config('services.comordo.identity_url').'/register')->name('signup');
+Route::redirect('/account', config('services.comordo.identity_url').'/dashboard')->name('account');

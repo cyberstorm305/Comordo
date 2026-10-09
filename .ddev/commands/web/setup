@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+## Description: First-time setup: install dependencies, create .env, migrate and build assets
+## Usage: setup
+## Example: ddev setup
+set -euo pipefail
+cd /var/www/html
+[ -f .env ] || cp .env.example .env
+composer install
+grep -q '^APP_KEY=base64' .env || php artisan key:generate
+php artisan migrate --force
+npm install
+npm run build
+echo "Marketing site ready at ${DDEV_PRIMARY_URL}"
