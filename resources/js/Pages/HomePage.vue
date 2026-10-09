@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue'
-import SiteNav from '../components/SiteNav.vue'
-import SiteFooter from '../components/SiteFooter.vue'
+import SiteNav from '../Components/SiteNav.vue'
+import SiteFooter from '../Components/SiteFooter.vue'
 
 const oatLogo = new URL('../../../public/oat.svg', import.meta.url).href
 const hsatLogo = new URL('../../../public/hsat.svg', import.meta.url).href

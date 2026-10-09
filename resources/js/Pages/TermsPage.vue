@@ -1,6 +1,6 @@
 <script setup>
-import SiteNav from '../components/SiteNav.vue'
-import SiteFooter from '../components/SiteFooter.vue'
+import SiteNav from '../Components/SiteNav.vue'
+import SiteFooter from '../Components/SiteFooter.vue'
 
 // Structured template copy — have this reviewed by your legal adviser before launch.
 const sections = [

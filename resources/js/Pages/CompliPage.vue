@@ -1,6 +1,6 @@
 <script setup>
-import SiteNav from '../components/SiteNav.vue'
-import SiteFooter from '../components/SiteFooter.vue'
+import SiteNav from '../Components/SiteNav.vue'
+import SiteFooter from '../Components/SiteFooter.vue'
 
 const steps = [
   { n: '01', t: 'Find the evidence', d: 'Automated scans read each website and match what they find against the requirements for that school.' },

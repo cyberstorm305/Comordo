@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue'
-import SiteNav from '../components/SiteNav.vue'
-import SiteFooter from '../components/SiteFooter.vue'
+import SiteNav from '../Components/SiteNav.vue'
+import SiteFooter from '../Components/SiteFooter.vue'
 
 const sent = ref(false)
 const form = ref({ name: '', email: '', org: '', schools: '2–9', slot: 'Morning' })
