@@ -5,6 +5,11 @@
 set -euo pipefail
 cd /var/www/html
 [ -f .env ] || cp .env.example .env
+# Add any settings that are new in .env.example; existing values are never changed.
+while IFS= read -r line; do
+    [[ $line =~ ^([A-Z0-9_]+)= ]] || continue
+    grep -q "^${BASH_REMATCH[1]}=" .env || { echo "$line" >> .env; echo "Added ${BASH_REMATCH[1]} to .env"; }
+done < .env.example
 composer install
 grep -q '^APP_KEY=base64' .env || php artisan key:generate
 php artisan migrate --force
