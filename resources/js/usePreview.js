@@ -3,16 +3,46 @@ import { imagesafeBase } from '@/imagesafe.js'
 
 const POLL_MS = 2000
 const STALL_MS = 90000
-const headers = { 'Content-Type': 'application/json', Accept: 'application/json' }
+const FETCH_TIMEOUT_MS = 15000
+const MAX_POLL_FAILURES = 3 // consecutive network/timeouts before giving up
+const json = { 'Content-Type': 'application/json', Accept: 'application/json' }
+
+async function fetchWithTimeout(url, options = {}) {
+  const controller = new AbortController()
+  const t = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
+  try {
+    return await fetch(url, { ...options, signal: controller.signal })
+  } finally {
+    clearTimeout(t)
+  }
+}
+
+// Starts a preview. Resolves to { id } or { error: 'blocked' | 'limited' | 'busy' }.
+export async function createPreview(url) {
+  try {
+    const res = await fetchWithTimeout(`${imagesafeBase}/api/v1/previews`, {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ url, confirmed: true }),
+    })
+    if (res.status === 429) return { error: 'limited' }
+    if (res.status === 422) return { error: 'blocked' }
+    if (!res.ok) return { error: 'busy' }
+    const { id } = await res.json()
+    return id ? { id } : { error: 'busy' }
+  } catch {
+    return { error: 'busy' }
+  }
+}
 
 export function usePreview() {
-  const state = ref('idle') // idle | scanning | done | error
+  const state = ref('queued') // queued | scanning | done | error
   const progress = ref({ pages: 0, images: 0, found: 0 })
-  const result = ref(null)
-  const error = ref(null) // blocked | busy | limited | unreachable
+  const result = ref({ pages_checked: 0, images_checked: 0, found: [] })
+  const error = ref(null) // unreachable | busy | slow | expired
 
   let timer = null
-  let run = 0 // bumps on start/cancel so stale responses are ignored
+  let run = 0 // bumps on watch/stop so stale responses are ignored
 
   function stop() {
     run++
@@ -26,71 +56,58 @@ export function usePreview() {
     state.value = 'error'
   }
 
-  async function start(url) {
+  function watch(id) {
     stop()
     const mine = run
-    state.value = 'scanning'
+    state.value = 'queued'
     error.value = null
-    result.value = null
-    progress.value = { pages: 0, images: 0, found: 0 }
-
-    let id
-    try {
-      const res = await fetch(`${imagesafeBase}/api/v1/previews`, {
-        method: 'POST',
-        headers,
-        body: JSON.stringify({ url, confirmed: true }),
-      })
-      if (mine !== run) return
-      if (res.status === 429) return fail('limited')
-      if (res.status === 422) return fail('blocked')
-      if (!res.ok) return fail('busy')
-      id = (await res.json()).id
-    } catch {
-      if (mine === run) fail('busy')
-      return
-    }
 
     let last = ''
     let lastChange = Date.now()
+    let failures = 0
 
     const poll = async () => {
       try {
-        const res = await fetch(`${imagesafeBase}/api/v1/previews/${id}`, { headers: { Accept: 'application/json' } })
+        const res = await fetchWithTimeout(`${imagesafeBase}/api/v1/previews/${encodeURIComponent(id)}`, { headers: { Accept: 'application/json' } })
         if (mine !== run) return
+        if (res.status === 404) return fail('expired')
         if (!res.ok) return fail('busy')
         const d = await res.json()
         if (mine !== run) return
+        failures = 0
 
         const found = d.found || []
         progress.value = { pages: d.pages_checked || 0, images: d.images_checked || 0, found: found.length }
+        result.value = { pages_checked: d.pages_checked || 0, images_checked: d.images_checked || 0, found }
 
         if (d.status === 'done') {
-          result.value = { pages_checked: d.pages_checked || 0, images_checked: d.images_checked || 0, found }
-          clearTimeout(timer)
+          stop()
           state.value = 'done'
           return
         }
-        if (d.status === 'failed') return fail(d.message === 'unreachable' ? 'unreachable' : 'busy')
+        if (d.status === 'failed') {
+          return fail(['unreachable', 'slow', 'busy'].includes(d.message) ? d.message : 'busy')
+        }
 
-        const sig = `${d.pages_checked}:${d.images_checked}`
-        if (sig !== last) { last = sig; lastChange = Date.now() }
-        else if (Date.now() - lastChange > STALL_MS) return fail('busy')
+        if (d.status === 'scanning') {
+          // The stall clock only runs once the scan has started.
+          if (state.value !== 'scanning') { state.value = 'scanning'; lastChange = Date.now() }
+          const sig = `${d.pages_checked}:${d.images_checked}:${found.length}`
+          if (sig !== last) { last = sig; lastChange = Date.now() }
+          else if (Date.now() - lastChange > STALL_MS) return fail('busy')
+        } else {
+          state.value = 'queued'
+        }
       } catch {
-        if (mine === run) return fail('busy')
-        return
+        if (mine !== run) return
+        if (++failures >= MAX_POLL_FAILURES) return fail('busy')
       }
       timer = setTimeout(poll, POLL_MS)
     }
     poll()
   }
 
-  function cancel() {
-    stop()
-    state.value = 'idle'
-  }
-
   onBeforeUnmount(stop)
 
-  return { state, progress, result, error, start, cancel }
+  return { state, progress, result, error, watch, stop, create: createPreview }
 }

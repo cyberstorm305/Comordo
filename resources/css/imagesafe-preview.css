@@ -1,0 +1,87 @@
+/*
+ * ImageSafe dashboard preview (/preview/{id}).
+ * Tokens from the ImageSafe design handoff (Designs/Imagesafe/app.css) and the
+ * real app's Tailwind config. The colours the marketing theme doesn't already
+ * have only resolve inside the .isp wrapper, so they can't leak into the rest
+ * of the site. Satoshi and IBM Plex Mono are loaded by PreviewPage.vue only.
+ */
+
+@theme inline {
+  --color-shell: var(--isp-shell);
+  --color-line: var(--isp-line);
+  --color-line-soft: var(--isp-line-soft);
+  --color-paper: var(--isp-paper);
+  --color-tint: var(--isp-tint);
+  --color-tint-hover: var(--isp-tint-hover);
+  --color-copper-wash: var(--isp-copper-wash);
+  --color-good: var(--isp-good);
+  --color-good-pale: var(--isp-good-pale);
+  --color-warn-pale: var(--isp-warn-pale);
+  --color-bad: var(--isp-bad);
+  --color-bad-pale: var(--isp-bad-pale);
+  --color-plum: var(--isp-plum);
+  --color-plum-light: var(--isp-plum-light);
+  --color-plum-pale: var(--isp-plum-pale);
+  --shadow-isp-modal: var(--isp-shadow-modal);
+}
+
+.isp {
+  --isp-shell: #F1EEE6;
+  --isp-line: #DAD3C4;
+  --isp-line-soft: #E2DCCE;
+  --isp-paper: #FBFAF6;
+  --isp-tint: #F1EAD9;
+  --isp-tint-hover: #F4F1E8;
+  --isp-copper-wash: #F8F4EC;
+  --isp-good: #2F7D5B;
+  --isp-good-pale: #E7F4EC;
+  --isp-warn-pale: #F8F3E6;
+  --isp-bad: #B23A2E;
+  --isp-bad-pale: #FCE8E6;
+  --isp-plum: #5E5170;
+  --isp-plum-light: #8A7A9E;
+  --isp-plum-pale: #F3EFF7;
+  --isp-shadow-modal: 0 20px 50px rgba(27, 37, 54, 0.28);
+
+  font-family: "Satoshi", system-ui, sans-serif;
+  background: var(--isp-shell);
+  color: var(--color-navy);
+}
+
+.isp *:focus-visible {
+  outline: 2px solid #B4702F;
+  outline-offset: 2px;
+}
+
+/* Photo placeholders (from the handoff's app.css). */
+.isp .img-ph {
+  background:
+    radial-gradient(circle at 55% 32%, #E5E0D2, transparent 60%),
+    conic-gradient(from 25deg, #CCC5B4, #B5AE9B, #D5CEBE, #C6BFAE, #CCC5B4) 0 0 / 30px 30px;
+}
+
+.isp .img-ph-sm {
+  background:
+    radial-gradient(circle at 62% 34%, #E5E0D2, transparent 55%),
+    conic-gradient(from 25deg, #CCC5B4, #B5AE9B, #D5CEBE, #C6BFAE, #CCC5B4) 0 0 / 14px 14px;
+}
+
+.isp .queue-row:hover {
+  box-shadow: var(--row-hover) !important;
+}
+
+/* Placeholder rows while the scan runs. */
+@keyframes isp-pulse {
+  50% { opacity: 0.55; }
+}
+
+.isp .isp-pulse {
+  animation: isp-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .isp .isp-pulse,
+  .isp .animate-spin {
+    animation: none;
+  }
+}

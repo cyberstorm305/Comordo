@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@import "./imagesafe-preview.css";
 
 @source "../js/**/*.vue";
 @source "../views/**/*.blade.php";

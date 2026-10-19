@@ -13,6 +13,9 @@ Route::get('/contact', fn () => Inertia::render('ContactPage'))->name('contact')
 Route::get('/demo', fn () => Inertia::render('DemoPage'))->name('demo');
 Route::get('/privacy', fn () => Inertia::render('PrivacyPage'))->name('privacy');
 Route::get('/terms', fn () => Inertia::render('TermsPage'))->name('terms');
+// A live website preview, shown as an ImageSafe dashboard. The id comes from ImageSafe's preview API.
+Route::get('/preview/{id}', fn (string $id) => Inertia::render('PreviewPage', ['id' => $id]))
+    ->whereUuid('id')->name('preview');
 
 Route::redirect('/login', config('services.comordo.identity_url').'/login')->name('login');
 Route::redirect('/signup', config('services.comordo.identity_url').'/register')->name('signup');

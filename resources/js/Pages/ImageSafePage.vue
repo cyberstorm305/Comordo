@@ -1,8 +1,8 @@
 <script setup>
 import { identityBase } from '@/identity.js'
-import { ref, watch, nextTick } from 'vue'
-import { usePreview } from '@/usePreview.js'
-import PreviewResults from '../Components/PreviewResults.vue'
+import { ref, watch } from 'vue'
+import { router } from '@inertiajs/vue3'
+import { createPreview } from '@/usePreview.js'
 import SiteNav from '../Components/SiteNav.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
 
@@ -11,31 +11,34 @@ const previewUrl = ref('')
 const previewError = ref(false)
 const previewConfirmed = ref(false)
 const previewNeedsConfirm = ref(false)
-const previewHost = ref('')
-const { state: previewState, progress: previewProgress, result: previewResult, error: previewFailure, start: startPreview, cancel: cancelPreview } = usePreview()
-const resultsEl = ref(null)
+const previewStarting = ref(false)
+const previewFailure = ref(null) // blocked | limited | busy
 const errorCopy = {
   blocked: "That address can't be scanned.",
   limited: 'Lots of previews are running right now. Try again in a few minutes.',
-  unreachable: "We couldn't reach that website.",
   busy: 'Previews are busy right now. Try again shortly, or book a demo.',
 }
-function requestPreview() {
+async function requestPreview() {
+  if (previewStarting.value) return
   const u = previewUrl.value.trim()
   if (u.length < 4 || !/\.[a-z]{2,}/i.test(u) && !/^(https?:\/\/)?\d{1,3}(\.\d{1,3}){3}/.test(u)) { previewError.value = true; return }
   previewError.value = false
   if (!previewConfirmed.value) { previewNeedsConfirm.value = true; return }
   previewNeedsConfirm.value = false
-  previewHost.value = u.replace(/^[a-z][a-z0-9+.-]*:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0]
-  startPreview(u)
+  previewFailure.value = null
+  previewStarting.value = true
+  const res = await createPreview(u)
+  if (res.id) {
+    // The preview page shows this as "Viewing …"; the API doesn't return it.
+    const host = u.replace(/^[a-z][a-z0-9+.-]*:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0]
+    try { sessionStorage.setItem(`isp-preview-host:${res.id}`, host) } catch { /* storage blocked */ }
+    router.visit(`/preview/${res.id}`)
+    return
+  }
+  previewStarting.value = false
+  previewFailure.value = res.error
 }
 watch(previewConfirmed, (v) => { if (v) previewNeedsConfirm.value = false })
-watch(previewState, async (v) => {
-  if (v === 'done') {
-    await nextTick()
-    resultsEl.value?.$el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }
-})
 
 const stages = [
   { n: '01', t: 'Discovered', d: 'Crawls find every published image across your school websites. Manual uploads welcome too.' },
@@ -264,26 +267,15 @@ const responsible = [
         <div class="flex flex-col gap-4.5">
           <div class="eyebrow">Free preview</div>
           <h2 class="text-[clamp(29px,5vw,38px)] font-bold leading-[1.12] tracking-[-0.02em] text-balance">See your imagery the way ImageSafe does.</h2>
-          <p class="text-[15.5px] leading-relaxed text-cream/70 text-pretty">We&rsquo;ll crawl one school website and prepare a preview of your image library — how many images are published, where they live and what the review workflow would cover. Our team walks you through the results.</p>
+          <p class="text-[15.5px] leading-relaxed text-cream/70 text-pretty">See the first photos with people on your school website in under a minute, in the ImageSafe dashboard. Then start your free trial to check every page.</p>
           <ul class="flex flex-col gap-3 text-[14.5px] text-cream/85 mt-1.5">
-            <li class="flex gap-3 items-baseline"><span class="font-mono text-xs text-copper">→</span>Image discovery across one school website</li>
+            <li class="flex gap-3 items-baseline"><span class="font-mono text-xs text-copper">→</span>Instant results from the first pages of your website</li>
             <li class="flex gap-3 items-baseline"><span class="font-mono text-xs text-copper">→</span>No reference records or personal data needed for a preview</li>
-            <li class="flex gap-3 items-baseline"><span class="font-mono text-xs text-copper">→</span>No obligation — a walkthrough, not a sales pitch</li>
+            <li class="flex gap-3 items-baseline"><span class="font-mono text-xs text-copper">→</span>No sign-up needed to see your preview</li>
           </ul>
         </div>
         <div class="bg-cream text-navy rounded-xl p-[clamp(22px,5vw,36px)] flex flex-col gap-4.5 shadow-[0_24px_60px_rgba(0,0,0,0.3)]">
-          <b class="text-[19px]">Request your preview</b>
-          <div aria-live="polite" class="contents">
-            <div v-if="previewState === 'scanning'" class="flex flex-col gap-4">
-              <div class="flex items-center gap-3">
-                <span class="w-4 h-4 rounded-full border-2 border-sand border-t-copper animate-spin shrink-0" aria-hidden="true"></span>
-                <b class="text-[16px]">Checking your website…</b>
-              </div>
-              <p class="font-mono text-[12px] leading-relaxed text-slate m-0">{{ previewProgress.pages }} pages · {{ previewProgress.images }} images · {{ previewProgress.found }} of 5 photos with people</p>
-              <button type="button" class="btn-outline w-full" @click="cancelPreview">Cancel</button>
-            </div>
-          </div>
-          <template v-if="previewState !== 'scanning'">
+          <b class="text-[19px]">See your preview</b>
             <label class="flex flex-col gap-2">
               <span class="font-mono text-[11.5px] tracking-[0.06em] uppercase text-stone">School website address</span>
               <input v-model="previewUrl" class="field font-mono text-sm" placeholder="www.yourschool.org.uk" @keydown.enter="requestPreview">
@@ -292,18 +284,14 @@ const responsible = [
               <input v-model="previewConfirmed" type="checkbox" class="mt-0.5 w-4 h-4 shrink-0 accent-copper">
               <span>I work for this school or trust, or have its permission to scan this website.</span>
             </label>
-            <button class="btn-primary group w-full" :disabled="!previewConfirmed" :class="previewConfirmed ? '' : 'opacity-50 cursor-not-allowed'" @click="requestPreview">Request a free image preview <span class="transition-transform group-hover:translate-x-1"><svg width="7" height="11" viewBox="0 0 7 11" fill="none"><path d="M1 1l4.6 4.5L1 10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+            <button class="btn-primary group w-full" :disabled="!previewConfirmed || previewStarting" :class="previewConfirmed && !previewStarting ? '' : 'opacity-50 cursor-not-allowed'" @click="requestPreview">{{ previewStarting ? 'Starting your preview…' : 'Request a free image preview' }} <span class="transition-transform group-hover:translate-x-1"><svg width="7" height="11" viewBox="0 0 7 11" fill="none"><path d="M1 1l4.6 4.5L1 10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
             <p v-if="previewError" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] leading-normal text-[#9A3B2A] m-0"><b>!</b> Please enter a full school website address, like <b>www.yourschool.org.uk</b>.</p>
             <p v-if="previewNeedsConfirm" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] leading-normal text-[#9A3B2A] m-0"><b>!</b> Please confirm you have permission to scan this website.</p>
-            <p v-if="previewState === 'error'" role="alert" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] leading-normal text-[#9A3B2A] m-0"><b>!</b> {{ errorCopy[previewFailure] }}</p>
-            <p v-if="previewState === 'done' && !previewError" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#E9F4EE] rounded-lg text-[13.5px] leading-normal text-rag-green m-0"><b>✓</b> Preview ready — see below.</p>
+            <p v-if="previewFailure" role="alert" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] leading-normal text-[#9A3B2A] m-0"><b>!</b> {{ errorCopy[previewFailure] }}</p>
             <p class="text-[12.5px] leading-normal text-stone m-0">We only look at publicly visible pages and photos on the address you give. Previews show up to five photos with people.</p>
-          </template>
         </div>
       </div>
     </section>
-
-    <PreviewResults v-if="previewState === 'done' && previewResult" ref="resultsEl" :result="previewResult" :host="previewHost" />
 
     <!-- FAQ -->
     <section id="faqs" class="border-b border-sand">
