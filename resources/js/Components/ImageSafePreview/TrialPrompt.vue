@@ -15,11 +15,7 @@ const emit = defineEmits(['close'])
 
 const registerHref = `${identityBase}/register`
 const FEATURES = {
-  'Inventory': 'Every image on your school websites in one place, with the pages it appears on.',
-  'Scans': 'Scheduled scans of every page on your school websites, so new photos are checked as they go up.',
   'People & Permissions': 'Add pupils and staff with their photo permissions, and ImageSafe matches them to the faces it finds.',
-  'Reports': 'A termly safeguarding report for governors and a compliance summary, ready as a PDF.',
-  'Settings': 'Your schools, users and roles, and how often ImageSafe scans your websites.',
   'Recording decisions': 'Record what you decide for each photo, and why, so every image has an audit trail.',
   'Image detail': 'Every check, page and decision for a photo on one page.',
 }

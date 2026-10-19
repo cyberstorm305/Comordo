@@ -1,37 +1,22 @@
 <!--
   AppShell.vue — the ImageSafe app's two-tier header, copied from the design
   handoff (Designs/Imagesafe/ImageSafeApp.vue) and the real app's
-  AuthenticatedLayout + DashboardHeader. Every tab except Dashboard and every
-  action opens the trial prompt.
+  AuthenticatedLayout + DashboardHeader. In a preview every header control is
+  disabled (shown, muted, out of the tab order) except "Start your 14-day free
+  trial", which links to Identity's sign-up.
 -->
 <script setup>
-import { inject, ref } from 'vue'
 import { identityBase } from '@/identity.js'
 
 defineProps({ host: { type: String, default: '' } })
 
-const openTrial = inject('openTrial')
 const registerHref = `${identityBase}/register`
-const menuOpen = ref(false)
-
-const navDef = [
-  { key: 'dashboard', label: 'Dashboard' },
-  { key: 'inventory', label: 'Inventory', feature: 'Inventory' },
-  { key: 'scans', label: 'Scans', feature: 'Scans' },
-  { key: 'people', label: 'People', feature: 'People & Permissions' },
-  { key: 'reports', label: 'Reports', feature: 'Reports' },
-  { key: 'settings', label: 'Settings', feature: 'Settings' },
-]
-
-function pick(n, e) {
-  menuOpen.value = false
-  if (n.feature) openTrial(n.feature, e.currentTarget)
-}
+const tabs = ['Dashboard', 'Inventory', 'Scans', 'People', 'Reports', 'Settings']
 </script>
 
 <template>
   <div class="isp flex min-h-screen flex-col">
-    <p class="m-0 bg-navy px-4 py-[7px] text-center text-[12px] font-medium text-cream/85" data-testid="preview-strip">Preview using your website. Your trial checks every page.</p>
+    <p class="m-0 bg-navy px-4 py-[7px] text-center text-[12px] font-medium text-cream/85" data-testid="preview-strip">Preview of {{ host || 'your website' }}</p>
 
     <!-- HEADER (two-tier) -->
     <header class="sticky top-0 z-40 border-b border-line-soft bg-cream/[.94] backdrop-blur-[8px]">
@@ -45,29 +30,20 @@ function pick(n, e) {
         </a>
 
         <nav class="hidden min-w-0 flex-1 items-center gap-0.5 overflow-x-auto lg:flex" aria-label="ImageSafe">
-          <button v-for="n in navDef" :key="n.key" type="button"
-                  class="cursor-pointer whitespace-nowrap rounded-[7px] border-0 px-2.5 py-2 text-[13px] transition"
-                  :class="n.feature ? 'bg-transparent font-medium text-slate hover:bg-sand-light hover:text-navy' : 'bg-tint font-semibold text-navy'"
-                  :aria-current="n.feature ? undefined : 'page'"
-                  @click="pick(n, $event)">{{ n.label }}</button>
+          <button v-for="(t, i) in tabs" :key="t" type="button" disabled
+                  class="cursor-default whitespace-nowrap rounded-[7px] border-0 px-2.5 py-2 text-[13px]"
+                  :class="i === 0 ? 'bg-tint font-semibold text-navy' : 'cursor-not-allowed bg-transparent font-medium text-slate opacity-50'"
+                  :aria-current="i === 0 ? 'page' : undefined"
+                  data-testid="header-tab">{{ t }}</button>
         </nav>
 
         <div class="ml-auto flex items-center gap-2.5">
-          <span class="flex h-[30px] w-[30px] items-center justify-center rounded-full bg-copper-pale text-copper" aria-hidden="true">
+          <button type="button" disabled aria-label="Account menu" class="flex h-[30px] w-[30px] cursor-not-allowed items-center justify-center rounded-full border-0 bg-copper-pale p-0 text-copper opacity-60" data-testid="header-avatar">
             <svg width="13" height="14" viewBox="0 0 13 14" fill="none"><circle cx="6.5" cy="4" r="2.9" stroke="currentColor" stroke-width="1.6"/><path d="M1.2 13c.5-2.9 2.6-4.4 5.3-4.4s4.8 1.5 5.3 4.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
-          </span>
-          <button type="button" aria-label="Menu" :aria-expanded="menuOpen"
-                  class="inline-flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-[7px] border border-line bg-white text-[15px] text-slate hover:bg-tint-hover lg:hidden"
-                  @click="menuOpen = !menuOpen">{{ menuOpen ? '✕' : '☰' }}</button>
-        </div>
-      </div>
-
-      <div v-if="menuOpen" class="border-t border-hair bg-white lg:hidden">
-        <div class="flex w-full flex-col gap-0.5 px-4 py-2 sm:px-[26px]">
-          <button v-for="n in navDef" :key="n.key" type="button"
-                  class="w-full cursor-pointer rounded-lg border-0 px-3.5 py-[11px] text-left text-sm"
-                  :class="n.feature ? 'bg-transparent font-medium text-slate hover:bg-sand-light hover:text-navy' : 'bg-tint font-bold text-navy'"
-                  @click="pick(n, $event)">{{ n.label }}</button>
+          </button>
+          <button type="button" disabled aria-label="Menu"
+                  class="inline-flex h-[34px] w-[34px] cursor-not-allowed items-center justify-center rounded-[7px] border border-line bg-white text-[15px] text-slate opacity-50 lg:hidden"
+                  data-testid="header-menu">☰</button>
         </div>
       </div>
 
@@ -75,12 +51,11 @@ function pick(n, e) {
         <div class="flex min-h-[52px] w-full items-center justify-between gap-3 px-4 sm:px-[26px]">
           <div class="flex min-w-0 items-center gap-2.5">
             <span class="hidden text-xs text-mist lg:inline">Viewing</span>
-            <span class="min-w-0 max-w-[22rem] truncate rounded-lg border border-line bg-white py-2 pl-3 pr-3 text-[13px] font-semibold text-navy" data-testid="viewing-host">{{ host || 'Your website' }}</span>
+            <button type="button" disabled aria-label="School" class="min-w-0 max-w-[22rem] cursor-not-allowed truncate rounded-lg border border-line bg-white py-2 pl-3 pr-3 text-left text-[13px] font-semibold text-navy opacity-60" data-testid="viewing-host">{{ host || 'Your website' }}</button>
             <span class="whitespace-nowrap rounded-[5px] bg-hair px-2 py-[3px] text-[11.5px] text-mist">Preview</span>
           </div>
           <div class="flex flex-none items-center gap-2">
-            <button type="button" class="hidden cursor-pointer items-center rounded-[7px] border border-line bg-white px-3.5 py-2 text-[13px] font-medium text-slate hover:bg-tint-hover lg:inline-flex"
-                    @click="openTrial('People & Permissions', $event.currentTarget)">Import permissions</button>
+            <button type="button" disabled class="hidden cursor-not-allowed items-center rounded-[7px] border border-line bg-white px-3.5 py-2 text-[13px] font-medium text-slate opacity-50 lg:inline-flex" data-testid="header-import">Import permissions</button>
             <a :href="registerHref" class="inline-flex items-center whitespace-nowrap rounded-[7px] bg-navy px-3.5 py-2 text-[13px] font-semibold text-white no-underline hover:bg-navy-light lg:px-4" data-testid="shell-trial-link">
               <span class="hidden sm:inline">Start your 14-day free trial</span><span class="sm:hidden">Start free trial</span>
             </a>
