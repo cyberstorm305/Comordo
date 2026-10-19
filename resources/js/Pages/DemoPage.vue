@@ -51,7 +51,7 @@ function submit() {
             <span class="w-[60px] h-[60px] rounded-full bg-[#E7F0EA] flex items-center justify-center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#3F7E63" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
             <h2 class="text-[24px] font-bold tracking-[-0.02em] m-0">Demo requested.</h2>
             <p class="text-[15px] text-slate max-w-[380px] m-0">Thanks {{ form.name.split(' ')[0] }} — we&rsquo;ll email <b class="text-navy">{{ form.email }}</b> with a couple of times to choose from.</p>
-            <Link href="/imagesafe" class="btn-outline mt-2">Explore ImageSafe meanwhile</Link>
+            <Link href="/" class="btn-outline mt-2">Explore ImageSafe meanwhile</Link>
           </div>
         </div>
       </div>

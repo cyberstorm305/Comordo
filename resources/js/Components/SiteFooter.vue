@@ -11,8 +11,9 @@ const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
         <div class="text-[13px] text-stone ml-2">Digital assurance for schools and multi-academy trusts.</div>
       </div>
       <nav class="flex flex-wrap gap-x-6 gap-y-4 text-[13px]">
-        <Link href="/imagesafe" class="text-stone hover:text-navy">ImageSafe</Link>
-        <Link href="/compli" class="text-stone hover:text-navy">Compli</Link>
+        <Link href="/" class="text-stone hover:text-navy">ImageSafe</Link>
+        <!-- Hidden while ImageSafe is the homepage; restore for the joint marketing site (see BACKLOG.md). -->
+        <!-- <Link href="/compli" class="text-stone hover:text-navy">Compli</Link> -->
         <Link href="/privacy" class="text-stone hover:text-navy">Privacy</Link>
         <Link href="/terms" class="text-stone hover:text-navy">Terms</Link>
         <Link href="/contact" class="text-stone hover:text-navy">Contact</Link>

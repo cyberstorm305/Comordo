@@ -3,8 +3,11 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-Route::get('/', fn () => Inertia::render('HomePage'))->name('home');
-Route::get('/imagesafe', fn () => Inertia::render('ImageSafePage'))->name('imagesafe');
+// ImageSafe is the homepage for now. The joint Comordo homepage (HomePage.vue) is kept
+// for the multi-product marketing site; see BACKLOG.md.
+// Route::get('/', fn () => Inertia::render('HomePage'))->name('home');
+Route::get('/', fn () => Inertia::render('ImageSafePage'))->name('home');
+Route::redirect('/imagesafe', '/', 301)->name('imagesafe');
 Route::get('/compli', fn () => Inertia::render('CompliPage'))->name('compli');
 Route::get('/contact', fn () => Inertia::render('ContactPage'))->name('contact');
 Route::get('/demo', fn () => Inertia::render('DemoPage'))->name('demo');

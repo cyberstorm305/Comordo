@@ -44,7 +44,7 @@ const responsible = [
 
 <template>
   <div class="min-h-screen">
-    <SiteNav active="imagesafe" cta-label="Request a preview" cta-href="/imagesafe#preview" />
+    <SiteNav active="imagesafe" cta-label="Request a preview" cta-href="/#preview" />
 
     <!-- HERO -->
     <section class="border-b border-sand">
@@ -95,7 +95,7 @@ const responsible = [
     </section>
 
     <!-- WORKFLOW -->
-    <section class="bg-navy text-cream">
+    <section id="workflow" class="bg-navy text-cream">
       <div class="container-site py-[clamp(56px,9vw,96px)]">
         <div class="max-w-[700px] flex flex-col gap-3.5 mb-14">
           <div class="eyebrow">The review workflow</div>
@@ -117,7 +117,7 @@ const responsible = [
     </section>
 
     <!-- WHO APPEARS -->
-    <section class="border-b border-sand">
+    <section id="people" class="border-b border-sand">
       <div class="container-site grid lg:grid-cols-[1fr_1.1fr] gap-16 items-center py-[clamp(56px,9vw,96px)]">
         <div class="flex flex-col gap-4.5">
           <div class="eyebrow">Understand who appears</div>
@@ -153,7 +153,7 @@ const responsible = [
     </section>
 
     <!-- OBSERVATIONS -->
-    <section class="border-b border-sand bg-white">
+    <section id="observations" class="border-b border-sand bg-white">
       <div class="container-site grid lg:grid-cols-[1.1fr_1fr] gap-16 items-center py-[clamp(56px,9vw,96px)]">
         <div class="max-lg:order-2 bg-cream border border-sand rounded-[10px] shadow-[0_20px_50px_rgba(27,37,54,0.08)] overflow-hidden">
           <div class="flex items-center justify-between px-5 py-3.5 border-b border-sand-light bg-white">
@@ -182,7 +182,7 @@ const responsible = [
     </section>
 
     <!-- WHOLE ORGANISATION -->
-    <section class="border-b border-sand">
+    <section id="organisation" class="border-b border-sand">
       <div class="container-site py-[clamp(56px,9vw,96px)]">
         <div class="max-w-[720px] flex flex-col gap-4.5 mb-12">
           <div class="eyebrow">See the whole organisation</div>
@@ -204,7 +204,7 @@ const responsible = [
     </section>
 
     <!-- RESPONSIBLE USE -->
-    <section class="border-b border-sand">
+    <section id="responsible-use" class="border-b border-sand">
       <div class="container-site py-[clamp(56px,9vw,96px)]">
         <div class="max-w-[720px] flex flex-col gap-4.5 mb-12">
           <div class="eyebrow">Built for responsible use</div>

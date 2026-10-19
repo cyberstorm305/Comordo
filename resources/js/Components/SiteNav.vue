@@ -8,11 +8,22 @@ defineProps({
 })
 const open = ref(false)
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
+// Product page links are hidden while ImageSafe is the homepage; restore them for the
+// joint Comordo marketing site (see BACKLOG.md).
+// const links = [
+//   { to: '/imagesafe', key: 'imagesafe', label: 'ImageSafe' },
+//   { to: '/compli', key: 'compli', label: 'Compli' },
+//   { to: '/#products', key: 'products', label: 'Products' },
+//   { to: '/#faqs', key: 'faqs', label: 'FAQs' },
+// ]
+
+// Anchors to sections of the ImageSafe homepage. The leading slash makes them work from other pages too.
 const links = [
-  { to: '/imagesafe', key: 'imagesafe', label: 'ImageSafe' },
-  { to: '/compli', key: 'compli', label: 'Compli' },
-  { to: '/#products', key: 'products', label: 'Products' },
-  { to: '/#faqs', key: 'faqs', label: 'FAQs' },
+  { to: '/#workflow', key: 'workflow', label: 'How it works' },
+  { to: '/#people', key: 'people', label: 'Who appears' },
+  { to: '/#observations', key: 'observations', label: 'Observations' },
+  { to: '/#organisation', key: 'organisation', label: 'For trusts' },
+  { to: '/#responsible-use', key: 'responsible-use', label: 'Responsible use' },
 ]
 </script>
 
@@ -23,8 +34,8 @@ const links = [
         <img :src="logoSrc" alt="Comordo" class="h-7 w-auto block">
       </Link>
       <nav class="hidden lg:flex items-center gap-7 text-sm font-medium">
-        <Link v-for="l in links" :key="l.key" :href="l.to"
-          :class="active === l.key ? 'text-navy font-bold' : 'text-slate hover:text-navy'">{{ l.label }}</Link>
+        <a v-for="l in links" :key="l.key" :href="l.to"
+          :class="active === l.key ? 'text-navy font-bold' : 'text-slate hover:text-navy'">{{ l.label }}</a>
       </nav>
       <div class="hidden lg:flex items-center gap-3">
         <a :href="`${identityBase}/login`" class="text-sm font-semibold text-navy px-4.5 py-2.5 border border-edge rounded-md hover:border-navy hover:bg-white">Sign in</a>
@@ -44,7 +55,7 @@ const links = [
     </div>
     <div v-if="open" class="lg:hidden border-t border-sand bg-cream" @click="open = false">
       <div class="container-site flex flex-col pb-5 pt-2">
-        <Link v-for="l in links" :key="l.key" :href="l.to" class="text-base font-semibold text-navy py-3.5 border-b border-sand">{{ l.label }}</Link>
+        <a v-for="l in links" :key="l.key" :href="l.to" class="text-base font-semibold text-navy py-3.5 border-b border-sand">{{ l.label }}</a>
         <div class="flex flex-col gap-2.5 mt-4">
           <a :href="ctaHref" class="btn-primary text-center">{{ ctaLabel }}</a>
           <a :href="`${identityBase}/login`" class="btn-outline text-center bg-white">Sign in</a>
