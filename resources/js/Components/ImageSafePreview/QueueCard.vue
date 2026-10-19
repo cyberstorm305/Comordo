@@ -5,10 +5,11 @@
   becomes a horizontal strip.
 -->
 <script setup>
-import { reactive } from 'vue'
+import { computed, reactive } from 'vue'
+import { looksWrong } from './imageCheck.js'
 
 const props = defineProps({
-  items: { type: Array, default: () => [] }, // [{ key, name, thumb, faces }]
+  items: { type: Array, default: () => [] }, // [{ key, name, thumb, faces, width, height }]
   selected: { type: Number, default: 0 },
   state: { type: String, default: 'queued' }, // queued | scanning | done
   progress: { type: Object, default: () => ({ pages: 0, images: 0 }) },
@@ -16,6 +17,7 @@ const props = defineProps({
 const emit = defineEmits(['select'])
 
 const broken = reactive({})
+const loaded = reactive({}) // placeholder pattern shows behind a thumbnail until it loads
 const ROW = { tint: '#FBFAF6', line: '#E7E2D6', solid: '#1B2536' }
 
 function rowStyle(i) {
@@ -25,6 +27,14 @@ function rowStyle(i) {
     '--row-hover': `inset 0 0 0 1px ${ROW.solid}`,
   }
 }
+// Screen readers hear only state changes and new photos, not every page count.
+const announcement = computed(() => {
+  const n = props.items.length
+  const photos = `${n} ${n === 1 ? 'photo' : 'photos'} with people`
+  if (props.state === 'queued') return 'Waiting to start.'
+  if (props.state === 'scanning') return `Scanning. ${photos} found so far.`
+  return `Scan finished. ${photos} found.`
+})
 const peopleWord = (n) => `${n} ${n === 1 ? 'PERSON' : 'PEOPLE'}`
 const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 </script>
@@ -38,7 +48,8 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
     <div class="flex flex-wrap gap-[5px] border-b border-hair px-3 py-2.5">
       <button type="button" class="cursor-default rounded-[14px] border border-navy bg-navy px-2.5 py-1 text-[11px] font-bold text-white" aria-pressed="true">All {{ items.length }}</button>
     </div>
-    <div v-if="state !== 'done'" class="flex items-center gap-2 border-b border-hair px-3.5 py-2.5 text-[11.5px] text-slate" aria-live="polite" data-testid="queue-status">
+    <p class="sr-only" aria-live="polite" data-testid="queue-announcement">{{ announcement }}</p>
+    <div v-if="state !== 'done'" class="flex items-center gap-2 border-b border-hair px-3.5 py-2.5 text-[11.5px] text-slate" data-testid="queue-status">
       <span class="h-3 w-3 flex-none animate-spin rounded-full border-2 border-sand border-t-copper" aria-hidden="true"></span>
       <span v-if="state === 'queued'">Waiting to start…</span>
       <span v-else>Scanning… {{ plural(progress.pages, 'page', 'pages') }} · {{ plural(progress.images, 'image', 'images') }}</span>
@@ -52,7 +63,8 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
               data-testid="queue-row"
               @click="emit('select', i)">
         <img v-if="!broken[x.key]" :src="x.thumb" alt="" referrerpolicy="no-referrer" loading="lazy"
-             class="img-ph-sm h-[38px] w-[52px] flex-none rounded-[5px] border border-[#CFC8B8] object-cover"
+             class="h-[38px] w-[52px] flex-none rounded-[5px] border border-[#CFC8B8] bg-paper object-cover" :class="loaded[x.key] ? '' : 'img-ph-sm'"
+             @load="e => { if (looksWrong(e.target, x.width, x.height)) broken[x.key] = true; else loaded[x.key] = true }"
              @error="broken[x.key] = true">
         <div v-else class="img-ph-sm h-[38px] w-[52px] flex-none rounded-[5px] border border-[#CFC8B8]"></div>
         <div class="min-w-0 flex-1">

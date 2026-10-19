@@ -6,6 +6,7 @@
 -->
 <script setup>
 import { computed, ref, watch } from 'vue'
+import { looksWrong } from './imageCheck.js'
 
 const props = defineProps({
   photo: { type: Object, required: true }, // { image_url, width, height, faces: [{x,y,w,h}] }
@@ -16,6 +17,11 @@ const emit = defineEmits(['tag'])
 const broken = ref(false)
 const loaded = ref(false)
 watch(() => props.photo.image_url, () => { broken.value = false; loaded.value = false })
+
+function onLoad(e) {
+  if (looksWrong(e.target, props.photo.width, props.photo.height)) broken.value = true
+  else loaded.value = true
+}
 
 const UNKNOWN_LINE = '#8A7A9E'
 const faces = computed(() => props.photo.faces || [])
@@ -44,7 +50,8 @@ function box(f) {
     <div v-if="!broken" class="relative max-h-full max-w-full" :class="loaded ? '' : 'img-ph'" :style="layerStyle">
       <img :src="photo.image_url" :alt="alt" referrerpolicy="no-referrer"
            class="pointer-events-none block h-full w-full object-fill"
-           @load="loaded = true" @error="broken = true">
+           @load="onLoad" @error="broken = true">
+      <template v-if="loaded">
       <button v-for="(f, i) in faces" :key="i" type="button"
               class="absolute z-20 cursor-pointer bg-transparent p-0"
               :style="box(f)" :aria-label="`Tag face ${i + 1}`"
@@ -53,12 +60,13 @@ function box(f) {
         <span class="pointer-events-none absolute left-0 top-0 -translate-y-[120%] whitespace-nowrap rounded-[3px] px-[5px] py-px text-[9px] font-semibold text-white"
               :style="{ background: UNKNOWN_LINE }">Unknown</span>
       </button>
+      </template>
     </div>
     <div v-else class="img-ph flex h-full w-full items-center justify-center" data-testid="photo-placeholder">
       <span class="rounded-full bg-white/80 px-3 py-1.5 text-[12px] font-medium text-slate">This photo couldn't be shown here.</span>
     </div>
     <div class="pointer-events-none absolute bottom-3 left-3 z-30 rounded-[20px] bg-navy/[.72] px-2.5 py-1 text-[11px] font-medium text-white backdrop-blur-[2px]" data-testid="faces-detected">
-      {{ faces.length }} {{ faces.length === 1 ? 'face' : 'faces' }} detected<template v-if="faces.length && !broken"> · click a box to tag</template>
+      {{ faces.length }} {{ faces.length === 1 ? 'face' : 'faces' }} detected<template v-if="faces.length && loaded"> · click a box to tag</template>
     </div>
   </div>
 </template>

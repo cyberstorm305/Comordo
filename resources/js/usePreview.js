@@ -4,14 +4,18 @@ import { imagesafeBase } from '@/imagesafe.js'
 const POLL_MS = 2000
 const STALL_MS = 90000
 const FETCH_TIMEOUT_MS = 15000
-const MAX_POLL_FAILURES = 3 // consecutive network/timeouts before giving up
+const MAX_POLL_FAILURES = 3 // consecutive failed polls (network, timeout, non-OK) before giving up
 const json = { 'Content-Type': 'application/json', Accept: 'application/json' }
 
-async function fetchWithTimeout(url, options = {}) {
+// Fetches and reads the JSON body, all inside one 15 s timeout so a stalled
+// body is covered too. Resolves to { status, ok, data }.
+async function fetchJson(url, options = {}) {
   const controller = new AbortController()
   const t = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
   try {
-    return await fetch(url, { ...options, signal: controller.signal })
+    const res = await fetch(url, { ...options, signal: controller.signal })
+    const data = res.ok ? await res.json() : null
+    return { status: res.status, ok: res.ok, data }
   } finally {
     clearTimeout(t)
   }
@@ -20,7 +24,7 @@ async function fetchWithTimeout(url, options = {}) {
 // Starts a preview. Resolves to { id } or { error: 'blocked' | 'limited' | 'busy' }.
 export async function createPreview(url) {
   try {
-    const res = await fetchWithTimeout(`${imagesafeBase}/api/v1/previews`, {
+    const res = await fetchJson(`${imagesafeBase}/api/v1/previews`, {
       method: 'POST',
       headers: json,
       body: JSON.stringify({ url, confirmed: true }),
@@ -28,7 +32,7 @@ export async function createPreview(url) {
     if (res.status === 429) return { error: 'limited' }
     if (res.status === 422) return { error: 'blocked' }
     if (!res.ok) return { error: 'busy' }
-    const { id } = await res.json()
+    const id = res.data?.id
     return id ? { id } : { error: 'busy' }
   } catch {
     return { error: 'busy' }
@@ -68,12 +72,11 @@ export function usePreview() {
 
     const poll = async () => {
       try {
-        const res = await fetchWithTimeout(`${imagesafeBase}/api/v1/previews/${encodeURIComponent(id)}`, { headers: { Accept: 'application/json' } })
+        const res = await fetchJson(`${imagesafeBase}/api/v1/previews/${encodeURIComponent(id)}`, { headers: { Accept: 'application/json' } })
         if (mine !== run) return
         if (res.status === 404) return fail('expired')
-        if (!res.ok) return fail('busy')
-        const d = await res.json()
-        if (mine !== run) return
+        if (!res.ok) throw new Error(`HTTP ${res.status}`) // retried like a network failure
+        const d = res.data || {}
         failures = 0
 
         const found = d.found || []

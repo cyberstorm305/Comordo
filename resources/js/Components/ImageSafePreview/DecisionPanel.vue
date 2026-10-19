@@ -15,8 +15,8 @@ const opts = [
 
 <template>
   <div class="flex flex-1 flex-col" data-testid="decision">
-    <div class="mb-3 flex flex-col gap-[7px]" role="radiogroup" aria-label="Decision">
-      <button v-for="o in opts" :key="o.key" type="button" role="radio" aria-checked="false"
+    <div class="mb-3 flex flex-col gap-[7px]">
+      <button v-for="o in opts" :key="o.key" type="button"
               class="flex w-full cursor-pointer items-start gap-[9px] rounded-[9px] border-[1.5px] border-sand bg-white px-3 py-2.5 text-left hover:border-copper-pale"
               data-testid="decision-option"
               @click="emit('trial', $event.currentTarget)">

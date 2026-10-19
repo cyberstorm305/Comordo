@@ -53,6 +53,8 @@ const items = computed(() => found.value.map((f, i) => ({
   name: fileName(f.image_url),
   thumb: f.image_url,
   faces: (f.faces || []).length,
+  width: f.width,
+  height: f.height,
 })))
 
 const selected = ref(0)
