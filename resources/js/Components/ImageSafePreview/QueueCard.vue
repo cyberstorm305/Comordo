@@ -40,7 +40,7 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
 </script>
 
 <template>
-  <div class="flex min-h-0 flex-col overflow-hidden rounded-xl border border-sand bg-white lg:sticky lg:top-[112px] lg:max-h-[calc(100vh-160px)]" data-testid="queue">
+  <div class="flex min-h-0 flex-col overflow-hidden rounded-xl border border-sand bg-white lg:sticky lg:top-[85px] lg:max-h-[calc(100vh-113px)]" data-testid="queue">
     <div class="flex items-center justify-between border-b border-hair px-3.5 py-3">
       <span class="text-[11px] font-bold uppercase tracking-[0.4px] text-stone">Queue</span>
       <span class="text-[11.5px] text-stone">{{ items.length }} to review</span>

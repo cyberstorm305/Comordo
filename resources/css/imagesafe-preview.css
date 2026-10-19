@@ -22,6 +22,7 @@
   --color-plum: var(--isp-plum);
   --color-plum-light: var(--isp-plum-light);
   --color-plum-pale: var(--isp-plum-pale);
+  --color-teal: var(--isp-teal);
   --shadow-isp-modal: var(--isp-shadow-modal);
 }
 
@@ -41,6 +42,7 @@
   --isp-plum: #5E5170;
   --isp-plum-light: #8A7A9E;
   --isp-plum-pale: #F3EFF7;
+  --isp-teal: #5BA8A0;
   --isp-shadow-modal: 0 20px 50px rgba(27, 37, 54, 0.28);
 
   font-family: "Satoshi", system-ui, sans-serif;
