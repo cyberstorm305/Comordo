@@ -122,7 +122,7 @@ const clamp = (n) => Math.max(1, Math.min(200, Math.round(n) || 1))
           </label>
           <label class="flex flex-col gap-1.5">
             <span class="text-[13px] font-semibold">Your name</span>
-            <input v-model="name" class="field" :class="errs.name && 'border-[#B23A2E]'" placeholder="e.g. Lewis Hartley">
+            <input v-model="name" class="field" :class="errs.name && 'border-[#B23A2E]'" placeholder="e.g. Jane Smith">
             <span v-if="errs.name" class="text-[12.5px] text-[#9A3B2A]">Please add your name.</span>
           </label>
           <label class="flex flex-col gap-1.5">

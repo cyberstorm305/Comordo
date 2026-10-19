@@ -31,7 +31,7 @@ const topics = ['General enquiry', 'ImageSafe', 'Register interest in Compli', '
         <div class="bg-white border border-sand-dark rounded-xl p-[clamp(24px,4vw,40px)]">
           <form v-if="!sent" class="flex flex-col gap-4.5" @submit.prevent="submit">
             <div class="grid sm:grid-cols-2 gap-4.5">
-              <label class="flex flex-col gap-1.5"><span class="text-[13px] font-semibold">Your name</span><input v-model="form.name" class="field" placeholder="e.g. Lewis Hartley"></label>
+              <label class="flex flex-col gap-1.5"><span class="text-[13px] font-semibold">Your name</span><input v-model="form.name" class="field" placeholder="e.g. Jane Smith"></label>
               <label class="flex flex-col gap-1.5"><span class="text-[13px] font-semibold">Work email</span><input v-model="form.email" type="email" class="field" placeholder="you@yourtrust.org.uk"></label>
             </div>
             <label class="flex flex-col gap-1.5"><span class="text-[13px] font-semibold">School or trust</span><input v-model="form.org" class="field" placeholder="e.g. Meridian Learning Trust"></label>
