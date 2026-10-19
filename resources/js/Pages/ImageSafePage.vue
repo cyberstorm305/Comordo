@@ -34,6 +34,20 @@ const orgRows = [
   { school: 'Birchwood SEND School', images: '642', crawl: '3h ago', queue: 'All reviewed', cls: 'pill-muted' },
   { school: 'St Aidan\u2019s CofE Primary', images: '918', crawl: 'crawling now', queue: '2 flags open', cls: 'pill-red' },
 ]
+const openFaq = ref(0)
+const faqs = [
+  { q: 'What does ImageSafe check?', a: 'ImageSafe scans your school website for the photos, videos and newsletter PDFs it publishes. For each one it finds who appears and checks them against your permission records, and looks for pupils who must never be published, names next to or printed in a photo, location data in the file, and children in swimwear or undressed. Anything that needs a closer look joins your review queue.' },
+  { q: 'Does ImageSafe make decisions automatically?', a: 'No. ImageSafe finds and flags; your staff decide. Every flagged image is reviewed by a person, who records the outcome (keep, replace or take down) and the reasoning. That decision, and who made it, stays in the audit history.' },
+  { q: 'How does it know who has photo permission?', a: 'You add your pupils and staff in People & Permissions, either one at a time or by uploading a CSV with their permissions. Reference photos let ImageSafe recognise them in published images. It also tracks leavers, moves year groups on at the end of the school year, and reminds you when permissions are due for renewal.' },
+  { q: 'Can it check our Facebook and Instagram?', a: 'Yes. The account owner connects the school’s Facebook Page and Instagram account and chooses which ones ImageSafe can see. Recent photos are checked in the same way as photos on your website.' },
+  { q: 'Can we check photos before they go online?', a: 'Yes. If your school website runs on WordPress, the ImageSafe plugin checks each photo as it is uploaded and tells you whether it is safe to publish, and why not if it isn’t. The photo is checked and then deleted from ImageSafe straight away.' },
+  { q: 'What is AI exposure?', a: 'AI image datasets have been built from photos collected from public websites. ImageSafe checks whether your website turns away AI crawlers, whether pages with photos of children are already held in public web archives used to train AI, and whether your photos appear in Google and Bing image search. Where they do, the Reports page gives you ready-written removal requests.' },
+  { q: 'How is children’s face data protected?', a: 'Face data is encrypted at rest, and access to it is role-based and logged. When a photo has not been seen on your website for a set period (90 days by default), its face data is removed automatically. Your school or trust is the data controller, and we’re happy to walk your DPO through data handling in detail.' },
+  { q: 'Does it work for a trust as well as a single school?', a: 'Yes. A single school gets its own workspace. A trust adds every school and sees them together in an All schools view, with staff given access to the schools they work with and trust admins overseeing the whole estate.' },
+  { q: 'What reports does it produce?', a: 'A termly safeguarding report for governors (photos found, decisions made, removals and fixes confirmed, alerts and AI exposure) as a PDF, and a compliance summary for one school or several that you can export as CSV or PDF.' },
+  { q: 'How much does it cost, and can we try it?', a: 'ImageSafe is licensed per school, billed monthly or yearly, with volume discounts as you add schools. Every account starts with a 14-day free trial, and you can request a free preview of one school website before signing up.' },
+]
+
 const responsible = [
   { n: '01', t: 'Controlled access', d: 'Role-based access, so imagery and reference records are only visible to the staff who need them.' },
   { n: '02', t: 'Human review', d: 'Analysis produces observations for staff. No safeguarding decision is ever automated.' },
@@ -245,6 +259,26 @@ const responsible = [
           <p v-if="previewError" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] leading-normal text-[#9A3B2A] m-0"><b>!</b> Please enter a full school website address, like <b>www.yourschool.org.uk</b>.</p>
           <p v-if="previewSent" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#E9F4EE] rounded-lg text-[13.5px] leading-normal text-rag-green m-0"><b>✓</b> Thanks — we&rsquo;ll be in touch to arrange your walkthrough.</p>
           <p class="text-[12.5px] leading-normal text-stone m-0">Previews are prepared with our team — we&rsquo;ll be in touch to arrange a walkthrough of the results.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section id="faqs" class="border-b border-sand">
+      <div class="container-site grid lg:grid-cols-[0.8fr_1.4fr] gap-16 py-[clamp(56px,9vw,96px)]">
+        <div class="flex flex-col gap-4">
+          <div class="eyebrow">FAQs</div>
+          <h2 class="section-title">Sensible questions, straight answers.</h2>
+          <p class="text-[15.5px] leading-relaxed text-slate">Anything we haven&rsquo;t covered, <Link href="/contact" class="text-copper font-semibold no-underline">ask us</Link> or book a demo.</p>
+        </div>
+        <div class="border-t border-sand">
+          <div v-for="(f, i) in faqs" :key="f.q" class="border-b border-sand">
+            <button class="w-full flex justify-between items-center gap-6 py-5 px-1 text-left cursor-pointer hover:bg-white/60" :aria-expanded="openFaq === i" @click="openFaq = openFaq === i ? -1 : i">
+              <span class="text-[16.5px] font-bold">{{ f.q }}</span>
+              <span class="font-mono text-lg text-copper w-6 text-center shrink-0" aria-hidden="true">{{ openFaq === i ? '−' : '+' }}</span>
+            </button>
+            <p v-if="openFaq === i" class="text-[14.5px] leading-relaxed text-slate pb-6 px-1 pr-10 max-w-[640px] text-pretty m-0">{{ f.a }}</p>
+          </div>
         </div>
       </div>
     </section>
