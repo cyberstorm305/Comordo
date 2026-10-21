@@ -16,7 +16,6 @@ const emit = defineEmits(['tag'])
             @click="emit('tag', $event.currentTarget)">
       <div class="min-w-0 flex-1">
         <div class="truncate text-[12.5px] text-mist">Untagged face</div>
-        <div class="text-[10.5px] text-mist">Face {{ n }}</div>
       </div>
       <span class="flex-none whitespace-nowrap rounded-[10px] px-2 py-0.5 text-[10px] font-semibold" style="background:#EFEBF3; color:#5E5170">Unknown person</span>
     </button>

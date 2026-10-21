@@ -27,6 +27,7 @@
   --font-display: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --breakpoint-lg: 980px;
+  --breakpoint-wide: 1400px;
 }
 
 html {
