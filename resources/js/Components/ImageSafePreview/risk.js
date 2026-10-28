@@ -1,10 +1,9 @@
 // The safeguarding checks a preview can run, and the photo's risk from them. A
 // copy of the rules in ImageSafe's SafeguardingReviewService, limited to what
-// the preview API returns (face boxes, the photo's size and any AI label in the
-// file). Face visibility
-// needs detection confidence and metadata needs the file's EXIF, so those two
-// only run in the trial. Faces start untagged (permission unknown); the demo
-// tags a visitor adds feed the permission rules, as tags do in the app.
+// the preview API returns (face boxes and confidence, the photo's size and any AI
+// label in the file). The app's other checks need the page around the photo or the
+// file's EXIF, so they only run in the trial. Faces start untagged (permission
+// unknown); the demo tags a visitor adds feed the permission rules, as tags do in the app.
 
 export const RISK = {
   high: { word: 'HIGH', long: 'High', solid: '#B23A2E', tint: '#FCE8E6', line: '#F3C9C5' },
@@ -33,7 +32,13 @@ export function permissionVerdict(keys) {
   return keys.some((k) => k !== 'approved') ? 'UNKNOWN' : 'YES'
 }
 
-export const LOCKED_CHECKS = ['Face visibility', 'Metadata present']
+// The app's checks a preview can't run, by the app's key (for the explainer).
+export const LOCKED_CHECKS = [
+  { key: 'named_person', label: 'Name in or near the photo' },
+  { key: 'full_size_original', label: 'Full-size original online' },
+  { key: 'metadata_present', label: 'Location or camera data' },
+  { key: 'state_of_dress', label: 'Appropriate clothing' },
+]
 
 const STATE = {
   high: { state: 'fail', icon: '✕', word: 'FLAG' },
@@ -41,12 +46,15 @@ const STATE = {
   low: { state: 'pass', icon: '✓', word: 'OK' },
 }
 
-// Over 2% of the frame is high, except a 3–3.5% band that is medium (as in the app).
+// How much of the picture the largest face fills: up to 2% is a wide shot, up to 3.5% a caution, more a close-up.
 function faceSizeStatus(ratio) {
   if (ratio <= 0.02) return 'low'
-  if (ratio >= 0.03 && ratio <= 0.035) return 'medium'
-  return 'high'
+  return ratio <= 0.035 ? 'medium' : 'high'
 }
+
+// A face clear enough to recognise: detected with confidence and at least 48px across (the app's
+// clearFaceCount). Previews from before the API returned confidence count on size alone.
+const isClear = (f) => (f.confidence ?? 1) >= 0.85 && f.w >= 48 && f.h >= 48
 
 // "Made or edited with AI", from the label the preview API found in the file (the app's
 // aiProvenanceItem). Made with AI is a flag, edited a check; no label passes, but proves nothing.
@@ -81,23 +89,23 @@ export function review(photo, keys) {
   const count = (photo.faces || []).length
   const ratio = largestFaceRatio(photo)
   const longEdge = Math.max(photo.width || 0, photo.height || 0)
+  const clear = (photo.faces || []).filter(isClear).length
   const statuses = {
+    // A clearly visible face can be recognised: one alone is flagged, clear faces in a group are a caution.
+    face_visibility: clear === 0 ? 'low' : count === 1 ? 'high' : 'medium',
     close_up_vs_wide_angle: faceSizeStatus(ratio),
-    individual_pupil_focus: faceSizeStatus(ratio),
-    group_activity_composition: count === 0 ? 'low' : count >= 2 ? 'low' : 'high',
+    group_activity_composition: count === 1 && clear === 1 ? 'high' : 'low',
     image_resolution: longEdge > 2000 ? 'high' : longEdge >= 1400 ? 'medium' : 'low',
-    easy_to_crop: faceSizeStatus(ratio),
   }
   // Previews from before the API returned AI labels have no "ai" field: the check is skipped.
   const ai = 'ai' in photo ? aiCheck(photo.ai) : null
   if (ai) statuses.ai_provenance = ai.status
   const notes = ai ? { ai_provenance: ai.note } : {}
   const labels = {
-    close_up_vs_wide_angle: 'Close-up vs wide-angle',
-    individual_pupil_focus: 'Individual pupil focus',
-    group_activity_composition: 'Group / activity-led composition',
-    image_resolution: 'Image resolution',
-    easy_to_crop: 'Easy to crop / isolate a child',
+    face_visibility: 'Recognisable faces',
+    close_up_vs_wide_angle: 'Close-up of a child',
+    group_activity_composition: 'Single child in shot',
+    image_resolution: 'High-resolution file',
     ai_provenance: ai?.label,
   }
 

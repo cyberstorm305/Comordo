@@ -2,12 +2,13 @@
   ChecksPanel.vue — the "Safeguarding checks" list (the real app's
   Review/SafeguardingChecks). Checks that need a look show in full; the passed
   ones fold into one line until shown, as in the app. The checks a preview
-  can't run fold into a second line. Give it a :key of the photo so each one
-  starts folded.
+  can't run fold into a second line. "What do these mean?" opens the
+  explainer, and clicking a check opens it at that check. Give it a :key of
+  the photo so each one starts folded.
 -->
 <script setup>
 import { computed, ref } from 'vue'
-import InfoTip from './InfoTip.vue'
+import ChecksExplainer from './ChecksExplainer.vue'
 import { LOCKED_CHECKS } from './risk.js'
 
 const props = defineProps({ checks: { type: Array, default: () => [] } })
@@ -21,20 +22,29 @@ const passedLabel = computed(() => {
   const noun = n === 1 ? 'check' : 'checks'
   return passed.value.every((c) => c.state === 'na') ? `${n} ${noun} not applicable` : `${n} ${noun} passed`
 })
+
+const explaining = ref(false)
+const highlight = ref(null)
+const explainReturn = ref(null)
+function explain(key, el) {
+  highlight.value = key
+  explainReturn.value = el
+  explaining.value = true
+}
+// A check's own note (such as where an AI label came from), otherwise the app's hint.
+const rowTitle = (c) => c.note || `What does “${c.label}” mean?`
 </script>
 
 <template>
   <div data-testid="checks">
     <div class="flex items-center gap-1.5 px-4 pb-2 pt-3.5">
       <span class="text-[11px] font-bold uppercase leading-4 tracking-[0.04em] text-stone">Safeguarding checks</span>
-      <InfoTip label="How the checks work">
-        A refusal counts as high — the image must come off, and the other checks are N/A.
-        Any flag = high. 4+ cautions together = high. Untagged faces or missing permission data make it at least medium.
-        AI-assisted — your judgement decides.
-      </InfoTip>
+      <button type="button" class="ml-auto cursor-pointer border-0 bg-transparent p-0 text-[11px] font-semibold leading-4 text-copper-dark hover:underline"
+              data-testid="explain-checks" @click="explain(null, $event.currentTarget)">What do these mean?</button>
     </div>
     <div class="flex flex-col gap-1 border-b border-shell px-2.5 pb-3">
-      <div v-for="c in flagged" :key="c.key" class="check-row" :class="`check-row--${c.state}`" :title="c.note" data-testid="check">
+      <div v-for="c in flagged" :key="c.key" role="button" tabindex="0" class="check-row cursor-pointer hover:brightness-[.98]" :class="`check-row--${c.state}`" :title="rowTitle(c)" data-testid="check"
+           @click="explain(c.key, $event.currentTarget)" @keydown.enter.prevent="explain(c.key, $event.currentTarget)">
         <span class="check-row__icon" aria-hidden="true">{{ c.icon }}</span>
         <span class="check-row__label">{{ c.label }}</span>
         <span class="check-row__word">{{ c.word }}</span>
@@ -47,7 +57,8 @@ const passedLabel = computed(() => {
           <span class="flex-none text-[11px] leading-4 text-stone">{{ showPassed ? 'Hide' : 'Show' }}</span>
         </button>
         <template v-if="showPassed">
-          <div v-for="c in passed" :key="c.key" class="check-row" :class="`check-row--${c.state}`" :title="c.note" data-testid="check">
+          <div v-for="c in passed" :key="c.key" role="button" tabindex="0" class="check-row cursor-pointer hover:bg-paper" :class="`check-row--${c.state}`" :title="rowTitle(c)" data-testid="check"
+               @click="explain(c.key, $event.currentTarget)" @keydown.enter.prevent="explain(c.key, $event.currentTarget)">
             <span class="check-row__icon" aria-hidden="true">{{ c.icon }}</span>
             <span class="check-row__label">{{ c.label }}</span>
             <span class="check-row__word">{{ c.word }}</span>
@@ -64,14 +75,16 @@ const passedLabel = computed(() => {
         <span class="flex-none text-[11px] leading-4 text-stone">{{ showLocked ? 'Hide' : 'Show' }}</span>
       </button>
       <template v-if="showLocked">
-        <div v-for="label in LOCKED_CHECKS" :key="label" class="check-row check-row--locked" data-testid="locked-check">
+        <div v-for="c in LOCKED_CHECKS" :key="c.key" role="button" tabindex="0" class="check-row check-row--locked cursor-pointer hover:bg-paper" :title="`What does “${c.label}” mean?`" data-testid="locked-check"
+             @click="explain(c.key, $event.currentTarget)" @keydown.enter.prevent="explain(c.key, $event.currentTarget)">
           <span class="check-row__icon" aria-hidden="true">
             <svg width="8" height="10" viewBox="0 0 11 13" fill="none"><rect x="1" y="5.5" width="9" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 5.5V3.8a2.5 2.5 0 015 0v1.7" stroke="currentColor" stroke-width="1.6"/></svg>
           </span>
-          <span class="check-row__label">{{ label }}</span>
+          <span class="check-row__label">{{ c.label }}</span>
           <span class="check-row__word">In your trial</span>
         </div>
       </template>
     </div>
+    <ChecksExplainer :open="explaining" :highlight="highlight" :return-to="explainReturn" @close="explaining = false" />
   </div>
 </template>
