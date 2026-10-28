@@ -16,6 +16,7 @@ import DecisionPanel from '../Components/ImageSafePreview/DecisionPanel.vue'
 import SafeVersion from '../Components/ImageSafePreview/SafeVersion.vue'
 import PeoplePanel from '../Components/ImageSafePreview/PeoplePanel.vue'
 import TrialPrompt from '../Components/ImageSafePreview/TrialPrompt.vue'
+import { RISK, recommended, review } from '../Components/ImageSafePreview/risk.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 
@@ -57,26 +58,54 @@ function pagePath(u) {
   try { const p = new URL(u).pathname; return p === '/' ? 'the home page' : p } catch { return 'your website' }
 }
 
-const items = computed(() => found.value.map((f, i) => ({
-  key: `${i}:${f.image_url}`,
-  name: fileName(f.image_url),
-  thumb: f.image_url,
-  faces: (f.faces || []).length,
-  width: f.width,
-  height: f.height,
-})))
+// Riskiest first, as the app's queue: high → medium, then in the order they were found.
+const RANK = { high: 0, medium: 1, low: 2 }
+const items = computed(() => found.value.map((f, i) => {
+  const r = review(f)
+  return {
+    key: `${i}:${f.image_url}`,
+    order: i,
+    photo: f,
+    name: fileName(f.image_url),
+    thumb: f.image_url,
+    faces: (f.faces || []).length,
+    width: f.width,
+    height: f.height,
+    risk: r.overall,
+    checks: r.checks,
+  }
+}).sort((a, b) => RANK[a.risk] - RANK[b.risk] || a.order - b.order))
 
-const selected = ref(0)
-const decision = ref(null) // picked as in the app; recording it opens the trial prompt
-vueWatch(selected, () => { decision.value = null })
-const sel = computed(() => found.value[selected.value] || null)
-const selName = computed(() => items.value[selected.value]?.name || '')
-const selFaces = computed(() => (sel.value?.faces || []).length)
+// Selection follows the photo, not its place, so photos arriving mid-scan don't move it.
+const filter = ref('all')
+const shown = computed(() => filter.value === 'all' ? items.value : items.value.filter((x) => x.risk === filter.value))
+const selectedKey = ref(null)
+const current = computed(() => shown.value.find((x) => x.key === selectedKey.value) || shown.value[0] || null)
+const position = computed(() => shown.value.indexOf(current.value))
+const sel = computed(() => current.value?.photo || null)
+const selName = computed(() => current.value?.name || '')
+const selFaces = computed(() => current.value?.faces || 0)
+const selRisk = computed(() => RISK[current.value?.risk || 'medium'])
 const selAlt = computed(() => sel.value ? `Photo from ${pagePath(sel.value.page_url)} with ${selFaces.value} ${selFaces.value === 1 ? 'person' : 'people'}` : '')
 
+// Each photo starts on the decision the app recommends for its risk.
+const decision = ref(null) // picked as in the app; recording it opens the trial prompt
+vueWatch(() => current.value?.key, () => {
+  if (!current.value) return
+  selectedKey.value = current.value.key
+  decision.value = recommended(current.value.risk)
+}, { immediate: true })
+
+function setFilter(key) {
+  filter.value = key
+  selectedKey.value = shown.value[0]?.key ?? null
+}
+
 function step(dir) {
-  if (!items.value.length) return
-  selected.value = Math.min(items.value.length - 1, Math.max(0, selected.value + dir))
+  const list = shown.value
+  if (!list.length) return
+  const i = Math.min(list.length - 1, Math.max(0, position.value + dir))
+  selectedKey.value = list[i].key
 }
 
 const errorCopy = {
@@ -90,8 +119,8 @@ function onKey(e) {
   if (trialFeature.value || state.value === 'error') return
   if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return
   if (e.metaKey || e.ctrlKey || e.altKey) return
-  if (e.key === 'ArrowDown' || e.key === 'j') { if (items.value.length) { e.preventDefault(); step(1) } }
-  else if (e.key === 'ArrowUp' || e.key === 'k') { if (items.value.length) { e.preventDefault(); step(-1) } }
+  if (e.key === 'ArrowDown' || e.key === 'j') { if (shown.value.length) { e.preventDefault(); step(1) } }
+  else if (e.key === 'ArrowUp' || e.key === 'k') { if (shown.value.length) { e.preventDefault(); step(-1) } }
   else if (sel.value && ['1', '2', '3'].includes(e.key)) {
     e.preventDefault()
     decision.value = ['remove', 'fix', 'keep'][Number(e.key) - 1]
@@ -107,7 +136,6 @@ onMounted(() => {
   watchPreview(props.id)
 })
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
-vueWatch(() => items.value.length, (n) => { if (selected.value >= n) selected.value = Math.max(0, n - 1) })
 </script>
 
 <template>
@@ -142,14 +170,16 @@ vueWatch(() => items.value.length, (n) => { if (selected.value >= n) selected.va
       </div>
 
       <div class="grid items-stretch gap-4 lg:grid-cols-[minmax(290px,1fr)_minmax(0,3fr)]">
-        <QueueCard :items="items" :selected="selected" :state="state" :progress="progress" @select="i => selected = i" />
+        <QueueCard :items="items" :shown="shown" :selected="current?.key ?? null" :filter="filter" :state="state" :progress="progress"
+                   @select="k => selectedKey = k" @filter="setFilter" />
 
         <!-- focus panel: fills the screen height like the queue, so the photo takes the depth the controls leave.
              145px, not the app's 113px: the preview strip above the header is 32px. -->
         <div v-if="sel" class="flex min-w-0 flex-col overflow-hidden rounded-[14px] border border-sand bg-white lg:h-[calc(100vh-145px)]" data-testid="focus">
-          <div class="flex items-center justify-between gap-3 bg-navy px-5 py-2.5">
+          <div class="flex items-center justify-between gap-3 px-5 py-2.5" :style="{ background: selRisk.solid }">
             <div class="flex min-w-0 items-center gap-3">
-              <span class="flex-none whitespace-nowrap text-[12px] leading-[18px] tabular-nums text-white/75" data-testid="item-position">{{ selected + 1 }} / {{ items.length }}</span>
+              <span class="flex-none whitespace-nowrap rounded-[7px] bg-white/20 px-2 py-0.5 text-[11px] font-extrabold leading-4 text-white" :title="`${selRisk.long} risk`" data-testid="item-risk">{{ selRisk.word }}</span>
+              <span class="flex-none whitespace-nowrap text-[12px] leading-[18px] tabular-nums text-white/75" data-testid="item-position">{{ position + 1 }} / {{ shown.length }}</span>
               <button type="button" class="min-w-0 cursor-pointer truncate border-0 bg-transparent p-0 text-left font-mono text-[14px] font-bold leading-5 text-white hover:underline" title="Open full detail" data-testid="item-name"
                       @click="openTrial('Image detail', $event.currentTarget)">{{ selName }}</button>
               <a :href="sel.page_url" target="_blank" rel="noopener noreferrer"
@@ -160,10 +190,10 @@ vueWatch(() => items.value.length, (n) => { if (selected.value >= n) selected.va
               </a>
             </div>
             <div class="flex flex-none gap-2">
-              <button type="button" aria-label="Previous image" class="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-[7px] border border-white/50 bg-transparent text-white hover:bg-white/15 disabled:cursor-default disabled:opacity-40" :disabled="selected === 0" data-testid="prev" @click="step(-1)">
+              <button type="button" aria-label="Previous image" class="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-[7px] border border-white/50 bg-transparent text-white hover:bg-white/15 disabled:cursor-default disabled:opacity-40" :disabled="position <= 0" data-testid="prev" @click="step(-1)">
                 <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 16V4M5 9l5-5 5 5" /></svg>
               </button>
-              <button type="button" aria-label="Next image" class="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-[7px] border border-white/50 bg-transparent text-white hover:bg-white/15 disabled:cursor-default disabled:opacity-40" :disabled="selected >= items.length - 1" data-testid="next" @click="step(1)">
+              <button type="button" aria-label="Next image" class="flex h-[34px] w-[34px] cursor-pointer items-center justify-center rounded-[7px] border border-white/50 bg-transparent text-white hover:bg-white/15 disabled:cursor-default disabled:opacity-40" :disabled="position >= shown.length - 1" data-testid="next" @click="step(1)">
                 <svg class="h-4 w-4" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 4v12M5 11l5 5 5-5" /></svg>
               </button>
             </div>
@@ -173,11 +203,11 @@ vueWatch(() => items.value.length, (n) => { if (selected.value >= n) selected.va
               <div class="flex flex-1 flex-col gap-3 px-4 py-4">
                 <ImageFrame :photo="sel" :alt="selAlt" @tag="el => openTrial('People & Permissions', el)" @zoom="el => openTrial('Photo zoom', el)" />
                 <SafeVersion @trial="el => openTrial('Safe versions', el)" />
-                <DecisionPanel v-model:decision="decision" @trial="el => openTrial('Recording decisions', el)" @detail="el => openTrial('Image detail', el)" @skip="step(1)" />
+                <DecisionPanel v-model:decision="decision" :recommended="recommended(current.risk)" @trial="el => openTrial('Recording decisions', el)" @detail="el => openTrial('Image detail', el)" @skip="step(1)" />
               </div>
             </div>
             <div class="flex min-h-0 flex-col border-t border-shell lg:border-t-0">
-              <ChecksPanel :key="selected" :people="selFaces" />
+              <ChecksPanel :key="current.key" :checks="current.checks" />
               <PeoplePanel class="flex-1" :count="selFaces"
                            @tag="el => openTrial('People & Permissions', el)"
                            @zoom="el => openTrial('Photo zoom', el)"

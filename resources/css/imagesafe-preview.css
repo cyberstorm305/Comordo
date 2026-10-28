@@ -84,7 +84,7 @@
   box-shadow: var(--row-hover) !important;
 }
 
-/* Safeguarding check rows, as the app's .check-row: pass / warn / locked. */
+/* Safeguarding check rows, as the app's .check-row: pass / warn / fail / locked. */
 .isp .check-row {
   display: flex;
   align-items: center;
@@ -136,6 +136,34 @@
 .isp .check-row--warn .check-row__word {
   font-weight: 600;
   color: var(--color-copper-dark);
+}
+
+.isp .check-row--pass .check-row__icon {
+  background: var(--isp-good-pale);
+  color: var(--isp-good);
+}
+
+.isp .check-row--pass .check-row__word {
+  color: var(--isp-good);
+}
+
+.isp .check-row--fail {
+  border-color: var(--isp-bad-line);
+  background: var(--isp-bad-pale);
+}
+
+.isp .check-row--fail .check-row__icon {
+  background: var(--isp-bad);
+  color: #fff;
+}
+
+.isp .check-row--fail .check-row__label {
+  font-weight: 600;
+  color: var(--isp-bad-dark);
+}
+
+.isp .check-row--fail .check-row__word {
+  color: var(--isp-bad);
 }
 
 .isp .check-row--locked .check-row__icon {

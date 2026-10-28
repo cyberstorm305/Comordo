@@ -1,11 +1,14 @@
 <!--
   DecisionPanel.vue — the three decisions as cards side by side, and the
-  buttons under them (the real app's DecisionPicker + Dashboard.vue). Picking
-  a decision works as in the app; recording it and Full detail open the trial
+  buttons under them (the real app's DecisionPicker + Dashboard.vue). The
+  decision recommended for the photo's risk is marked REC. Picking a decision
+  works as in the app; recording it and Full detail open the trial
   prompt, and Skip moves to the next photo.
 -->
 <script setup>
 import InfoTip from './InfoTip.vue'
+
+defineProps({ recommended: { type: String, default: null } })
 
 const decision = defineModel('decision', { type: String, default: null })
 const emit = defineEmits(['trial', 'detail', 'skip'])
@@ -31,6 +34,7 @@ const opts = [
         <span class="h-4 w-4 flex-none rounded-full bg-white"
               :class="decision === o.value ? 'border-[4.5px] border-copper' : 'border-[1.5px] border-edge'"></span>
         <span class="min-w-0 flex-1 truncate text-[13px] font-semibold leading-5">{{ o.title }}</span>
+        <span v-if="o.value === recommended" class="flex-none text-[10px] font-extrabold leading-[14px] text-copper-dark" title="Recommended">REC</span>
         <span class="flex h-5 min-w-5 flex-none items-center justify-center rounded-[4px] border border-line text-[10px] leading-[14px] text-stone">{{ o.num }}</span>
       </div>
     </div>
