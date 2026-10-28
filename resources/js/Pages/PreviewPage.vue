@@ -61,8 +61,11 @@ function pagePath(u) {
 }
 
 // Demo tagging: the person on each face, by `${photo key}#${face index}`. Held in
-// memory only — nothing is sent or saved, and a reload starts again.
+// memory only — nothing is sent or saved, and a reload starts again. A visitor
+// gets TAG_LIMIT tags; after that, tagging opens the trial prompt.
+const TAG_LIMIT = 10
 const tags = reactive({})
+const tagsUsed = ref(0)
 const people = ref([...DEMO_PEOPLE])
 const personOn = (key, i) => tags[`${key}#${i}`] || null
 
@@ -122,6 +125,7 @@ const tagging = ref(null) // { key, index }
 const tagReturn = ref(null)
 function openTag(index, el = null) {
   if (!current.value) return
+  if (tagsUsed.value >= TAG_LIMIT) { openTrial('Unlimited tagging', el); return }
   tagReturn.value = el
   tagging.value = { key: current.value.key, index }
 }
@@ -129,8 +133,12 @@ const tagCurrent = computed(() => tagging.value ? personOn(tagging.value.key, ta
 function assignTag(person) {
   if (!tagging.value) return
   const k = `${tagging.value.key}#${tagging.value.index}`
-  if (person) tags[k] = person
-  else delete tags[k]
+  if (person) {
+    tags[k] = person
+    tagsUsed.value++
+  } else {
+    delete tags[k]
+  }
   tagging.value = null
 }
 function createPerson({ name, permission }) {
@@ -288,6 +296,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   </AppShell>
 
   <TrialPrompt :feature="trialFeature" :return-to="trialReturn" @close="trialFeature = null" />
-  <TagFaceModal :open="Boolean(tagging)" :face-label="tagging ? `Face ${tagging.index + 1}` : 'This face'" :current="tagCurrent" :people="people" :return-to="tagReturn"
+  <TagFaceModal :open="Boolean(tagging)" :face-label="tagging ? `Face ${tagging.index + 1}` : 'This face'" :current="tagCurrent" :people="people" :left="TAG_LIMIT - tagsUsed" :return-to="tagReturn"
                 @assign="assignTag" @create="createPerson" @close="tagging = null" />
 </template>

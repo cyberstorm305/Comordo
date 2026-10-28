@@ -14,6 +14,7 @@ const props = defineProps({
   faceLabel: { type: String, default: 'This face' },
   current: { type: Object, default: null }, // the person the face is tagged as
   people: { type: Array, default: () => [] },
+  left: { type: Number, default: 0 }, // demo tags the visitor has left
   returnTo: { type: null, default: null }, // the element that opened it
 })
 const emit = defineEmits(['assign', 'create', 'close'])
@@ -86,6 +87,7 @@ function onKey(e) {
 
           <div class="border-b border-shell bg-copper-wash px-5 py-2.5 text-[12px] leading-[18px] text-copper-dark" data-testid="tag-demo-note">
             A demo with made-up records. Tags change this preview only and aren't saved.
+            <b class="font-semibold">{{ left }} {{ left === 1 ? 'tag' : 'tags' }} left.</b>
           </div>
 
           <div v-if="current" class="flex items-center justify-between gap-3 border-b border-shell bg-paper px-5 py-2.5 text-[12px] leading-[18px]">
