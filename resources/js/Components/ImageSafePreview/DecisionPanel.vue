@@ -1,35 +1,22 @@
 <!--
   DecisionPanel.vue — the three decisions as cards side by side, and the
   buttons under them (the real app's DecisionPicker + Dashboard.vue). The
-  decision recommended for the photo's risk is marked REC. Picking a decision
-  works as in the app; recording it and Full detail open the trial
-  prompt, and Skip moves to the next photo.
+  options and the recommended one (REC) are the app's own (decisionOptions
+  and recommendedDecision), so "Keep as is" is unavailable once someone has
+  refused, as in the app. Picking a decision works as in the app; recording
+  it and Full detail open the trial prompt, and Skip moves to the next photo.
 -->
 <script setup>
 import InfoTip from './InfoTip.vue'
 
-import { computed } from 'vue'
-
-const props = defineProps({
+defineProps({
+  options: { type: Array, default: () => [] }, // the app's decisionOptions: [{ value, title, sub, disabled, num }]
   recommended: { type: String, default: null },
-  verdict: { type: String, default: 'UNKNOWN' }, // permission: YES | NO | UNKNOWN
 })
 
 const decision = defineModel('decision', { type: String, default: null })
 const emit = defineEmits(['trial', 'detail', 'skip'])
 
-// "Keep as is" isn't available once someone has refused, as in the app.
-const opts = computed(() => [
-  { value: 'remove', title: 'Remove from website', sub: 'Take it down, tick off here', num: 1, disabled: false },
-  { value: 'fix', title: 'Fix on site', sub: 'Crop, blur or edit caption', num: 2, disabled: false },
-  {
-    value: 'keep',
-    title: 'Keep as is',
-    sub: props.verdict === 'NO' ? 'Not available — no permission' : props.verdict === 'YES' ? 'Log why it can stay' : '⚠ note required',
-    num: 3,
-    disabled: props.verdict === 'NO',
-  },
-])
 function choose(o) {
   if (!o.disabled) decision.value = o.value
 }
@@ -38,7 +25,7 @@ function choose(o) {
 <template>
   <div class="flex flex-col gap-3" data-testid="decision">
     <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Decision">
-      <div v-for="o in opts" :key="o.value" role="radio" :tabindex="o.disabled ? -1 : 0"
+      <div v-for="o in options" :key="o.value" role="radio" :tabindex="o.disabled ? -1 : 0"
            :aria-checked="decision === o.value" :aria-disabled="o.disabled"
            :title="`${o.title}: ${o.sub}`"
            class="flex min-w-0 items-center gap-2.5 rounded-[10px] px-3 py-3"
@@ -55,7 +42,7 @@ function choose(o) {
         <span class="flex h-5 min-w-5 flex-none items-center justify-center rounded-[4px] border border-line text-[10px] leading-[14px] text-stone">{{ o.num }}</span>
       </div>
     </div>
-    <input v-if="decision === 'keep'" type="text"
+    <input v-if="decision === 'ok'" type="text"
            class="w-full rounded-[7px] border border-copper-pale bg-white px-2.5 py-2 text-[13px] leading-5 text-navy outline-none placeholder:text-stone focus:border-copper"
            placeholder="Why is it OK to keep? This is required when permission or risk is flagged.">
     <div class="flex flex-wrap items-center gap-2 sm:flex-nowrap">

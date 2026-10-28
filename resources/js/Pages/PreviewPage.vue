@@ -18,7 +18,7 @@ import PeoplePanel from '../Components/ImageSafePreview/PeoplePanel.vue'
 import TrialPrompt from '../Components/ImageSafePreview/TrialPrompt.vue'
 import TagFaceModal from '../Components/ImageSafePreview/TagFaceModal.vue'
 import { DEMO_PEOPLE } from '../Components/ImageSafePreview/demoPeople.js'
-import { PERMISSION, RISK, matches, permissionChip, permissionKey, queueRank, recommended, review } from '../Components/ImageSafePreview/risk.js'
+import { appReview, loadAppReview, matchesFilter, toAppImage } from '../Components/ImageSafePreview/appReview.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 
@@ -48,14 +48,7 @@ function fileName(u) {
   return seg || hostOf(u) || 'image'
 }
 const withoutScheme = (u) => String(u || '').replace(/^[a-z][a-z0-9+.-]*:\/\//i, '')
-// The page's last path segment as words, or its host for the home page (the app's pageLabel).
-function pageLabel(u) {
-  const [h, ...path] = withoutScheme(u).replace(/^www\./i, '').split(/[?#]/)[0].split('/').filter(Boolean)
-  let last = path.at(-1) || ''
-  try { last = decodeURIComponent(last) } catch { /* keep it as written */ }
-  const words = last.replace(/\.[a-z0-9]+$/i, '').replace(/[-_+]+/g, ' ').trim()
-  return words ? words.charAt(0).toUpperCase() + words.slice(1) : (h || 'Page')
-}
+const pageLabel = (u) => appReview.value?.pageLabel(u) || 'Page'
 function pagePath(u) {
   try { const p = new URL(u).pathname; return p === '/' ? 'the home page' : p } catch { return 'your website' }
 }
@@ -69,27 +62,38 @@ const tagsUsed = ref(0)
 const people = ref([...DEMO_PEOPLE])
 const personOn = (key, i) => tags[`${key}#${i}`] || null
 
-// Riskiest first, as the app's queue, then in the order they were found.
-const items = computed(() => found.value.map((f, i) => {
-  const key = `${i}:${f.image_url}`
-  const faces = (f.faces || []).map((_, n) => personOn(key, n))
-  const keys = faces.map(permissionKey)
-  const r = review(f, keys)
-  return {
-    key,
-    order: i,
-    photo: f,
-    name: fileName(f.image_url),
-    thumb: f.image_url,
-    width: f.width,
-    height: f.height,
-    people: faces,
-    risk: r.overall,
-    verdict: r.verdict,
-    checks: r.checks,
-    chip: permissionChip(keys, r.overall),
-  }
-}).sort((a, b) => queueRank(a.risk, a.verdict) - queueRank(b.risk, b.verdict) || a.order - b.order))
+// The app's review display rules (appReview.js), loaded from ImageSafe before any photo shows.
+const reviewFailed = ref(false)
+
+// Each photo in the app's shape, shown with the app's own functions. Riskiest first, as the
+// app's queue, then in the order they were found.
+const items = computed(() => {
+  const app = appReview.value
+  if (!app) return []
+  return found.value.map((f, i) => {
+    const key = `${i}:${f.image_url}`
+    const people = (f.faces || []).map((_, n) => personOn(key, n))
+    const image = toAppImage(f, people)
+    const riskMeta = app.riskMeta(image)
+    return {
+      key,
+      order: i,
+      photo: f,
+      image,
+      name: fileName(f.image_url),
+      thumb: f.image_url,
+      width: f.width,
+      height: f.height,
+      people,
+      riskMeta,
+      verdict: app.permissionVerdict(image),
+      checks: app.checkRows(image),
+      // The queue line, as the app's dashboard shows it.
+      chip: app.permissionChip(image)?.label ?? `${riskMeta.long.toLowerCase()} risk`,
+      rank: app.queueRank(image),
+    }
+  }).sort((a, b) => a.rank - b.rank || a.order - b.order)
+})
 
 // The preview opens the first PHOTO_LIMIT photos found; the rest show greyed out in
 // the queue, in the order they were found, and open the trial prompt.
@@ -99,25 +103,21 @@ const locked = computed(() => items.value.filter((x) => x.order >= PHOTO_LIMIT).
 
 // Selection follows the photo, not its place, so photos arriving mid-scan don't move it.
 const filter = ref('all')
-const shown = computed(() => open.value.filter((x) => matches(x, filter.value)))
+const shown = computed(() => open.value.filter((x) => matchesFilter(x.image, filter.value)))
 const selectedKey = ref(null)
 const current = computed(() => shown.value.find((x) => x.key === selectedKey.value) || shown.value[0] || null)
 const position = computed(() => shown.value.indexOf(current.value))
 const sel = computed(() => current.value?.photo || null)
 const selName = computed(() => current.value?.name || '')
 const selFaces = computed(() => current.value?.people.length || 0)
-const selPeople = computed(() => (current.value?.people || []).map((person) => ({ person, pill: PERMISSION[permissionKey(person)] })))
-const selTags = computed(() => (current.value?.people || []).map((person) => ({
-  text: person ? person.name.split(' ')[0] : 'Unknown',
-  line: PERMISSION[permissionKey(person)].line,
-  named: Boolean(person),
-})))
-const selRisk = computed(() => RISK[current.value?.risk || 'medium'])
+const selPeople = computed(() => (current.value?.image.faces || []).map((face) => ({ person: face.known_person, pill: appReview.value.permissionMeta(face) })))
+const selRisk = computed(() => current.value?.riskMeta || {})
 const selAlt = computed(() => sel.value ? `Photo from ${pagePath(sel.value.page_url)} with ${selFaces.value} ${selFaces.value === 1 ? 'person' : 'people'}` : '')
 
 // Each photo starts on the decision the app recommends, and moves with it as tags change the risk.
 const decision = ref(null) // picked as in the app; recording it opens the trial prompt
-const selRecommended = computed(() => current.value ? recommended(current.value.risk, current.value.verdict) : null)
+const selRecommended = computed(() => current.value ? appReview.value.recommendedDecision(current.value.image) : null)
+const selOptions = computed(() => current.value ? appReview.value.decisionOptions(current.value.image) : [])
 vueWatch(() => current.value?.key, () => {
   if (current.value) selectedKey.value = current.value.key
 }, { immediate: true })
@@ -180,8 +180,8 @@ function onKey(e) {
   else if (e.key === 'ArrowUp' || e.key === 'k') { if (shown.value.length) { e.preventDefault(); step(-1) } }
   else if (sel.value && ['1', '2', '3'].includes(e.key)) {
     e.preventDefault()
-    const pick = ['remove', 'fix', 'keep'][Number(e.key) - 1]
-    if (!(pick === 'keep' && current.value?.verdict === 'NO')) decision.value = pick
+    const option = selOptions.value[Number(e.key) - 1]
+    if (option && !option.disabled) decision.value = option.value
   } else if (sel.value && e.key === 'Enter' && e.target === document.body) {
     e.preventDefault()
     openTrial('Recording decisions')
@@ -191,6 +191,7 @@ function onKey(e) {
 onMounted(() => {
   try { savedHost.value = sessionStorage.getItem(`isp-preview-host:${props.id}`) || '' } catch { /* storage blocked */ }
   window.addEventListener('keydown', onKey)
+  loadAppReview().catch(() => { reviewFailed.value = true })
   watchPreview(props.id)
 })
 onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
@@ -208,7 +209,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 
   <AppShell :host="host">
     <!-- ERROR STATES -->
-    <div v-if="state === 'error'" class="mx-auto my-10 flex max-w-[560px] flex-col items-center rounded-[14px] border border-sand bg-white px-8 py-8 text-center" role="alert" data-testid="preview-error">
+    <!-- The scan failed, or the app's display rules couldn't be loaded from ImageSafe. -->
+    <div v-if="state === 'error' || reviewFailed" class="mx-auto my-10 flex max-w-[560px] flex-col items-center rounded-[14px] border border-sand bg-white px-8 py-8 text-center" role="alert" data-testid="preview-error">
       <div class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full text-xl font-bold"
            :class="error === 'expired' ? 'bg-hair text-stone' : 'bg-bad-pale text-bad'" aria-hidden="true">{{ error === 'expired' ? '⏱' : '!' }}</div>
       <h1 class="m-0 mb-1.5 text-base font-bold" data-testid="error-message">{{ errorCopy[error] || errorCopy.busy }}</h1>
@@ -259,9 +261,9 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
           <div class="grid min-h-0 flex-1 items-stretch lg:grid-cols-[minmax(420px,1.9fr)_minmax(320px,1.1fr)] lg:grid-rows-[minmax(0,1fr)]">
             <div class="flex min-w-0 flex-col border-shell lg:min-h-0 lg:overflow-y-auto lg:border-r">
               <div class="flex flex-1 flex-col gap-3 px-4 py-4">
-                <ImageFrame ref="frame" :photo="sel" :alt="selAlt" :tags="selTags" @tag="openTag" />
+                <ImageFrame ref="frame" :photo="sel" :alt="selAlt" :image="current.image" @tag="openTag" />
                 <SafeVersion @trial="el => openTrial('Safe versions', el)" />
-                <DecisionPanel v-model:decision="decision" :verdict="current.verdict" :recommended="selRecommended" @trial="el => openTrial('Recording decisions', el)" @detail="el => openTrial('Image detail', el)" @skip="step(1)" />
+                <DecisionPanel v-model:decision="decision" :options="selOptions" :recommended="selRecommended" @trial="el => openTrial('Recording decisions', el)" @detail="el => openTrial('Image detail', el)" @skip="step(1)" />
               </div>
             </div>
             <div class="flex min-h-0 flex-col border-t border-shell lg:border-t-0">

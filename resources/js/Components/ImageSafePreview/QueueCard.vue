@@ -8,10 +8,10 @@
 <script setup>
 import { computed, inject, reactive } from 'vue'
 import { looksWrong } from './imageCheck.js'
-import { RISK, matches } from './risk.js'
+import { matchesFilter } from './appReview.js'
 
 const props = defineProps({
-  items: { type: Array, default: () => [] }, // the photos the preview opens: [{ key, name, thumb, width, height, risk, verdict, chip }]
+  items: { type: Array, default: () => [] }, // the photos the preview opens: [{ key, image, name, thumb, width, height, riskMeta, chip }]
   locked: { type: Array, default: () => [] }, // the ones beyond the limit, greyed out
   shown: { type: Array, default: () => [] }, // the ones the filter lets through
   selected: { type: String, default: null }, // key
@@ -31,7 +31,7 @@ const filters = [
   { key: 'medium', label: 'Med', on: '#B4702F', border: '#E7C9A8', color: '#8F5722' },
   { key: 'noperm', label: 'No perm', on: '#B23A2E', border: '#F3C9C5', color: '#B23A2E' },
 ]
-const count = (key) => props.items.filter((x) => matches(x, key)).length
+const count = (key) => props.items.filter((x) => matchesFilter(x.image, key)).length
 function filterStyle(f) {
   return f.key === props.filter
     ? { borderColor: f.on, background: f.on, color: '#fff' }
@@ -40,7 +40,7 @@ function filterStyle(f) {
 
 // Only the selected row is filled in its risk colour; the rest stay white and outline on hover.
 function rowStyle(x) {
-  const meta = RISK[x.risk]
+  const meta = x.riskMeta
   const selected = x.key === props.selected
   return {
     background: selected ? meta.tint : 'transparent',
@@ -94,7 +94,7 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
         <div class="min-w-0 flex-1">
           <div class="truncate font-mono text-[12px] font-semibold leading-[18px] text-navy">{{ x.name }}</div>
           <div class="mt-0.5 flex items-center gap-1.5 text-[11px] leading-4 text-stone">
-            <span class="h-[7px] w-[7px] flex-none rounded-full" :style="{ background: RISK[x.risk].solid }" :title="`${RISK[x.risk].long} risk`"></span>
+            <span class="h-[7px] w-[7px] flex-none rounded-full" :style="{ background: x.riskMeta.solid }" :title="`${x.riskMeta.long} risk`"></span>
             <span class="truncate">{{ x.chip }}</span>
           </div>
         </div>

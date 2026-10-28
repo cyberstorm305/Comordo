@@ -7,7 +7,7 @@
 -->
 <script setup>
 import { computed, nextTick, onBeforeUnmount, reactive, ref, watch } from 'vue'
-import { PERMISSION, permissionKey } from './risk.js'
+import { appReview } from './appReview.js'
 
 const props = defineProps({
   open: { type: Boolean, default: false },
@@ -26,7 +26,8 @@ const filtered = computed(() => {
   const q = search.value.trim().toLowerCase()
   return props.people.filter((p) => !q || p.name.toLowerCase().includes(q))
 })
-const pill = (p) => PERMISSION[permissionKey(p)]
+// The app's permission pill for a record, as its own tag pop-up shows it.
+const pill = (p) => appReview.value.permissionMeta({ known_person: { name: p.name, permission_status: p.permission } })
 const initials = (name) => name.split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0].toUpperCase()).join('')
 
 function create() {

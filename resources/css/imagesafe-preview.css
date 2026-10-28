@@ -6,6 +6,9 @@
  * of the site. Satoshi and IBM Plex Mono are loaded by PreviewPage.vue only.
  */
 
+/* Classes the app's faceTagClass returns at runtime (appReview.js), which Tailwind can't find in this repo's source. */
+@source inline("left-0 right-0 top-full bottom-full mt-0.5 mb-0.5");
+
 @theme inline {
   --color-shell: var(--isp-shell);
   --color-line: var(--isp-line);

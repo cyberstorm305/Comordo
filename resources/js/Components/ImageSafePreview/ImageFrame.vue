@@ -3,8 +3,9 @@
   frame and ZoomableImage). The frame is 16:9 on small screens and takes the
   height the controls leave from lg up. The photo is fitted inside it, and the
   boxes sit on a layer the exact size of the photo, so they are placed in
-  percentages of its natural width and height. Boxes and tags take the colour
-  of the face's permission, and named faces show a first name.
+  percentages of its natural width and height. Box borders and the tags'
+  colour, text, placement and when they show are the app's own (faceBoxStyle,
+  faceTagText, faceTagClass, faceTagStyle, showFaceTag).
 
   Zoom works as in the app: zoomToFace (the people list's magnifying glass)
   fills a good part of the view with a face, −, + and Fit step and reset, and
@@ -13,12 +14,13 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import InfoTip from './InfoTip.vue'
+import { appReview } from './appReview.js'
 import { looksWrong } from './imageCheck.js'
 
 const props = defineProps({
   photo: { type: Object, required: true }, // { image_url, width, height, faces: [{x,y,w,h}] }
   alt: { type: String, default: '' },
-  tags: { type: Array, default: () => [] }, // per face: { text, line, named }
+  image: { type: Object, required: true }, // the photo in the app's shape (appReview.js toAppImage): faces in the same order
 })
 const emit = defineEmits(['tag'])
 
@@ -43,8 +45,8 @@ onMounted(() => {
 })
 onBeforeUnmount(() => observer?.disconnect())
 
-const PLUM = '#5E5170' // the app's "Unknown person" colour
-const tagOf = (i) => props.tags[i] || { text: 'Unknown', line: PLUM, named: false }
+const app = () => appReview.value
+const appFace = (i) => props.image.faces[i]
 const faces = computed(() => props.photo.faces || [])
 const w = computed(() => props.photo.width || 16)
 const h = computed(() => props.photo.height || 9)
@@ -142,26 +144,16 @@ function onClickCapture(e) {
 }
 onBeforeUnmount(onPointerUp)
 
-// Named faces always show their tag; on busy photos "Unknown" tags show on hover only, as in the app.
-const showTag = (i) => tagOf(i).named || faces.value.length <= 8
+// Placed in percentages of the photo; drawn by the app's rules, so borders and tags keep their size when zoomed.
 function box(f, i) {
   return {
     left: `${(f.x / w.value) * 100}%`,
     top: `${(f.y / h.value) * 100}%`,
     width: `${(f.w / w.value) * 100}%`,
     height: `${(f.h / h.value) * 100}%`,
-    border: `${2 / scale.value}px solid ${tagOf(i).line}`,
-    borderRadius: `${4 / scale.value}px`,
-    boxShadow: `0 0 0 ${2 / scale.value}px rgba(255,255,255,.55)`,
+    ...app().faceBoxStyle(appFace(i), scale.value),
   }
 }
-// The tag sits above the box, or below it when the box is near the top, and shrinks back on a zoomed photo.
-const nearTop = (f) => f.y / h.value < 0.08
-const tagStyle = (f, i) => ({
-  background: tagOf(i).line,
-  transform: `scale(${1 / scale.value})`,
-  transformOrigin: `${nearTop(f) ? 'top' : 'bottom'} left`,
-})
 </script>
 
 <template>
@@ -177,12 +169,12 @@ const tagStyle = (f, i) => ({
       <template v-if="loaded">
         <button v-for="(f, i) in faces" :key="i" type="button"
                 class="group absolute z-20 cursor-pointer bg-transparent p-0 text-left"
-                :style="box(f, i)" :aria-label="tagOf(i).named ? `Change the tag on ${tagOf(i).text}` : `Tag face ${i + 1}`"
+                :style="box(f, i)" :aria-label="appFace(i).known_person ? `Change the tag on ${app().faceTagText(appFace(i))}` : `Tag face ${i + 1}`"
                 data-testid="face-box"
                 @click="emit('tag', i, $event.currentTarget)">
-          <span class="pointer-events-none absolute left-0 whitespace-nowrap rounded-[4px] px-1 py-px text-[10px] font-semibold leading-[14px] text-white"
-                :class="[nearTop(f) ? 'top-full mt-0.5' : 'bottom-full mb-0.5', showTag(i) ? '' : 'hidden group-hover:block']"
-                :style="tagStyle(f, i)">{{ tagOf(i).text }}</span>
+          <span class="pointer-events-none absolute whitespace-nowrap rounded-[4px] px-1 py-px text-[10px] font-semibold leading-[14px] text-white"
+                :class="[app().faceTagClass(appFace(i), image), app().showFaceTag(appFace(i), image) ? '' : 'hidden group-hover:block']"
+                :style="app().faceTagStyle(appFace(i), image, scale)">{{ app().faceTagText(appFace(i)) }}</span>
         </button>
       </template>
     </div>
