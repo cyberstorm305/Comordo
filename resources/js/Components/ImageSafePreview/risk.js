@@ -50,6 +50,7 @@ function faceSizeStatus(ratio) {
 
 // "Made or edited with AI", from the label the preview API found in the file (the app's
 // aiProvenanceItem). Made with AI is a flag, edited a check; no label passes, but proves nothing.
+// The label says what was found, so a pass never reads as "Made with AI · OK".
 const AI_SOURCE = {
   c2pa: 'Its Content Credentials (C2PA) say',
   iptc: 'Its IPTC metadata says',
@@ -57,11 +58,12 @@ const AI_SOURCE = {
 }
 function aiCheck(ai) {
   if (!ai || !['generated', 'edited'].includes(ai.kind)) {
-    return { status: 'low', note: 'No AI labels found in the file. These labels are often lost when an image is re-saved, so this doesn’t prove it wasn’t made or edited with AI.' }
+    return { status: 'low', label: 'No AI labels found', note: 'No AI labels found in the file. These labels are often lost when an image is re-saved, so this doesn’t prove it wasn’t made or edited with AI.' }
   }
   const how = ai.kind === 'generated' ? 'made with AI' : 'edited with AI'
   return {
     status: ai.kind === 'generated' ? 'high' : 'medium',
+    label: ai.kind === 'generated' ? 'Made with AI' : 'Edited with AI',
     note: `${AI_SOURCE[ai.source] || 'Its metadata says'} it was ${how}${ai.tool ? ` (${ai.tool})` : ''}.`,
   }
 }
@@ -96,7 +98,7 @@ export function review(photo, keys) {
     group_activity_composition: 'Group / activity-led composition',
     image_resolution: 'Image resolution',
     easy_to_crop: 'Easy to crop / isolate a child',
-    ai_provenance: 'Made or edited with AI',
+    ai_provenance: ai?.label,
   }
 
   const verdict = permissionVerdict(keys)
