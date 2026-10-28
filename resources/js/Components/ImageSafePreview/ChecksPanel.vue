@@ -9,9 +9,10 @@
 <script setup>
 import { computed, ref } from 'vue'
 import ChecksExplainer from './ChecksExplainer.vue'
-import { LOCKED_CHECKS } from './risk.js'
-
-const props = defineProps({ checks: { type: Array, default: () => [] } })
+const props = defineProps({
+  checks: { type: Array, default: () => [] },
+  notChecked: { type: Array, default: () => [] }, // the app's checks a preview doesn't run, from the API: [{ key, name }]
+})
 
 const showPassed = ref(false)
 const showLocked = ref(false)
@@ -65,26 +66,26 @@ const rowTitle = (c) => c.note || `What does “${c.label}” mean?`
           </div>
         </template>
       </template>
-      <button type="button" class="flex cursor-pointer items-center gap-2 rounded-[7px] border-0 bg-transparent px-2.5 py-1.5 text-left hover:bg-paper"
+      <button v-if="notChecked.length" type="button" class="flex cursor-pointer items-center gap-2 rounded-[7px] border-0 bg-transparent px-2.5 py-1.5 text-left hover:bg-paper"
               :aria-expanded="showLocked" data-testid="locked-toggle"
               @click="showLocked = !showLocked">
         <span class="check-row__icon bg-shell text-stone" aria-hidden="true">
           <svg width="8" height="10" viewBox="0 0 11 13" fill="none"><rect x="1" y="5.5" width="9" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 5.5V3.8a2.5 2.5 0 015 0v1.7" stroke="currentColor" stroke-width="1.6"/></svg>
         </span>
-        <span class="min-w-0 flex-1 text-[12px] font-semibold leading-[18px] text-slate">{{ LOCKED_CHECKS.length }} more checks in your trial</span>
+        <span class="min-w-0 flex-1 text-[12px] font-semibold leading-[18px] text-slate">{{ notChecked.length }} more checks in your trial</span>
         <span class="flex-none text-[11px] leading-4 text-stone">{{ showLocked ? 'Hide' : 'Show' }}</span>
       </button>
       <template v-if="showLocked">
-        <div v-for="c in LOCKED_CHECKS" :key="c.key" role="button" tabindex="0" class="check-row check-row--locked cursor-pointer hover:bg-paper" :title="`What does “${c.label}” mean?`" data-testid="locked-check"
+        <div v-for="c in notChecked" :key="c.key" role="button" tabindex="0" class="check-row check-row--locked cursor-pointer hover:bg-paper" :title="`What does “${c.name}” mean?`" data-testid="locked-check"
              @click="explain(c.key, $event.currentTarget)" @keydown.enter.prevent="explain(c.key, $event.currentTarget)">
           <span class="check-row__icon" aria-hidden="true">
             <svg width="8" height="10" viewBox="0 0 11 13" fill="none"><rect x="1" y="5.5" width="9" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 5.5V3.8a2.5 2.5 0 015 0v1.7" stroke="currentColor" stroke-width="1.6"/></svg>
           </span>
-          <span class="check-row__label">{{ c.label }}</span>
+          <span class="check-row__label">{{ c.name }}</span>
           <span class="check-row__word">In your trial</span>
         </div>
       </template>
     </div>
-    <ChecksExplainer :open="explaining" :highlight="highlight" :return-to="explainReturn" @close="explaining = false" />
+    <ChecksExplainer :open="explaining" :highlight="highlight" :locked="notChecked.map((c) => c.key)" :return-to="explainReturn" @close="explaining = false" />
   </div>
 </template>

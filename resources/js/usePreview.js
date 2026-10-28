@@ -42,7 +42,7 @@ export async function createPreview(url) {
 export function usePreview() {
   const state = ref('queued') // queued | scanning | done | error
   const progress = ref({ pages: 0, images: 0, found: 0 })
-  const result = ref({ pages_checked: 0, images_checked: 0, found: [] })
+  const result = ref({ pages_checked: 0, images_checked: 0, found: [], not_checked: [] })
   const error = ref(null) // unreachable | busy | slow | expired
 
   let timer = null
@@ -81,7 +81,7 @@ export function usePreview() {
 
         const found = d.found || []
         progress.value = { pages: d.pages_checked || 0, images: d.images_checked || 0, found: found.length }
-        result.value = { pages_checked: d.pages_checked || 0, images_checked: d.images_checked || 0, found }
+        result.value = { pages_checked: d.pages_checked || 0, images_checked: d.images_checked || 0, found, not_checked: d.not_checked || [] }
 
         if (d.status === 'done') {
           stop()

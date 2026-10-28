@@ -1,9 +1,8 @@
-// The safeguarding checks a preview can run, and the photo's risk from them. A
-// copy of the rules in ImageSafe's SafeguardingReviewService, limited to what
-// the preview API returns (face boxes and confidence, the photo's size and any AI
-// label in the file). The app's other checks need the page around the photo or the
-// file's EXIF, so they only run in the trial. Faces start untagged (permission
-// unknown); the demo tags a visitor adds feed the permission rules, as tags do in the app.
+// How the preview shows a photo's safeguarding checks and risk. The checks and the
+// risk come from ImageSafe: its preview API runs each photo through the app's own
+// SafeguardingReviewService and returns the results, so no check rules live here.
+// Only permission depends on the demo tags a visitor adds, and the API gives the
+// risk for each permission state to look up.
 
 export const RISK = {
   high: { word: 'HIGH', long: 'High', solid: '#B23A2E', tint: '#FCE8E6', line: '#F3C9C5' },
@@ -32,97 +31,29 @@ export function permissionVerdict(keys) {
   return keys.some((k) => k !== 'approved') ? 'UNKNOWN' : 'YES'
 }
 
-// The app's checks a preview can't run, by the app's key (for the explainer).
-export const LOCKED_CHECKS = [
-  { key: 'named_person', label: 'Name in or near the photo' },
-  { key: 'full_size_original', label: 'Full-size original online' },
-  { key: 'metadata_present', label: 'Location or camera data' },
-  { key: 'state_of_dress', label: 'Appropriate clothing' },
-]
-
 const STATE = {
   high: { state: 'fail', icon: '✕', word: 'FLAG' },
   medium: { state: 'warn', icon: '!', word: 'CHECK' },
   low: { state: 'pass', icon: '✓', word: 'OK' },
 }
 
-// How much of the picture the largest face fills: up to 2% is a wide shot, up to 3.5% a caution, more a close-up.
-function faceSizeStatus(ratio) {
-  if (ratio <= 0.02) return 'low'
-  return ratio <= 0.035 ? 'medium' : 'high'
-}
+// The API's risk for each permission state, by permission verdict.
+const RISK_FOR = { YES: 'clear', UNKNOWN: 'unknown', NO: 'refused' }
 
-// A face clear enough to recognise: detected with confidence and at least 48px across (the app's
-// clearFaceCount). Previews from before the API returned confidence count on size alone.
-const isClear = (f) => (f.confidence ?? 1) >= 0.85 && f.w >= 48 && f.h >= 48
-
-// "Made or edited with AI", from the label the preview API found in the file (the app's
-// aiProvenanceItem). Made with AI is a flag, edited a check; no label passes, but proves nothing.
-// The label says what was found, so a pass never reads as "Made with AI · OK".
-const AI_SOURCE = {
-  c2pa: 'Its Content Credentials (C2PA) say',
-  iptc: 'Its IPTC metadata says',
-  png: 'It carries AI image-generation settings, which say',
-}
-function aiCheck(ai) {
-  if (!ai || !['generated', 'edited'].includes(ai.kind)) {
-    return { status: 'low', label: 'No AI labels found', note: 'No AI labels found in the file. These labels are often lost when an image is re-saved, so this doesn’t prove it wasn’t made or edited with AI.' }
-  }
-  const how = ai.kind === 'generated' ? 'made with AI' : 'edited with AI'
-  return {
-    status: ai.kind === 'generated' ? 'high' : 'medium',
-    label: ai.kind === 'generated' ? 'Made with AI' : 'Edited with AI',
-    note: `${AI_SOURCE[ai.source] || 'Its metadata says'} it was ${how}${ai.tool ? ` (${ai.tool})` : ''}.`,
-  }
-}
-
-function largestFaceRatio(photo) {
-  const area = (photo.width || 0) * (photo.height || 0)
-  if (!area) return 0
-  return Math.max(0, ...(photo.faces || []).map((f) => (Math.max(0, f.w) * Math.max(0, f.h)) / area))
-}
-
-// { overall: 'high' | 'medium' | 'low', verdict, checks: [{ key, label, state, icon, word, note? }] }
-// with "Permission to use" first, then flag → check → ok, as the app lists them.
-// keys: each face's PERMISSION key, in face order.
+// { overall: 'high' | 'medium' | 'low', verdict, checks: [{ key, label, state, icon, word, note }] }
+// photo.checks and photo.risk are the app's (see above); keys are each face's PERMISSION key.
+// "Permission to use" joins them and they're ordered flag → check → ok, as the app's checkRows does.
+// Previews from before the API returned checks show permission only until they expire.
 export function review(photo, keys) {
-  const count = (photo.faces || []).length
-  const ratio = largestFaceRatio(photo)
-  const longEdge = Math.max(photo.width || 0, photo.height || 0)
-  const clear = (photo.faces || []).filter(isClear).length
-  const statuses = {
-    // A clearly visible face can be recognised: one alone is flagged, clear faces in a group are a caution.
-    face_visibility: clear === 0 ? 'low' : count === 1 ? 'high' : 'medium',
-    close_up_vs_wide_angle: faceSizeStatus(ratio),
-    group_activity_composition: count === 1 && clear === 1 ? 'high' : 'low',
-    image_resolution: longEdge > 2000 ? 'high' : longEdge >= 1400 ? 'medium' : 'low',
-  }
-  // Previews from before the API returned AI labels have no "ai" field: the check is skipped.
-  const ai = 'ai' in photo ? aiCheck(photo.ai) : null
-  if (ai) statuses.ai_provenance = ai.status
-  const notes = ai ? { ai_provenance: ai.note } : {}
-  const labels = {
-    face_visibility: 'Recognisable faces',
-    close_up_vs_wide_angle: 'Close-up of a child',
-    group_activity_composition: 'Single child in shot',
-    image_resolution: 'High-resolution file',
-    ai_provenance: ai?.label,
-  }
-
   const verdict = permissionVerdict(keys)
-  const values = Object.values(statuses)
-  const cautions = values.filter((s) => s === 'medium').length
-  // A refusal, any flag or four cautions is high; other cautions or unknown permission are medium.
-  const overall = verdict === 'NO' || values.includes('high') || cautions >= 4
-    ? 'high'
-    : cautions > 0 || verdict === 'UNKNOWN' ? 'medium' : 'low'
+  const overall = photo.risk?.[RISK_FOR[verdict]] ?? 'medium'
 
   const permission = {
     key: 'permission',
     label: 'Permission to use',
     ...(verdict === 'NO' ? STATE.high : verdict === 'UNKNOWN' ? STATE.medium : STATE.low),
   }
-  const checks = Object.entries(statuses).map(([key, status]) => ({ key, label: labels[key], ...STATE[status], note: notes[key] }))
+  const checks = (photo.checks || []).map((c) => ({ key: c.key, label: c.label, note: c.note, ...(STATE[c.status] || STATE.low) }))
 
   // When someone refused, the other checks don't matter and show as N/A.
   if (verdict === 'NO') {

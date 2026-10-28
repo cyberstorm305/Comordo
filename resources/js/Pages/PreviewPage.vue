@@ -265,7 +265,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               </div>
             </div>
             <div class="flex min-h-0 flex-col border-t border-shell lg:border-t-0">
-              <ChecksPanel :key="current.key" :checks="current.checks" />
+              <ChecksPanel :key="current.key" :checks="current.checks" :not-checked="result.not_checked || []" />
               <PeoplePanel class="flex-1" :faces="selPeople"
                            @tag="openTag"
                            @zoom="i => frame?.zoomToFace(i)"

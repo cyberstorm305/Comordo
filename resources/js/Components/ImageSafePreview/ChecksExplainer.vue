@@ -11,17 +11,16 @@
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { identityBase } from '@/identity.js'
 import { imagesafeBase } from '@/imagesafe.js'
-import { LOCKED_CHECKS } from './risk.js'
 
 const props = defineProps({
   open: { type: Boolean, default: false },
   highlight: { type: String, default: null },
+  locked: { type: Array, default: () => [] }, // keys of the checks a preview doesn't run
   returnTo: { type: null, default: null }, // the element that opened it
 })
 const emit = defineEmits(['close'])
 
 const registerHref = `${identityBase}/register`
-const lockedKeys = LOCKED_CHECKS.map((c) => c.key)
 
 // { summary: [lines], checks: [{ key, name, looks, why, fix }] }, fetched once per page.
 // {high} and {medium} in the summary are shown as the coloured risk words.
@@ -116,7 +115,7 @@ function onKey(e) {
                  data-testid="explainer-check">
               <div class="mb-1.5 flex items-center gap-2 text-[14px] font-semibold leading-5 text-navy">
                 {{ check.name }}
-                <span v-if="lockedKeys.includes(check.key)" class="rounded-[7px] bg-shell px-2 py-0.5 text-[11px] font-semibold leading-4 text-stone">In your trial</span>
+                <span v-if="locked.includes(check.key)" class="rounded-[7px] bg-shell px-2 py-0.5 text-[11px] font-semibold leading-4 text-stone">In your trial</span>
               </div>
               <dl class="m-0 grid gap-x-4 gap-y-1 text-[13px] leading-normal sm:grid-cols-[110px_1fr]">
                 <dt class="font-semibold text-stone">Looks for</dt>
