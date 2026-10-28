@@ -1,13 +1,20 @@
 <!--
   PeoplePanel.vue — the faces in one image (the real app's Review/PeopleList).
-  Every face is an unknown person in a preview. The magnifying glass, the name
-  and the ✕ open the trial prompt.
+  Clicking a name opens the demo tagging; the magnifying glass and the ✕ open
+  the trial prompt.
 -->
 <script setup>
 import InfoTip from './InfoTip.vue'
 
-defineProps({ count: { type: Number, default: 0 } })
+import { computed } from 'vue'
+
+const props = defineProps({
+  faces: { type: Array, default: () => [] }, // per face: { person, pill: { label, bg, fg } }
+})
 const emit = defineEmits(['tag', 'zoom', 'dismiss'])
+
+const count = computed(() => props.faces.length)
+const untagged = computed(() => props.faces.filter((f) => !f.person).length)
 </script>
 
 <template>
@@ -16,12 +23,12 @@ const emit = defineEmits(['tag', 'zoom', 'dismiss'])
       <span class="text-[11px] font-bold uppercase leading-4 tracking-[0.04em] text-stone">People</span>
       <span class="text-[11px] leading-4 text-stone">{{ count }}</span>
       <InfoTip label="About the people list">
-        Click a name to tag the face. The magnifying glass zooms to the face; × dismisses a face that isn't a real person.
+        Click a name to tag the face, or to change or remove its tag. The magnifying glass zooms to the face; × dismisses a face that isn't a real person.
       </InfoTip>
-      <span v-if="count" class="ml-auto text-[12px] font-semibold leading-[18px] text-bad">{{ count }} untagged</span>
+      <span v-if="untagged" class="ml-auto text-[12px] font-semibold leading-[18px] text-bad">{{ untagged }} untagged</span>
     </div>
     <div class="flex min-h-0 flex-1 flex-col gap-0.5 overflow-y-auto px-2.5 py-1">
-      <div v-for="n in count" :key="n" class="flex items-center gap-1 rounded-[7px] hover:bg-shell">
+      <div v-for="(f, i) in faces" :key="i" class="flex items-center gap-1 rounded-[7px] hover:bg-shell">
         <button type="button" class="flex h-7 w-7 flex-none cursor-pointer items-center justify-center rounded-[7px] border-0 bg-transparent p-0 text-navy-light hover:text-navy"
                 aria-label="Zoom to this face" title="Zoom to this face"
                 @click="emit('zoom', $event.currentTarget)">
@@ -31,10 +38,11 @@ const emit = defineEmits(['tag', 'zoom', 'dismiss'])
           </svg>
         </button>
         <button type="button" class="flex min-w-0 flex-1 cursor-pointer items-center gap-2 rounded-[7px] border-0 bg-transparent py-1.5 pl-0.5 text-left"
-                title="Tag this face"
-                @click="emit('tag', $event.currentTarget)">
-          <span class="min-w-0 flex-1 truncate text-[13px] leading-5 text-slate">Untagged face</span>
-          <span class="flex-none whitespace-nowrap rounded-[7px] bg-plum-pale px-2 py-0.5 text-[11px] font-semibold leading-4 text-plum">Unknown person</span>
+                :title="f.person ? 'Change or remove the tag' : 'Tag this face'"
+                data-testid="person-row"
+                @click="emit('tag', i, $event.currentTarget)">
+          <span class="min-w-0 flex-1 truncate text-[13px] leading-5" :class="f.person ? 'font-semibold text-navy' : 'text-slate'">{{ f.person?.name ?? 'Untagged face' }}</span>
+          <span class="flex-none whitespace-nowrap rounded-[7px] px-2 py-0.5 text-[11px] font-semibold leading-4" :style="{ background: f.pill.bg, color: f.pill.fg }">{{ f.pill.label }}</span>
         </button>
         <button type="button" class="flex h-7 w-7 flex-none cursor-pointer items-center justify-center rounded-[7px] border-0 bg-transparent p-0 text-[13px] text-stone hover:text-navy"
                 aria-label="Dismiss this face" title="Dismiss this face"

@@ -15,7 +15,12 @@ const props = defineProps({ checks: { type: Array, default: () => [] } })
 const showPassed = ref(false)
 const showLocked = ref(false)
 const flagged = computed(() => props.checks.filter((c) => c.state === 'fail' || c.state === 'warn'))
-const passed = computed(() => props.checks.filter((c) => c.state === 'pass'))
+const passed = computed(() => props.checks.filter((c) => c.state !== 'fail' && c.state !== 'warn'))
+const passedLabel = computed(() => {
+  const n = passed.value.length
+  const noun = n === 1 ? 'check' : 'checks'
+  return passed.value.every((c) => c.state === 'na') ? `${n} ${noun} not applicable` : `${n} ${noun} passed`
+})
 </script>
 
 <template>
@@ -23,8 +28,9 @@ const passed = computed(() => props.checks.filter((c) => c.state === 'pass'))
     <div class="flex items-center gap-1.5 px-4 pb-2 pt-3.5">
       <span class="text-[11px] font-bold uppercase leading-4 tracking-[0.04em] text-stone">Safeguarding checks</span>
       <InfoTip label="How the checks work">
-        Any flag = high. 4+ cautions together = high. Untagged faces mean permission is unknown, so the photo is at least medium.
-        Your trial matches every face against your permission records. AI-assisted — your judgement decides.
+        A refusal counts as high — the image must come off, and the other checks are N/A.
+        Any flag = high. 4+ cautions together = high. Untagged faces or missing permission data make it at least medium.
+        AI-assisted — your judgement decides.
       </InfoTip>
     </div>
     <div class="flex flex-col gap-1 border-b border-shell px-2.5 pb-3">
@@ -37,11 +43,11 @@ const passed = computed(() => props.checks.filter((c) => c.state === 'pass'))
         <button type="button" class="flex cursor-pointer items-center gap-2 rounded-[7px] border-0 bg-transparent px-2.5 py-1.5 text-left hover:bg-paper"
                 :aria-expanded="showPassed" @click="showPassed = !showPassed">
           <span class="check-row__icon bg-good-pale text-good" aria-hidden="true">✓</span>
-          <span class="min-w-0 flex-1 text-[12px] font-semibold leading-[18px] text-good">{{ passed.length }} {{ passed.length === 1 ? 'check' : 'checks' }} passed</span>
+          <span class="min-w-0 flex-1 text-[12px] font-semibold leading-[18px] text-good">{{ passedLabel }}</span>
           <span class="flex-none text-[11px] leading-4 text-stone">{{ showPassed ? 'Hide' : 'Show' }}</span>
         </button>
         <template v-if="showPassed">
-          <div v-for="c in passed" :key="c.key" class="check-row check-row--pass" data-testid="check">
+          <div v-for="c in passed" :key="c.key" class="check-row" :class="`check-row--${c.state}`" data-testid="check">
             <span class="check-row__icon" aria-hidden="true">{{ c.icon }}</span>
             <span class="check-row__label">{{ c.label }}</span>
             <span class="check-row__word">{{ c.word }}</span>

@@ -4,7 +4,7 @@
   and checked against the real app. Polls ImageSafe's preview API.
 -->
 <script setup>
-import { computed, onBeforeUnmount, onMounted, provide, ref, watch as vueWatch } from 'vue'
+import { computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch as vueWatch } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import { identityBase } from '@/identity.js'
 import { usePreview } from '@/usePreview.js'
@@ -16,7 +16,9 @@ import DecisionPanel from '../Components/ImageSafePreview/DecisionPanel.vue'
 import SafeVersion from '../Components/ImageSafePreview/SafeVersion.vue'
 import PeoplePanel from '../Components/ImageSafePreview/PeoplePanel.vue'
 import TrialPrompt from '../Components/ImageSafePreview/TrialPrompt.vue'
-import { RISK, recommended, review } from '../Components/ImageSafePreview/risk.js'
+import TagFaceModal from '../Components/ImageSafePreview/TagFaceModal.vue'
+import { DEMO_PEOPLE } from '../Components/ImageSafePreview/demoPeople.js'
+import { PERMISSION, RISK, matches, permissionChip, permissionKey, queueRank, recommended, review } from '../Components/ImageSafePreview/risk.js'
 
 const props = defineProps({ id: { type: String, required: true } })
 
@@ -58,43 +60,81 @@ function pagePath(u) {
   try { const p = new URL(u).pathname; return p === '/' ? 'the home page' : p } catch { return 'your website' }
 }
 
-// Riskiest first, as the app's queue: high → medium, then in the order they were found.
-const RANK = { high: 0, medium: 1, low: 2 }
+// Demo tagging: the person on each face, by `${photo key}#${face index}`. Held in
+// memory only — nothing is sent or saved, and a reload starts again.
+const tags = reactive({})
+const people = ref([...DEMO_PEOPLE])
+const personOn = (key, i) => tags[`${key}#${i}`] || null
+
+// Riskiest first, as the app's queue, then in the order they were found.
 const items = computed(() => found.value.map((f, i) => {
-  const r = review(f)
+  const key = `${i}:${f.image_url}`
+  const faces = (f.faces || []).map((_, n) => personOn(key, n))
+  const keys = faces.map(permissionKey)
+  const r = review(f, keys)
   return {
-    key: `${i}:${f.image_url}`,
+    key,
     order: i,
     photo: f,
     name: fileName(f.image_url),
     thumb: f.image_url,
-    faces: (f.faces || []).length,
     width: f.width,
     height: f.height,
+    people: faces,
     risk: r.overall,
+    verdict: r.verdict,
     checks: r.checks,
+    chip: permissionChip(keys, r.overall),
   }
-}).sort((a, b) => RANK[a.risk] - RANK[b.risk] || a.order - b.order))
+}).sort((a, b) => queueRank(a.risk, a.verdict) - queueRank(b.risk, b.verdict) || a.order - b.order))
 
 // Selection follows the photo, not its place, so photos arriving mid-scan don't move it.
 const filter = ref('all')
-const shown = computed(() => filter.value === 'all' ? items.value : items.value.filter((x) => x.risk === filter.value))
+const shown = computed(() => items.value.filter((x) => matches(x, filter.value)))
 const selectedKey = ref(null)
 const current = computed(() => shown.value.find((x) => x.key === selectedKey.value) || shown.value[0] || null)
 const position = computed(() => shown.value.indexOf(current.value))
 const sel = computed(() => current.value?.photo || null)
 const selName = computed(() => current.value?.name || '')
-const selFaces = computed(() => current.value?.faces || 0)
+const selFaces = computed(() => current.value?.people.length || 0)
+const selPeople = computed(() => (current.value?.people || []).map((person) => ({ person, pill: PERMISSION[permissionKey(person)] })))
+const selTags = computed(() => (current.value?.people || []).map((person) => ({
+  text: person ? person.name.split(' ')[0] : 'Unknown',
+  line: PERMISSION[permissionKey(person)].line,
+  named: Boolean(person),
+})))
 const selRisk = computed(() => RISK[current.value?.risk || 'medium'])
 const selAlt = computed(() => sel.value ? `Photo from ${pagePath(sel.value.page_url)} with ${selFaces.value} ${selFaces.value === 1 ? 'person' : 'people'}` : '')
 
-// Each photo starts on the decision the app recommends for its risk.
+// Each photo starts on the decision the app recommends, and moves with it as tags change the risk.
 const decision = ref(null) // picked as in the app; recording it opens the trial prompt
+const selRecommended = computed(() => current.value ? recommended(current.value.risk, current.value.verdict) : null)
 vueWatch(() => current.value?.key, () => {
-  if (!current.value) return
-  selectedKey.value = current.value.key
-  decision.value = recommended(current.value.risk)
+  if (current.value) selectedKey.value = current.value.key
 }, { immediate: true })
+vueWatch(() => [current.value?.key, selRecommended.value], () => { decision.value = selRecommended.value }, { immediate: true })
+
+// The tag pop-up, for one face of the selected photo.
+const tagging = ref(null) // { key, index }
+const tagReturn = ref(null)
+function openTag(index, el = null) {
+  if (!current.value) return
+  tagReturn.value = el
+  tagging.value = { key: current.value.key, index }
+}
+const tagCurrent = computed(() => tagging.value ? personOn(tagging.value.key, tagging.value.index) : null)
+function assignTag(person) {
+  if (!tagging.value) return
+  const k = `${tagging.value.key}#${tagging.value.index}`
+  if (person) tags[k] = person
+  else delete tags[k]
+  tagging.value = null
+}
+function createPerson({ name, permission }) {
+  const person = { id: `new-${people.value.length + 1}`, name, detail: 'Added just now', permission }
+  people.value = [...people.value, person]
+  assignTag(person)
+}
 
 function setFilter(key) {
   filter.value = key
@@ -116,14 +156,15 @@ const errorCopy = {
 }
 
 function onKey(e) {
-  if (trialFeature.value || state.value === 'error') return
+  if (trialFeature.value || tagging.value || state.value === 'error') return
   if (e.target && /INPUT|TEXTAREA|SELECT/.test(e.target.tagName)) return
   if (e.metaKey || e.ctrlKey || e.altKey) return
   if (e.key === 'ArrowDown' || e.key === 'j') { if (shown.value.length) { e.preventDefault(); step(1) } }
   else if (e.key === 'ArrowUp' || e.key === 'k') { if (shown.value.length) { e.preventDefault(); step(-1) } }
   else if (sel.value && ['1', '2', '3'].includes(e.key)) {
     e.preventDefault()
-    decision.value = ['remove', 'fix', 'keep'][Number(e.key) - 1]
+    const pick = ['remove', 'fix', 'keep'][Number(e.key) - 1]
+    if (!(pick === 'keep' && current.value?.verdict === 'NO')) decision.value = pick
   } else if (sel.value && e.key === 'Enter' && e.target === document.body) {
     e.preventDefault()
     openTrial('Recording decisions')
@@ -201,15 +242,15 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
           <div class="grid min-h-0 flex-1 items-stretch lg:grid-cols-[minmax(420px,1.9fr)_minmax(320px,1.1fr)] lg:grid-rows-[minmax(0,1fr)]">
             <div class="flex min-w-0 flex-col border-shell lg:min-h-0 lg:overflow-y-auto lg:border-r">
               <div class="flex flex-1 flex-col gap-3 px-4 py-4">
-                <ImageFrame :photo="sel" :alt="selAlt" @tag="el => openTrial('People & Permissions', el)" @zoom="el => openTrial('Photo zoom', el)" />
+                <ImageFrame :photo="sel" :alt="selAlt" :tags="selTags" @tag="openTag" @zoom="el => openTrial('Photo zoom', el)" />
                 <SafeVersion @trial="el => openTrial('Safe versions', el)" />
-                <DecisionPanel v-model:decision="decision" :recommended="recommended(current.risk)" @trial="el => openTrial('Recording decisions', el)" @detail="el => openTrial('Image detail', el)" @skip="step(1)" />
+                <DecisionPanel v-model:decision="decision" :verdict="current.verdict" :recommended="selRecommended" @trial="el => openTrial('Recording decisions', el)" @detail="el => openTrial('Image detail', el)" @skip="step(1)" />
               </div>
             </div>
             <div class="flex min-h-0 flex-col border-t border-shell lg:border-t-0">
               <ChecksPanel :key="current.key" :checks="current.checks" />
-              <PeoplePanel class="flex-1" :count="selFaces"
-                           @tag="el => openTrial('People & Permissions', el)"
+              <PeoplePanel class="flex-1" :faces="selPeople"
+                           @tag="openTag"
                            @zoom="el => openTrial('Photo zoom', el)"
                            @dismiss="el => openTrial('Dismissing faces', el)" />
               <div class="border-t border-shell px-4 py-3 text-[11px] leading-[1.55] text-stone">Your trial matches every face against your permission records and runs every check. AI-assisted — your judgement decides.</div>
@@ -244,4 +285,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
   </AppShell>
 
   <TrialPrompt :feature="trialFeature" :return-to="trialReturn" @close="trialFeature = null" />
+  <TagFaceModal :open="Boolean(tagging)" :face-label="tagging ? `Face ${tagging.index + 1}` : 'This face'" :current="tagCurrent" :people="people" :return-to="tagReturn"
+                @assign="assignTag" @create="createPerson" @close="tagging = null" />
 </template>

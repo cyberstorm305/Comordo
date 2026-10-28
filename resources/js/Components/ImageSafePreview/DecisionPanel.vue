@@ -8,33 +8,50 @@
 <script setup>
 import InfoTip from './InfoTip.vue'
 
-defineProps({ recommended: { type: String, default: null } })
+import { computed } from 'vue'
+
+const props = defineProps({
+  recommended: { type: String, default: null },
+  verdict: { type: String, default: 'UNKNOWN' }, // permission: YES | NO | UNKNOWN
+})
 
 const decision = defineModel('decision', { type: String, default: null })
 const emit = defineEmits(['trial', 'detail', 'skip'])
 
-const opts = [
-  { value: 'remove', title: 'Remove from website', sub: 'Take it down, tick off here', num: 1 },
-  { value: 'fix', title: 'Fix on site', sub: 'Crop, blur or edit caption', num: 2 },
-  { value: 'keep', title: 'Keep as is', sub: '⚠ note required', num: 3 },
-]
+// "Keep as is" isn't available once someone has refused, as in the app.
+const opts = computed(() => [
+  { value: 'remove', title: 'Remove from website', sub: 'Take it down, tick off here', num: 1, disabled: false },
+  { value: 'fix', title: 'Fix on site', sub: 'Crop, blur or edit caption', num: 2, disabled: false },
+  {
+    value: 'keep',
+    title: 'Keep as is',
+    sub: props.verdict === 'NO' ? 'Not available — no permission' : props.verdict === 'YES' ? 'Log why it can stay' : '⚠ note required',
+    num: 3,
+    disabled: props.verdict === 'NO',
+  },
+])
+function choose(o) {
+  if (!o.disabled) decision.value = o.value
+}
 </script>
 
 <template>
   <div class="flex flex-col gap-3" data-testid="decision">
     <div class="grid gap-2 sm:grid-cols-3" role="radiogroup" aria-label="Decision">
-      <div v-for="o in opts" :key="o.value" role="radio" tabindex="0"
-           :aria-checked="decision === o.value"
+      <div v-for="o in opts" :key="o.value" role="radio" :tabindex="o.disabled ? -1 : 0"
+           :aria-checked="decision === o.value" :aria-disabled="o.disabled"
            :title="`${o.title}: ${o.sub}`"
-           class="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-[10px] border-[1.5px] px-3 py-3"
-           :class="decision === o.value ? 'border-copper bg-copper-wash' : 'border-sand bg-white'"
+           class="flex min-w-0 items-center gap-2.5 rounded-[10px] px-3 py-3"
+           :class="o.disabled
+             ? 'cursor-not-allowed border border-dashed border-line bg-paper opacity-60'
+             : decision === o.value ? 'cursor-pointer border-[1.5px] border-copper bg-copper-wash' : 'cursor-pointer border-[1.5px] border-sand bg-white'"
            data-testid="decision-option"
-           @click="decision = o.value"
-           @keydown.space.prevent="decision = o.value">
+           @click="choose(o)"
+           @keydown.space.prevent="choose(o)">
         <span class="h-4 w-4 flex-none rounded-full bg-white"
-              :class="decision === o.value ? 'border-[4.5px] border-copper' : 'border-[1.5px] border-edge'"></span>
+              :class="decision === o.value && !o.disabled ? 'border-[4.5px] border-copper' : 'border-[1.5px] border-edge'"></span>
         <span class="min-w-0 flex-1 truncate text-[13px] font-semibold leading-5">{{ o.title }}</span>
-        <span v-if="o.value === recommended" class="flex-none text-[10px] font-extrabold leading-[14px] text-copper-dark" title="Recommended">REC</span>
+        <span v-if="o.value === recommended && !o.disabled" class="flex-none text-[10px] font-extrabold leading-[14px] text-copper-dark" title="Recommended">REC</span>
         <span class="flex h-5 min-w-5 flex-none items-center justify-center rounded-[4px] border border-line text-[10px] leading-[14px] text-stone">{{ o.num }}</span>
       </div>
     </div>

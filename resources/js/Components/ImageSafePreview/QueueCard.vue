@@ -1,25 +1,23 @@
 <!--
   QueueCard.vue — the dashboard's review queue rail (the real app's
-  Dashboard.vue): rows in their risk colour, and the All / High / Med filters.
-  "No perm" needs permission records, so it opens the trial prompt. Every
-  face is untagged in a preview. On small screens the queue becomes a
-  horizontal strip.
+  Dashboard.vue): rows in their risk colour with their permission line, and
+  the All / High / Med / No perm filters. On small screens the queue becomes
+  a horizontal strip.
 -->
 <script setup>
-import { computed, inject, reactive } from 'vue'
+import { computed, reactive } from 'vue'
 import { looksWrong } from './imageCheck.js'
-import { RISK } from './risk.js'
+import { RISK, matches } from './risk.js'
 
 const props = defineProps({
-  items: { type: Array, default: () => [] }, // every photo: [{ key, name, thumb, faces, width, height, risk }]
+  items: { type: Array, default: () => [] }, // every photo: [{ key, name, thumb, width, height, risk, verdict, chip }]
   shown: { type: Array, default: () => [] }, // the ones the filter lets through
   selected: { type: String, default: null }, // key
-  filter: { type: String, default: 'all' }, // all | high | medium
+  filter: { type: String, default: 'all' }, // all | high | medium | noperm
   state: { type: String, default: 'queued' }, // queued | scanning | done
   progress: { type: Object, default: () => ({ pages: 0, images: 0 }) },
 })
 const emit = defineEmits(['select', 'filter'])
-const openTrial = inject('openTrial')
 
 const broken = reactive({})
 const loaded = reactive({}) // placeholder pattern shows behind a thumbnail until it loads
@@ -28,8 +26,9 @@ const filters = [
   { key: 'all', label: 'All', on: '#1B2536', border: '#DAD3C4', color: '#4A5468' },
   { key: 'high', label: 'High', on: '#B23A2E', border: '#F3C9C5', color: '#B23A2E' },
   { key: 'medium', label: 'Med', on: '#B4702F', border: '#E7C9A8', color: '#8F5722' },
+  { key: 'noperm', label: 'No perm', on: '#B23A2E', border: '#F3C9C5', color: '#B23A2E' },
 ]
-const count = (key) => key === 'all' ? props.items.length : props.items.filter((x) => x.risk === key).length
+const count = (key) => props.items.filter((x) => matches(x, key)).length
 function filterStyle(f) {
   return f.key === props.filter
     ? { borderColor: f.on, background: f.on, color: '#fff' }
@@ -68,10 +67,6 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
                 :style="filterStyle(f)"
                 data-testid="queue-filter"
                 @click="emit('filter', f.key)">{{ f.label }} {{ count(f.key) }}</button>
-        <button type="button" aria-pressed="false"
-                class="cursor-pointer rounded-[14px] border border-bad-line bg-white px-2.5 py-1 text-[11px] font-bold leading-4 text-bad"
-                data-testid="queue-filter-noperm"
-                @click="openTrial('People & Permissions', $event.currentTarget)">No perm</button>
       </div>
     </div>
     <p class="sr-only" aria-live="polite" data-testid="queue-announcement">{{ announcement }}</p>
@@ -97,7 +92,7 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
           <div class="truncate font-mono text-[12px] font-semibold leading-[18px] text-navy">{{ x.name }}</div>
           <div class="mt-0.5 flex items-center gap-1.5 text-[11px] leading-4 text-stone">
             <span class="h-[7px] w-[7px] flex-none rounded-full" :style="{ background: RISK[x.risk].solid }" :title="`${RISK[x.risk].long} risk`"></span>
-            <span class="truncate">{{ x.faces }} untagged</span>
+            <span class="truncate">{{ x.chip }}</span>
           </div>
         </div>
       </button>

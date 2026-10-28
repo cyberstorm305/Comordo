@@ -3,8 +3,9 @@
   frame and ZoomableImage). The frame is 16:9 on small screens and takes the
   height the controls leave from lg up. The photo is fitted inside it, and the
   boxes sit on a layer the exact size of the photo, so they are placed in
-  percentages of its natural width and height. The zoom controls open the
-  trial prompt.
+  percentages of its natural width and height. Boxes and tags take the colour
+  of the face's permission, and named faces show a first name. The zoom
+  controls open the trial prompt.
 -->
 <script setup>
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
@@ -14,6 +15,7 @@ import { looksWrong } from './imageCheck.js'
 const props = defineProps({
   photo: { type: Object, required: true }, // { image_url, width, height, faces: [{x,y,w,h}] }
   alt: { type: String, default: '' },
+  tags: { type: Array, default: () => [] }, // per face: { text, line, named }
 })
 const emit = defineEmits(['tag', 'zoom'])
 
@@ -37,6 +39,7 @@ onMounted(() => {
 onBeforeUnmount(() => observer?.disconnect())
 
 const PLUM = '#5E5170' // the app's "Unknown person" colour
+const tagOf = (i) => props.tags[i] || { text: 'Unknown', line: PLUM, named: false }
 const faces = computed(() => props.photo.faces || [])
 const w = computed(() => props.photo.width || 16)
 const h = computed(() => props.photo.height || 9)
@@ -46,15 +49,15 @@ const layerStyle = computed(() => {
   const scale = Math.min(fw / w.value, fh / h.value)
   return { width: `${w.value * scale}px`, height: `${h.value * scale}px` }
 })
-// Busy photos show their "Unknown" tags on hover only, as in the app.
-const showTags = computed(() => faces.value.length <= 8)
-function box(f) {
+// Named faces always show their tag; on busy photos "Unknown" tags show on hover only, as in the app.
+const showTag = (i) => tagOf(i).named || faces.value.length <= 8
+function box(f, i) {
   return {
     left: `${(f.x / w.value) * 100}%`,
     top: `${(f.y / h.value) * 100}%`,
     width: `${(f.w / w.value) * 100}%`,
     height: `${(f.h / h.value) * 100}%`,
-    border: `2px solid ${PLUM}`,
+    border: `2px solid ${tagOf(i).line}`,
     borderRadius: '4px',
     boxShadow: '0 0 0 2px rgba(255,255,255,.55)',
   }
@@ -72,12 +75,12 @@ const nearTop = (f) => f.y / h.value < 0.08
       <template v-if="loaded">
         <button v-for="(f, i) in faces" :key="i" type="button"
                 class="group absolute z-20 cursor-pointer bg-transparent p-0 text-left"
-                :style="box(f)" :aria-label="`Tag face ${i + 1}`"
+:style="box(f, i)" :aria-label="tagOf(i).named ? `Change the tag on ${tagOf(i).text}` : `Tag face ${i + 1}`"
                 data-testid="face-box"
-                @click="emit('tag', $event.currentTarget)">
+                @click="emit('tag', i, $event.currentTarget)">
           <span class="pointer-events-none absolute left-0 whitespace-nowrap rounded-[4px] px-1 py-px text-[10px] font-semibold leading-[14px] text-white"
-                :class="[nearTop(f) ? 'top-full mt-0.5' : 'bottom-full mb-0.5', showTags ? '' : 'hidden group-hover:block']"
-                :style="{ background: PLUM }">Unknown</span>
+                :class="[nearTop(f) ? 'top-full mt-0.5' : 'bottom-full mb-0.5', showTag(i) ? '' : 'hidden group-hover:block']"
+                :style="{ background: tagOf(i).line }">{{ tagOf(i).text }}</span>
         </button>
       </template>
     </div>
@@ -87,7 +90,7 @@ const nearTop = (f) => f.y / h.value < 0.08
     <div class="absolute bottom-3 left-3 z-30 flex items-center gap-1.5 rounded-[7px] bg-navy/[.78] px-2.5 py-1.5 text-[12px] font-medium leading-[18px] text-white backdrop-blur-[2px]" data-testid="faces-detected">
       {{ faces.length }} {{ faces.length === 1 ? 'face' : 'faces' }}
       <InfoTip label="Using the photo" placement="above" tone="light">
-        <template v-if="faces.length">Click a face to tag it. </template>Your trial lets you zoom in, drag the photo around and jump to any face.
+        <template v-if="faces.length">Click a face to tag it, and again to change its tag. </template>Your trial lets you zoom in, drag the photo around and jump to any face.
       </InfoTip>
     </div>
     <div class="absolute bottom-3 right-3 z-30 flex items-center gap-0.5 rounded-[7px] bg-navy/[.78] p-0.5 text-white backdrop-blur-[2px]">
