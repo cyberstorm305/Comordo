@@ -18,6 +18,14 @@ const FEATURES = {
   'People & Permissions': 'Add pupils and staff with their photo permissions, and ImageSafe matches them to the faces it finds.',
   'Recording decisions': 'Record what you decide for each photo, and why, so every image has an audit trail.',
   'Image detail': 'Every check, page and decision for a photo on one page.',
+  'Risk ratings': 'Every photo is rated high, medium or low from its checks and permissions, so you review the riskiest first.',
+  'Safe versions': 'Download a copy that’s safe to re-publish, with faces without permission censored and location and camera data removed.',
+  'Photo zoom': 'Zoom into any photo, or jump straight to a face, to check it up close.',
+  'Dismissing faces': 'Dismiss a face that isn’t a real person, such as a poster, so it stops counting.',
+  Inventory: 'Every image from your website, social media and uploads in one searchable list, with its status.',
+  Notifications: 'Hear when a scan finds new photos of people, or when permissions are due to renew.',
+  'Multiple schools': 'Check every school in your trust from one account, and switch between them here.',
+  'Settings & users': 'Invite colleagues, set their roles and choose how often each website is scanned.',
 }
 const blurb = computed(() => FEATURES[props.feature] || 'It’s included in your 14-day free trial.')
 

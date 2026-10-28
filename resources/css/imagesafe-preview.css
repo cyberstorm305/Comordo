@@ -16,14 +16,19 @@
   --color-copper-wash: var(--isp-copper-wash);
   --color-good: var(--isp-good);
   --color-good-pale: var(--isp-good-pale);
+  --color-good-line: var(--isp-good-line);
   --color-warn-pale: var(--isp-warn-pale);
   --color-bad: var(--isp-bad);
   --color-bad-pale: var(--isp-bad-pale);
+  --color-bad-line: var(--isp-bad-line);
+  --color-bad-dark: var(--isp-bad-dark);
   --color-plum: var(--isp-plum);
   --color-plum-light: var(--isp-plum-light);
   --color-plum-pale: var(--isp-plum-pale);
+  --color-plum-line: var(--isp-plum-line);
   --color-teal: var(--isp-teal);
   --shadow-isp-modal: var(--isp-shadow-modal);
+  --shadow-isp-pop: var(--isp-shadow-pop);
 }
 
 .isp {
@@ -36,14 +41,21 @@
   --isp-copper-wash: #F8F4EC;
   --isp-good: #2F7D5B;
   --isp-good-pale: #E7F4EC;
+  --isp-good-line: #CFE6D6;
   --isp-warn-pale: #F8F3E6;
   --isp-bad: #B23A2E;
   --isp-bad-pale: #FCE8E6;
+  --isp-bad-line: #F3C9C5;
+  --isp-bad-dark: #9A3127;
   --isp-plum: #5E5170;
   --isp-plum-light: #8A7A9E;
   --isp-plum-pale: #F3EFF7;
+  --isp-plum-line: #D5CCE0;
   --isp-teal: #5BA8A0;
   --isp-shadow-modal: 0 20px 50px rgba(27, 37, 54, 0.28);
+  --isp-shadow-pop: 0 4px 14px rgba(27, 37, 54, 0.25);
+  /* The app's stone is a shade darker than the marketing site's. */
+  --color-stone: #757063;
 
   font-family: "Satoshi", system-ui, sans-serif;
   background: var(--isp-shell);
@@ -70,6 +82,74 @@
 
 .isp .queue-row:hover {
   box-shadow: var(--row-hover) !important;
+}
+
+/* Safeguarding check rows, as the app's .check-row: pass / warn / locked. */
+.isp .check-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  padding: 6px 10px;
+}
+
+.isp .check-row__icon {
+  display: flex;
+  width: 17px;
+  height: 17px;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 700;
+}
+
+.isp .check-row__label {
+  min-width: 0;
+  flex: 1;
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--color-navy-light);
+}
+
+.isp .check-row__word {
+  flex: none;
+  font-size: 10px;
+  line-height: 14px;
+  font-weight: 800;
+}
+
+.isp .check-row--warn {
+  border-color: var(--color-copper-pale);
+  background: var(--isp-copper-wash);
+}
+
+.isp .check-row--warn .check-row__icon {
+  background: var(--color-copper);
+  color: #fff;
+}
+
+.isp .check-row--warn .check-row__label,
+.isp .check-row--warn .check-row__word {
+  font-weight: 600;
+  color: var(--color-copper-dark);
+}
+
+.isp .check-row--locked .check-row__icon {
+  background: var(--isp-shell);
+  color: var(--color-stone);
+}
+
+.isp .check-row--locked .check-row__label,
+.isp .check-row--locked .check-row__word {
+  color: var(--color-stone);
+}
+
+.isp .check-row--locked .check-row__word {
+  font-weight: 600;
 }
 
 /* Placeholder rows while the scan runs. */
