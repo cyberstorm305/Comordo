@@ -1,16 +1,18 @@
 <!--
   QueueCard.vue — the dashboard's review queue rail (the real app's
   Dashboard.vue): rows in their risk colour with their permission line, and
-  the All / High / Med / No perm filters. On small screens the queue becomes
-  a horizontal strip.
+  the All / High / Med / No perm filters. Photos beyond the preview's limit
+  follow, greyed out: hovering one says it's in the trial, and clicking opens
+  the trial prompt. On small screens the queue becomes a horizontal strip.
 -->
 <script setup>
-import { computed, reactive } from 'vue'
+import { computed, inject, reactive } from 'vue'
 import { looksWrong } from './imageCheck.js'
 import { RISK, matches } from './risk.js'
 
 const props = defineProps({
-  items: { type: Array, default: () => [] }, // every photo: [{ key, name, thumb, width, height, risk, verdict, chip }]
+  items: { type: Array, default: () => [] }, // the photos the preview opens: [{ key, name, thumb, width, height, risk, verdict, chip }]
+  locked: { type: Array, default: () => [] }, // the ones beyond the limit, greyed out
   shown: { type: Array, default: () => [] }, // the ones the filter lets through
   selected: { type: String, default: null }, // key
   filter: { type: String, default: 'all' }, // all | high | medium | noperm
@@ -18,6 +20,7 @@ const props = defineProps({
   progress: { type: Object, default: () => ({ pages: 0, images: 0 }) },
 })
 const emit = defineEmits(['select', 'filter'])
+const openTrial = inject('openTrial')
 
 const broken = reactive({})
 const loaded = reactive({}) // placeholder pattern shows behind a thumbnail until it loads
@@ -96,6 +99,29 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
           </div>
         </div>
       </button>
+      <template v-if="filter === 'all'">
+        <button v-for="x in locked" :key="x.key" type="button"
+                class="group flex w-[230px] flex-none cursor-pointer items-center gap-2.5 rounded-[10px] border-0 bg-transparent px-2.5 py-2 text-left outline-none hover:bg-copper-wash focus-visible:bg-copper-wash lg:w-full"
+                :aria-label="`${x.name}: start your 14-day free trial to review this photo`"
+                data-testid="queue-row-locked"
+                @click="openTrial('Reviewing every photo', $event.currentTarget)">
+          <span class="relative h-[38px] w-[52px] flex-none overflow-hidden rounded-[4px] border border-edge">
+            <img v-if="!broken[x.key]" :src="x.thumb" alt="" referrerpolicy="no-referrer" loading="lazy"
+                 class="h-full w-full object-cover opacity-50 grayscale" :class="loaded[x.key] ? '' : 'img-ph-sm'"
+                 @load="e => { if (looksWrong(e.target, x.width, x.height)) broken[x.key] = true; else loaded[x.key] = true }"
+                 @error="broken[x.key] = true">
+            <span v-else class="img-ph-sm block h-full w-full opacity-50 grayscale"></span>
+            <span class="absolute inset-0 flex items-center justify-center text-navy/70 group-hover:text-copper-dark group-focus-visible:text-copper-dark" aria-hidden="true">
+              <svg width="11" height="13" viewBox="0 0 11 13" fill="none"><rect x="1" y="5.5" width="9" height="7" rx="1.5" stroke="currentColor" stroke-width="1.6"/><path d="M3 5.5V3.8a2.5 2.5 0 015 0v1.7" stroke="currentColor" stroke-width="1.6"/></svg>
+            </span>
+          </span>
+          <span class="min-w-0 flex-1">
+            <span class="block truncate font-mono text-[12px] font-semibold leading-[18px] text-stone">{{ x.name }}</span>
+            <span class="mt-0.5 block truncate text-[11px] leading-4 text-stone group-hover:hidden group-focus-visible:hidden">In your trial</span>
+            <span class="mt-0.5 hidden truncate text-[11px] font-semibold leading-4 text-copper-dark group-hover:block group-focus-visible:block">Start your free trial to review →</span>
+          </span>
+        </button>
+      </template>
       <template v-if="state !== 'done'">
         <div v-for="n in 2" :key="'ph' + n" class="isp-pulse flex w-[230px] flex-none items-center gap-2.5 rounded-[10px] px-2.5 py-2 lg:w-full" aria-hidden="true">
           <div class="img-ph-sm h-[38px] w-[52px] flex-none rounded-[4px] border border-edge opacity-60"></div>
@@ -108,7 +134,7 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
     </div>
 
     <div class="mt-auto hidden border-t border-shell px-3.5 py-3 text-[12px] leading-[18px] text-stone lg:block">
-      {{ shown.length }} to review · {{ plural(progress.images, 'image', 'images') }} checked on {{ plural(progress.pages, 'page', 'pages') }}{{ state === 'done' ? '' : ' so far' }}
+      {{ shown.length }} to review<template v-if="locked.length"> · {{ locked.length }} more in your trial</template> · {{ plural(progress.images, 'image', 'images') }} checked on {{ plural(progress.pages, 'page', 'pages') }}{{ state === 'done' ? '' : ' so far' }}
     </div>
   </div>
 </template>

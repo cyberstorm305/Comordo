@@ -19,6 +19,7 @@ const FEATURES = {
   'Recording decisions': 'Record what you decide for each photo, and why, so every image has an audit trail.',
   'Image detail': 'Every check, page and decision for a photo on one page.',
   'Safe versions': 'Download a copy that’s safe to re-publish, with faces without permission censored and location and camera data removed.',
+  'Reviewing every photo': 'This preview opens the first 30 photos with people. Your trial checks every page of your website and every photo on it.',
   'Unlimited tagging': 'You’ve used the 10 demo tags. In your trial you can tag every face, against your own pupils’ and staff’s permission records.',
   'Dismissing faces': 'Dismiss a face that isn’t a real person, such as a poster, so it stops counting.',
   Inventory: 'Every image from your website, social media and uploads in one searchable list, with its status.',

@@ -91,9 +91,15 @@ const items = computed(() => found.value.map((f, i) => {
   }
 }).sort((a, b) => queueRank(a.risk, a.verdict) - queueRank(b.risk, b.verdict) || a.order - b.order))
 
+// The preview opens the first PHOTO_LIMIT photos found; the rest show greyed out in
+// the queue, in the order they were found, and open the trial prompt.
+const PHOTO_LIMIT = 30
+const open = computed(() => items.value.filter((x) => x.order < PHOTO_LIMIT))
+const locked = computed(() => items.value.filter((x) => x.order >= PHOTO_LIMIT).sort((a, b) => a.order - b.order))
+
 // Selection follows the photo, not its place, so photos arriving mid-scan don't move it.
 const filter = ref('all')
-const shown = computed(() => items.value.filter((x) => matches(x, filter.value)))
+const shown = computed(() => open.value.filter((x) => matches(x, filter.value)))
 const selectedKey = ref(null)
 const current = computed(() => shown.value.find((x) => x.key === selectedKey.value) || shown.value[0] || null)
 const position = computed(() => shown.value.indexOf(current.value))
@@ -222,7 +228,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
       </div>
 
       <div class="grid items-stretch gap-4 lg:grid-cols-[minmax(290px,1fr)_minmax(0,3fr)]">
-        <QueueCard :items="items" :shown="shown" :selected="current?.key ?? null" :filter="filter" :state="state" :progress="progress"
+        <QueueCard :items="open" :shown="shown" :locked="locked" :selected="current?.key ?? null" :filter="filter" :state="state" :progress="progress"
                    @select="k => selectedKey = k" @filter="setFilter" />
 
         <!-- focus panel: fills the screen height like the queue, so the photo takes the depth the controls leave.
