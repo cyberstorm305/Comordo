@@ -114,6 +114,9 @@ vueWatch(() => current.value?.key, () => {
 }, { immediate: true })
 vueWatch(() => [current.value?.key, selRecommended.value], () => { decision.value = selRecommended.value }, { immediate: true })
 
+// The photo, so the people list's magnifying glass can zoom it to a face.
+const frame = ref(null)
+
 // The tag pop-up, for one face of the selected photo.
 const tagging = ref(null) // { key, index }
 const tagReturn = ref(null)
@@ -242,7 +245,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
           <div class="grid min-h-0 flex-1 items-stretch lg:grid-cols-[minmax(420px,1.9fr)_minmax(320px,1.1fr)] lg:grid-rows-[minmax(0,1fr)]">
             <div class="flex min-w-0 flex-col border-shell lg:min-h-0 lg:overflow-y-auto lg:border-r">
               <div class="flex flex-1 flex-col gap-3 px-4 py-4">
-                <ImageFrame :photo="sel" :alt="selAlt" :tags="selTags" @tag="openTag" @zoom="el => openTrial('Photo zoom', el)" />
+                <ImageFrame ref="frame" :photo="sel" :alt="selAlt" :tags="selTags" @tag="openTag" />
                 <SafeVersion @trial="el => openTrial('Safe versions', el)" />
                 <DecisionPanel v-model:decision="decision" :verdict="current.verdict" :recommended="selRecommended" @trial="el => openTrial('Recording decisions', el)" @detail="el => openTrial('Image detail', el)" @skip="step(1)" />
               </div>
@@ -251,7 +254,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
               <ChecksPanel :key="current.key" :checks="current.checks" />
               <PeoplePanel class="flex-1" :faces="selPeople"
                            @tag="openTag"
-                           @zoom="el => openTrial('Photo zoom', el)"
+                           @zoom="i => frame?.zoomToFace(i)"
                            @dismiss="el => openTrial('Dismissing faces', el)" />
               <div class="border-t border-shell px-4 py-3 text-[11px] leading-[1.55] text-stone">Your trial matches every face against your permission records and runs every check. AI-assisted — your judgement decides.</div>
             </div>

@@ -19,7 +19,6 @@ const FEATURES = {
   'Recording decisions': 'Record what you decide for each photo, and why, so every image has an audit trail.',
   'Image detail': 'Every check, page and decision for a photo on one page.',
   'Safe versions': 'Download a copy that’s safe to re-publish, with faces without permission censored and location and camera data removed.',
-  'Photo zoom': 'Zoom into any photo, or jump straight to a face, to check it up close.',
   'Dismissing faces': 'Dismiss a face that isn’t a real person, such as a poster, so it stops counting.',
   Inventory: 'Every image from your website, social media and uploads in one searchable list, with its status.',
   Notifications: 'Hear when a scan finds new photos of people, or when permissions are due to renew.',

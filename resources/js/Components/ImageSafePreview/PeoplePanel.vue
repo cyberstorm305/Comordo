@@ -1,7 +1,7 @@
 <!--
   PeoplePanel.vue — the faces in one image (the real app's Review/PeopleList).
-  Clicking a name opens the demo tagging; the magnifying glass and the ✕ open
-  the trial prompt.
+  Clicking a name opens the demo tagging, the magnifying glass zooms the photo
+  to the face, and the ✕ opens the trial prompt.
 -->
 <script setup>
 import InfoTip from './InfoTip.vue'
@@ -31,7 +31,7 @@ const untagged = computed(() => props.faces.filter((f) => !f.person).length)
       <div v-for="(f, i) in faces" :key="i" class="flex items-center gap-1 rounded-[7px] hover:bg-shell">
         <button type="button" class="flex h-7 w-7 flex-none cursor-pointer items-center justify-center rounded-[7px] border-0 bg-transparent p-0 text-navy-light hover:text-navy"
                 aria-label="Zoom to this face" title="Zoom to this face"
-                @click="emit('zoom', $event.currentTarget)">
+                @click="emit('zoom', i)">
           <svg class="h-3.5 w-3.5" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
             <circle cx="8.5" cy="8.5" r="5.75" />
             <path d="M13 13l4.25 4.25" stroke-linecap="round" />
