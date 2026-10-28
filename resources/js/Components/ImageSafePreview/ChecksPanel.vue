@@ -34,7 +34,7 @@ const passedLabel = computed(() => {
       </InfoTip>
     </div>
     <div class="flex flex-col gap-1 border-b border-shell px-2.5 pb-3">
-      <div v-for="c in flagged" :key="c.key" class="check-row" :class="`check-row--${c.state}`" data-testid="check">
+      <div v-for="c in flagged" :key="c.key" class="check-row" :class="`check-row--${c.state}`" :title="c.note" data-testid="check">
         <span class="check-row__icon" aria-hidden="true">{{ c.icon }}</span>
         <span class="check-row__label">{{ c.label }}</span>
         <span class="check-row__word">{{ c.word }}</span>
@@ -47,7 +47,7 @@ const passedLabel = computed(() => {
           <span class="flex-none text-[11px] leading-4 text-stone">{{ showPassed ? 'Hide' : 'Show' }}</span>
         </button>
         <template v-if="showPassed">
-          <div v-for="c in passed" :key="c.key" class="check-row" :class="`check-row--${c.state}`" data-testid="check">
+          <div v-for="c in passed" :key="c.key" class="check-row" :class="`check-row--${c.state}`" :title="c.note" data-testid="check">
             <span class="check-row__icon" aria-hidden="true">{{ c.icon }}</span>
             <span class="check-row__label">{{ c.label }}</span>
             <span class="check-row__word">{{ c.word }}</span>

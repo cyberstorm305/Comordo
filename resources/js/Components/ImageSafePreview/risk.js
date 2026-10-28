@@ -1,6 +1,7 @@
 // The safeguarding checks a preview can run, and the photo's risk from them. A
 // copy of the rules in ImageSafe's SafeguardingReviewService, limited to what
-// the preview API returns (face boxes and the photo's size). Face visibility
+// the preview API returns (face boxes, the photo's size and any AI label in the
+// file). Face visibility
 // needs detection confidence and metadata needs the file's EXIF, so those two
 // only run in the trial. Faces start untagged (permission unknown); the demo
 // tags a visitor adds feed the permission rules, as tags do in the app.
@@ -47,13 +48,31 @@ function faceSizeStatus(ratio) {
   return 'high'
 }
 
+// "Made or edited with AI", from the label the preview API found in the file (the app's
+// aiProvenanceItem). Made with AI is a flag, edited a check; no label passes, but proves nothing.
+const AI_SOURCE = {
+  c2pa: 'Its Content Credentials (C2PA) say',
+  iptc: 'Its IPTC metadata says',
+  png: 'It carries AI image-generation settings, which say',
+}
+function aiCheck(ai) {
+  if (!ai || !['generated', 'edited'].includes(ai.kind)) {
+    return { status: 'low', note: 'No AI labels found in the file. These labels are often lost when an image is re-saved, so this doesn’t prove it wasn’t made or edited with AI.' }
+  }
+  const how = ai.kind === 'generated' ? 'made with AI' : 'edited with AI'
+  return {
+    status: ai.kind === 'generated' ? 'high' : 'medium',
+    note: `${AI_SOURCE[ai.source] || 'Its metadata says'} it was ${how}${ai.tool ? ` (${ai.tool})` : ''}.`,
+  }
+}
+
 function largestFaceRatio(photo) {
   const area = (photo.width || 0) * (photo.height || 0)
   if (!area) return 0
   return Math.max(0, ...(photo.faces || []).map((f) => (Math.max(0, f.w) * Math.max(0, f.h)) / area))
 }
 
-// { overall: 'high' | 'medium' | 'low', verdict, checks: [{ key, label, state, icon, word }] }
+// { overall: 'high' | 'medium' | 'low', verdict, checks: [{ key, label, state, icon, word, note? }] }
 // with "Permission to use" first, then flag → check → ok, as the app lists them.
 // keys: each face's PERMISSION key, in face order.
 export function review(photo, keys) {
@@ -67,12 +86,17 @@ export function review(photo, keys) {
     image_resolution: longEdge > 2000 ? 'high' : longEdge >= 1400 ? 'medium' : 'low',
     easy_to_crop: faceSizeStatus(ratio),
   }
+  // Previews from before the API returned AI labels have no "ai" field: the check is skipped.
+  const ai = 'ai' in photo ? aiCheck(photo.ai) : null
+  if (ai) statuses.ai_provenance = ai.status
+  const notes = ai ? { ai_provenance: ai.note } : {}
   const labels = {
     close_up_vs_wide_angle: 'Close-up vs wide-angle',
     individual_pupil_focus: 'Individual pupil focus',
     group_activity_composition: 'Group / activity-led composition',
     image_resolution: 'Image resolution',
     easy_to_crop: 'Easy to crop / isolate a child',
+    ai_provenance: 'Made or edited with AI',
   }
 
   const verdict = permissionVerdict(keys)
@@ -88,7 +112,7 @@ export function review(photo, keys) {
     label: 'Permission to use',
     ...(verdict === 'NO' ? STATE.high : verdict === 'UNKNOWN' ? STATE.medium : STATE.low),
   }
-  const checks = Object.entries(statuses).map(([key, status]) => ({ key, label: labels[key], ...STATE[status] }))
+  const checks = Object.entries(statuses).map(([key, status]) => ({ key, label: labels[key], ...STATE[status], note: notes[key] }))
 
   // When someone refused, the other checks don't matter and show as N/A.
   if (verdict === 'NO') {
