@@ -1,13 +1,16 @@
 <!--
   ChecksExplainer.vue — "What the safeguarding checks mean" (the real app's
-  Review/ChecksExplainer, same wording). Checks the preview can't run are
-  marked "In your trial". highlight opens it at one check. Esc and the
+  Review/ChecksExplainer). The wording comes from ImageSafe (GET /api/v1/checks,
+  the file the app's explainer is built from), so the two can't drift; it's
+  fetched the first time this opens. Checks the preview can't run are marked
+  "In your trial". highlight opens it at one check. Esc and the
   backdrop close it; focus moves in, stays in, and returns to whatever opened
   it.
 -->
 <script setup>
-import { nextTick, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import { identityBase } from '@/identity.js'
+import { imagesafeBase } from '@/imagesafe.js'
 import { LOCKED_CHECKS } from './risk.js'
 
 const props = defineProps({
@@ -20,86 +23,32 @@ const emit = defineEmits(['close'])
 const registerHref = `${identityBase}/register`
 const lockedKeys = LOCKED_CHECKS.map((c) => c.key)
 
-// Keys match the app's SafeguardingReviewService (and "permission" from its checkRows).
-const CHECKS = [
-  {
-    key: 'permission',
-    name: 'Permission to use',
-    looks: 'Whether everyone tagged in the photo has permission for where it’s published: the website or social media.',
-    why: 'A family’s choice not to have their child online must be respected. A refusal on either channel is treated as a refusal for both, and overrides every other check.',
-    fix: 'Remove the photo, or download the safe version with faces without permission blurred. Tag any untagged faces so their permission can be checked.',
-  },
-  {
-    key: 'protected_person',
-    name: 'Never-publish pupil',
-    looks: 'A pupil marked "Never publish" (for example a looked-after child or one under a court order) tagged in the photo.',
-    why: 'Being found online could put these children at risk. This is always urgent.',
-    fix: 'Take the photo off the website and social media straight away. The alert closes once ImageSafe confirms it’s gone.',
-  },
-  {
-    key: 'state_of_dress',
-    name: 'Appropriate clothing',
-    looks: 'What people in the photo are wearing, using an image model. Nudity or swimwear (a bare chest) is flagged; a bare midriff on its own, often PE kit, is a caution for you to look at.',
-    why: 'Guidance is never to publish children in swimwear or undressed: these images are the most likely to be misused.',
-    fix: 'Don’t publish a flagged photo. Use one where everyone is fully dressed. For a caution, check whether it’s swimwear before publishing.',
-  },
-  {
-    key: 'named_person',
-    name: 'Name in or near the photo',
-    looks: 'A pupil’s name in the caption, alt text, text near the photo or the file name, or written in the picture itself (a sign, certificate or name badge).',
-    why: 'A face with a name is what lets a stranger, or a face-search engine, identify and find a child.',
-    fix: 'Remove the name, or use first names only and never with a photo of that child alone. Rename files before uploading.',
-  },
-  {
-    key: 'face_visibility',
-    name: 'Recognisable faces',
-    looks: 'Faces clear enough to identify: front-on, a reasonable size, and detected with confidence.',
-    why: 'A clearly visible face can be recognised. One child alone is the easiest to identify, so it’s flagged; clear faces in a group are a caution.',
-    fix: 'Prefer shots where children are side-on, further away or busy with an activity. Blur faces without permission in the safe version.',
-  },
-  {
-    key: 'close_up_vs_wide_angle',
-    name: 'Close-up of a child',
-    looks: 'How much of the picture the largest face fills. Up to 2% is a wide shot, up to 3.5% is a caution, more is a close-up.',
-    why: 'The bigger a face is in the frame, the easier one child is to single out or crop into a portrait.',
-    fix: 'Use a wider shot, or crop so the face is smaller in the frame.',
-  },
-  {
-    key: 'group_activity_composition',
-    name: 'Single child in shot',
-    looks: 'Exactly one person, with their face clearly visible. It counts faces only: it can’t see what’s happening in the picture.',
-    why: 'Group and activity photos are safer than photos of one child on their own, who is easier to identify and single out.',
-    fix: 'Use a group or activity shot instead. A lone child whose face can’t be seen (turned away, small, blurred) isn’t flagged.',
-  },
-  {
-    key: 'image_resolution',
-    name: 'High-resolution file',
-    looks: 'The size of the file: over 2000 pixels on the long edge is flagged, 1400 to 2000 is a caution.',
-    why: 'A large file can be zoomed into or cropped to a clear portrait of one child.',
-    fix: 'Resize to about 1200 pixels before publishing. The safe version does this for you.',
-  },
-  {
-    key: 'full_size_original',
-    name: 'Full-size original online',
-    looks: 'Whether the uncompressed original of a resized photo can still be downloaded from the website.',
-    why: 'Websites such as WordPress often keep the original alongside the smaller copy, so anyone can get the high-resolution version.',
-    fix: 'Delete the original from the website’s media library, keeping only the resized copy.',
-  },
-  {
-    key: 'metadata_present',
-    name: 'Location or camera data',
-    looks: 'Data saved inside the file (EXIF), such as GPS location, the date and the camera owner.',
-    why: 'Location data can show where a photo was taken, which can lead to a child’s home or school.',
-    fix: 'Strip the data before publishing. The safe version removes it.',
-  },
-  {
-    key: 'ai_provenance',
-    name: 'Made or edited with AI',
-    looks: 'Labels inside the file saying AI made or changed it: Content Credentials (C2PA), which tools such as Adobe Firefly and ChatGPT add, the IPTC "digital source type", or an AI tool’s name in the file’s details. Made with AI is flagged; edited with AI (such as Generative Fill) is a caution. Shown as "No AI labels found" when there are none.',
-    why: 'A picture made with AI may not show a real child, and an edited one may change a real child’s photo in a way their family never agreed to. Either can mislead parents and the school community.',
-    fix: 'Check whether it shows a real pupil and what was changed. Use the original photo instead, or remove it. No label doesn’t prove a photo is genuine: labels are lost when a file is re-saved, and watermarks hidden in the pixels (such as Google’s SynthID) aren’t checked.',
-  },
-]
+// { summary: [lines], checks: [{ key, name, looks, why, fix }] }, fetched once per page.
+// {high} and {medium} in the summary are shown as the coloured risk words.
+let request = null
+function fetchExplainer() {
+  request ??= fetch(`${imagesafeBase}/api/v1/checks`, { headers: { Accept: 'application/json' } })
+    .then((res) => { if (!res.ok) throw new Error(String(res.status)); return res.json() })
+    .catch((e) => { request = null; throw e }) // a failure can be tried again
+  return request
+}
+
+const explainer = ref(null)
+const failed = ref(false)
+async function load() {
+  failed.value = false
+  try {
+    explainer.value = await fetchExplainer()
+    await nextTick()
+    if (props.highlight) document.getElementById(`isp-check-${props.highlight}`)?.scrollIntoView({ block: 'center' })
+  } catch {
+    failed.value = true
+  }
+}
+
+const RISK_WORD = { '{high}': { text: 'High', class: 'text-bad' }, '{medium}': { text: 'Medium', class: 'text-copper-dark' } }
+const summary = computed(() => (explainer.value?.summary || []).map((line) => line.split(/(\{high\}|\{medium\})/).filter(Boolean).map((part) => RISK_WORD[part] || { text: part })))
+const CHECKS = computed(() => explainer.value?.checks || [])
 
 const panel = ref(null)
 const closeButton = ref(null)
@@ -111,7 +60,7 @@ watch(() => props.open, async (o, was) => {
     document.addEventListener('keydown', onKey)
     await nextTick()
     closeButton.value?.focus()
-    if (props.highlight) document.getElementById(`isp-check-${props.highlight}`)?.scrollIntoView({ block: 'center' })
+    load()
   } else if (!o && was) {
     document.removeEventListener('keydown', onKey)
     opener?.focus?.()
@@ -148,12 +97,17 @@ function onKey(e) {
           </div>
 
           <div class="flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto px-6 py-5">
-            <div class="rounded-[10px] border border-line bg-paper px-4 py-3 text-[13px] leading-normal text-slate">
+            <p v-if="failed" class="m-0 flex flex-wrap items-center gap-2 rounded-[10px] border border-line bg-paper px-4 py-3 text-[13px] text-slate" data-testid="explainer-failed">
+              The explanations couldn't be loaded.
+              <button type="button" class="cursor-pointer border-0 bg-transparent p-0 font-semibold text-copper-dark hover:underline" @click="load">Try again</button>
+            </p>
+            <p v-else-if="!explainer" class="m-0 px-1 text-[13px] text-stone" data-testid="explainer-loading">Loading…</p>
+
+            <div v-if="explainer" class="rounded-[10px] border border-line bg-paper px-4 py-3 text-[13px] leading-normal text-slate">
               <div class="mb-1 font-semibold text-navy">How they add up</div>
-              Any one flag (✕) makes the photo <b class="text-bad">High</b>. Four or more cautions (!) together also make it High.
-              One or more cautions, or anyone without known permission, makes it <b class="text-copper-dark">Medium</b>.
-              A refusal of permission overrides everything else. Checks about children are relaxed for photos of staff only, once a person has confirmed who they are.
-              The checks are AI-assisted: your judgement decides.
+              <template v-for="(line, i) in summary" :key="i">
+                <template v-for="(part, j) in line" :key="j"><b v-if="part.class" :class="part.class">{{ part.text }}</b><template v-else>{{ part.text }}</template></template>{{ ' ' }}
+              </template>
             </div>
 
             <div v-for="check in CHECKS" :id="`isp-check-${check.key}`" :key="check.key"
