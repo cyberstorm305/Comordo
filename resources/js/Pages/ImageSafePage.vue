@@ -6,7 +6,7 @@ import { createPreview } from '@/usePreview.js'
 import SiteNav from '../Components/SiteNav.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
 
-const identityRegisterHref = `${identityBase}/register`
+const identityRegisterHref = `${identityBase}/start`
 const previewUrl = ref('')
 const previewError = ref(false)
 const previewConfirmed = ref(false)
@@ -70,7 +70,7 @@ const faqs = [
   { q: 'How is children’s face data protected?', a: 'Face data is encrypted at rest, and access to it is role-based and logged. When a photo has not been seen on your website for a set period (90 days by default), its face data is removed automatically. Your school or trust is the data controller, and we’re happy to walk your DPO through data handling in detail.' },
   { q: 'Does it work for a trust as well as a single school?', a: 'Yes. A single school gets its own workspace. A trust adds every school and sees them together in an All schools view, with staff given access to the schools they work with and trust admins overseeing the whole estate.' },
   { q: 'What reports does it produce?', a: 'A termly safeguarding report for governors (photos found, decisions made, removals and fixes confirmed, alerts and AI exposure) as a PDF, and a compliance summary for one school or several that you can export as CSV or PDF.' },
-  { q: 'How much does it cost, and can we try it?', a: 'ImageSafe is licensed per school, billed monthly or yearly, with volume discounts as you add schools. Every account starts with a 14-day free trial, and you can request a free preview of one school website before signing up.' },
+  { q: 'How much does it cost, and can we try it?', a: 'ImageSafe is licensed per school, billed monthly or yearly, with volume discounts as you add schools. Every account starts with a 7-day free trial, no card needed, and you can request a free preview of one school website before signing up.' },
 ]
 
 const responsible = [
@@ -322,7 +322,7 @@ const responsible = [
           <p class="text-base leading-relaxed text-slate max-w-[480px]">Request a free image preview for one school, or talk to us about your organisation.</p>
           <div class="flex flex-wrap justify-center gap-3.5 mt-2.5">
             <a href="#preview" class="btn-primary">Request a free image preview</a>
-            <a :href="identityRegisterHref" class="btn-outline">Start a 14-day free trial</a>
+            <a :href="identityRegisterHref" class="btn-outline">Start a 7-day free trial</a>
             <Link href="/demo" class="btn-outline">Book a demo</Link>
           </div>
         </div>

@@ -3,7 +3,7 @@
   AuthenticatedLayout: logo and nav, the school menu centred, then the
   notification bell and account menu (Settings lives in it). In a preview the
   header controls look as they do in the app but open the trial prompt;
-  "Start your 14-day free trial" links to Identity's sign-up.
+  "Start your 7-day free trial" links to Identity's sign-up.
 -->
 <script setup>
 import { inject } from 'vue'
@@ -12,7 +12,7 @@ import { identityBase } from '@/identity.js'
 defineProps({ host: { type: String, default: '' } })
 
 const openTrial = inject('openTrial')
-const registerHref = `${identityBase}/register`
+const registerHref = `${identityBase}/start`
 const tabs = [
   { label: 'Dashboard' },
   { label: 'Inventory', feature: 'Inventory' },
@@ -55,7 +55,7 @@ const tabs = [
 
         <div class="flex items-center justify-end gap-2.5 wide:col-start-3">
           <a :href="registerHref" class="inline-flex items-center whitespace-nowrap rounded-[7px] bg-navy px-3.5 py-2 text-[13px] font-semibold text-white no-underline hover:bg-navy-light lg:px-4" data-testid="shell-trial-link">
-            <span class="hidden sm:inline">Start your 14-day free trial</span><span class="sm:hidden">Start free trial</span>
+            <span class="hidden sm:inline">Start your 7-day free trial</span><span class="sm:hidden">Start free trial</span>
           </a>
           <button type="button" aria-label="Notifications" class="relative inline-flex h-[34px] w-[34px] cursor-pointer items-center justify-center border-0 bg-transparent p-0 text-slate hover:text-navy" data-testid="header-bell"
                   @click="openTrial('Notifications', $event.currentTarget)">

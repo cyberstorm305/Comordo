@@ -22,7 +22,7 @@ import { appReview, loadAppReview, matchesFilter, toAppImage } from '../Componen
 
 const props = defineProps({ id: { type: String, required: true } })
 
-const registerHref = `${identityBase}/register`
+const registerHref = `${identityBase}/start`
 const { state, progress, result, error, watch: watchPreview } = usePreview()
 
 // Trial prompt, opened by every locked tab and action.
@@ -218,7 +218,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
       <div class="mt-5 flex flex-wrap justify-center gap-2.5">
         <a href="/#preview" class="inline-flex items-center rounded-[7px] border border-line bg-white px-4 py-[9px] text-[13px] font-semibold text-slate no-underline hover:bg-tint-hover" data-testid="error-home-link">{{ error === 'expired' ? 'Run a new preview' : 'Try again' }}</a>
         <a v-if="error === 'busy'" href="/demo" class="inline-flex items-center rounded-[7px] border border-line bg-white px-4 py-[9px] text-[13px] font-semibold text-copper no-underline hover:bg-tint-hover">Book a demo</a>
-        <a :href="registerHref" class="inline-flex items-center rounded-[7px] bg-navy px-4 py-[9px] text-[13px] font-semibold text-white no-underline hover:bg-navy-light">Start your 14-day free trial</a>
+        <a :href="registerHref" class="inline-flex items-center rounded-[7px] bg-navy px-4 py-[9px] text-[13px] font-semibold text-white no-underline hover:bg-navy-light">Start your 7-day free trial</a>
       </div>
     </div>
 
@@ -284,7 +284,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
             <div class="mb-1 text-lg font-bold tracking-[-0.3px]">No photos with people in the first pages we checked</div>
             <div class="text-[13px] text-stone">{{ progress.images }} images checked on {{ progress.pages }} pages. Your trial checks every page.</div>
           </div>
-          <a :href="registerHref" class="flex-none whitespace-nowrap rounded-[7px] border border-copper-light bg-copper-wash px-[15px] py-[9px] text-[12.5px] font-semibold text-navy no-underline hover:bg-[#EEE3D0]">Start your 14-day free trial</a>
+          <a :href="registerHref" class="flex-none whitespace-nowrap rounded-[7px] border border-copper-light bg-copper-wash px-[15px] py-[9px] text-[12.5px] font-semibold text-navy no-underline hover:bg-[#EEE3D0]">Start your 7-day free trial</a>
         </div>
 
         <!-- waiting for the first photo -->

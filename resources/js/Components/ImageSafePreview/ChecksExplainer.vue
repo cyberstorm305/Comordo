@@ -20,7 +20,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['close'])
 
-const registerHref = `${identityBase}/register`
+const registerHref = `${identityBase}/start`
 
 // { summary: [lines], checks: [{ key, name, looks, why, fix }] }, fetched once per page.
 // {high} and {medium} in the summary are shown as the coloured risk words.
@@ -130,7 +130,7 @@ function onKey(e) {
 
           <div class="flex flex-none flex-wrap items-center justify-between gap-3 border-t border-shell px-6 py-4">
             <span class="text-[12px] leading-[18px] text-stone">Checks marked "In your trial" run on every photo once you start.</span>
-            <a :href="registerHref" class="inline-flex items-center justify-center rounded-[7px] bg-navy px-4 py-[9px] text-[13px] font-semibold text-white no-underline hover:bg-navy-light">Start your 14-day free trial</a>
+            <a :href="registerHref" class="inline-flex items-center justify-center rounded-[7px] bg-navy px-4 py-[9px] text-[13px] font-semibold text-white no-underline hover:bg-navy-light">Start your 7-day free trial</a>
           </div>
         </div>
       </div>

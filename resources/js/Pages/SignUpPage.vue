@@ -43,7 +43,7 @@ function toPayment() {
   window.scrollTo(0, 0)
 }
 function pay() {
-  // Wire to Stripe Checkout / Elements here — card captured, £0 today, first charge after the 14-day trial.
+  // Wire to Stripe Checkout / Elements here — card captured, £0 today, first charge after the 7-day trial.
   step.value = 'processing'
   setTimeout(() => (step.value = 'done'), 2100)
 }
@@ -80,14 +80,14 @@ const clamp = (n) => Math.max(1, Math.min(200, Math.round(n) || 1))
           <div class="flex items-end justify-between gap-3">
             <span class="flex flex-col gap-1">
               <span class="font-mono text-[11px] tracking-[0.08em] uppercase text-copper">Due today</span>
-              <span class="text-xs text-cream/50">14-day free trial · then {{ gbp(total) }} / {{ cadence.abbr }}</span>
+              <span class="text-xs text-cream/50">7-day free trial · then {{ gbp(total) }} / {{ cadence.abbr }}</span>
             </span>
             <b class="text-[clamp(26px,4vw,32px)] tracking-[-0.02em]">£0</b>
           </div>
         </div>
         <ul class="flex flex-col gap-3 text-sm text-cream/85">
           <li class="flex items-center gap-3"><i class="text-copper-pale not-italic">✓</i> Full ImageSafe workspace for every school</li>
-          <li class="flex items-center gap-3"><i class="text-copper-pale not-italic">✓</i> No charge for 14 days · cancel anytime</li>
+          <li class="flex items-center gap-3"><i class="text-copper-pale not-italic">✓</i> No charge for 7 days · cancel anytime</li>
           <li class="flex items-center gap-3"><i class="text-copper-pale not-italic">✓</i> Add schools any time, pro-rata</li>
           <li class="flex items-center gap-3"><i class="text-copper-pale not-italic">✓</i> Compli joins the same account at launch</li>
         </ul>
@@ -113,7 +113,7 @@ const clamp = (n) => Math.max(1, Math.min(200, Math.round(n) || 1))
         <form v-if="step === 'details'" class="flex flex-col gap-5" @submit.prevent="toPayment">
           <div class="flex flex-col gap-1.5">
             <h1 class="text-[clamp(24px,3vw,30px)] font-bold tracking-[-0.02em] m-0">Tell us about your trust</h1>
-            <p class="text-[14.5px] text-slate m-0">One account for both products, starting with a 14-day free trial.</p>
+            <p class="text-[14.5px] text-slate m-0">One account for both products, starting with a 7-day free trial.</p>
           </div>
           <label class="flex flex-col gap-1.5">
             <span class="text-[13px] font-semibold">Trust or school name</span>
@@ -208,7 +208,7 @@ const clamp = (n) => Math.max(1, Math.min(200, Math.round(n) || 1))
             <span class="font-mono text-[10.5px] tracking-[0.06em] uppercase text-[#946100] bg-[#FBEFD6] border border-[#ECD6A8] px-2.5 py-1 rounded-full whitespace-nowrap">Test mode</span>
           </div>
           <div class="bg-[#F7F4EC] border border-[#E2DCCE] rounded-xl px-4.5 py-4 flex items-center justify-between gap-3">
-            <span class="flex flex-col gap-0.5"><b class="text-sm">ImageSafe · 14-day free trial</b><span class="text-xs text-stone">{{ gbp(perSchool) }} × {{ schoolsText }} · {{ cadence.billed }} from {{ trialEnd }}</span></span>
+            <span class="flex flex-col gap-0.5"><b class="text-sm">ImageSafe · 7-day free trial</b><span class="text-xs text-stone">{{ gbp(perSchool) }} × {{ schoolsText }} · {{ cadence.billed }} from {{ trialEnd }}</span></span>
             <b class="text-xl tracking-[-0.02em]">£0.00</b>
           </div>
           <label class="flex flex-col gap-1.5">
@@ -241,7 +241,7 @@ const clamp = (n) => Math.max(1, Math.min(200, Math.round(n) || 1))
           <span class="w-[60px] h-[60px] rounded-full bg-[#E7F0EA] flex items-center justify-center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#3F7E63" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
           <div class="flex flex-col gap-2">
             <h1 class="text-[clamp(23px,3vw,29px)] font-bold tracking-[-0.02em] m-0">You&rsquo;re all set, {{ firstName }}.</h1>
-            <p class="text-[15px] text-slate leading-relaxed max-w-[380px] text-pretty m-0">Your 14-day ImageSafe trial for <b class="text-navy">{{ trust }}</b> is live. We&rsquo;ve emailed your confirmation to {{ email }} — nothing is charged until {{ trialEnd }}. <template v-if="compliInterest">Compli will be added to the same account at launch.</template></p>
+            <p class="text-[15px] text-slate leading-relaxed max-w-[380px] text-pretty m-0">Your 7-day ImageSafe trial for <b class="text-navy">{{ trust }}</b> is live. We&rsquo;ve emailed your confirmation to {{ email }} — nothing is charged until {{ trialEnd }}. <template v-if="compliInterest">Compli will be added to the same account at launch.</template></p>
           </div>
           <div class="bg-white border border-[#E2DCCE] rounded-xl px-5 py-4 flex items-center justify-between gap-3 w-full">
             <span class="flex flex-col gap-0.5 text-left"><span class="text-[13px] text-stone">Due today</span><span class="text-xs text-stone">first payment {{ gbp(total) }} on {{ trialEnd }}</span></span>
