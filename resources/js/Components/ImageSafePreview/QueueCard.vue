@@ -102,7 +102,7 @@ const plural = (n, one, many) => `${n} ${n === 1 ? one : many}`
       <template v-if="filter === 'all'">
         <button v-for="x in locked" :key="x.key" type="button"
                 class="group flex w-[230px] flex-none cursor-pointer items-center gap-2.5 rounded-[10px] border-0 bg-transparent px-2.5 py-2 text-left outline-none hover:bg-copper-wash focus-visible:bg-copper-wash lg:w-full"
-                :aria-label="`${x.name}: start your 14-day free trial to review this photo`"
+                :aria-label="`${x.name}: start your 7-day free trial to review this photo`"
                 data-testid="queue-row-locked"
                 @click="openTrial('Reviewing every photo', $event.currentTarget)">
           <span class="relative h-[38px] w-[52px] flex-none overflow-hidden rounded-[4px] border border-edge">

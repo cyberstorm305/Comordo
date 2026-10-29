@@ -13,7 +13,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['close'])
 
-const registerHref = `${identityBase}/register`
+const registerHref = `${identityBase}/start`
 const FEATURES = {
   'People & Permissions': 'Add pupils and staff with their photo permissions, and ImageSafe matches them to the faces it finds.',
   'Recording decisions': 'Record what you decide for each photo, and why, so every image has an audit trail.',
@@ -27,7 +27,7 @@ const FEATURES = {
   'Multiple schools': 'Check every school in your trust from one account, and switch between them here.',
   'Settings & users': 'Invite colleagues, set their roles and choose how often each website is scanned.',
 }
-const blurb = computed(() => FEATURES[props.feature] || 'It’s included in your 14-day free trial.')
+const blurb = computed(() => FEATURES[props.feature] || 'It’s included in your 7-day free trial.')
 
 const panel = ref(null)
 const primary = ref(null)
@@ -76,7 +76,7 @@ function onKey(e) {
           </div>
           <div class="flex flex-wrap items-center justify-end gap-2.5 px-5 py-4">
             <button type="button" class="cursor-pointer rounded-[7px] border border-line bg-white px-4 py-[9px] text-[13px] font-semibold text-slate hover:bg-tint-hover" @click="emit('close')">Not now</button>
-            <a ref="primary" :href="registerHref" class="inline-flex items-center justify-center rounded-[7px] bg-navy px-4 py-[9px] text-[13px] font-semibold text-white no-underline hover:bg-navy-light" data-testid="trial-prompt-link">Start your 14-day free trial</a>
+            <a ref="primary" :href="registerHref" class="inline-flex items-center justify-center rounded-[7px] bg-navy px-4 py-[9px] text-[13px] font-semibold text-white no-underline hover:bg-navy-light" data-testid="trial-prompt-link">Start your 7-day free trial</a>
           </div>
         </div>
       </div>
