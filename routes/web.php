@@ -19,5 +19,6 @@ Route::get('/preview/{id}', fn (string $id) => Inertia::render('PreviewPage', ['
 
 Route::redirect('/login', config('services.comordo.identity_url').'/login')->name('login');
 Route::redirect('/signup', config('services.comordo.identity_url').'/start')->name('signup');
+Route::redirect('/start', config('services.comordo.identity_url').'/start')->name('start');
 Route::redirect('/buy', config('services.comordo.identity_url').'/register')->name('buy');
 Route::redirect('/account', config('services.comordo.identity_url').'/dashboard')->name('account');
