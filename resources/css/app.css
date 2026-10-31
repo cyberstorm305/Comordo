@@ -24,6 +24,7 @@
   --color-rag-green: #178049;
   --color-rag-amber: #C0760B;
   --color-rag-red: #C42E22;
+  --font-sans: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-display: "Satoshi", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
   --breakpoint-lg: 980px;
