@@ -549,7 +549,7 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
   [data-hero-p] { max-width: none !important; font-size: 16px !important; }
   [data-show-sm] { display: inline !important; }
   [data-hero-frame] { margin-top: 40px !important; }
-  [data-risk-band] { padding-top: 160px !important; padding-bottom: 64px !important; }
+  [data-risk-band] { padding-top: 144px !important; padding-bottom: 64px !important; }
   [data-hero-btn] { font-size: 14px !important; padding: 9px 14px !important; }
   [data-risk3] { grid-template-columns: minmax(0,1fr) !important; }
   [data-h1] br { display: none; }
