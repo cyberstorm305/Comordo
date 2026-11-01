@@ -189,7 +189,7 @@ const complianceRows = [
             { quote: 'Across our academies, keeping every website compliant used to mean endless chasing and spreadsheets. Comordo gives us one live picture — and the confidence that nothing has slipped before it reaches a trustee or an inspector.', initials: 'KB', name: 'Kerry Barry', role: 'Marketing & Communications Manager, Ormiston Academies Trust' },
             { quote: 'As a specialist trust, our requirements are never one-size-fits-all. Comordo maps the checks to each school and turns what used to be a manual audit into something my team genuinely keeps on top of, week to week.', initials: 'AB', name: 'Amir Bahrani', role: 'Head of Estates & IT, Horizons Specialist Academies Trust' },
           ]" :key="t.initials" class="m-0 rounded-xl p-[clamp(26px,3.5vw,36px)] flex flex-col gap-5 bg-cream/[0.04]">
-            <div class="font-serif text-[46px] leading-[0.7] text-copper h-[26px]">&ldquo;</div>
+            <div class="font-sans text-[46px] leading-[0.7] text-copper h-[26px]">&ldquo;</div>
             <blockquote class="m-0 text-[17px] leading-relaxed text-pretty">{{ t.quote }}</blockquote>
             <figcaption class="flex items-center gap-3 mt-auto pt-1">
               <span class="w-[42px] h-[42px] rounded-full bg-copper text-navy flex items-center justify-center text-sm font-bold">{{ t.initials }}</span>

@@ -32,7 +32,7 @@ onBeforeUnmount(() => document.removeEventListener('pointerdown', closeOnOutside
   <span ref="root" class="relative inline-flex" @mouseenter="open = true" @mouseleave="open = false" @click.stop @focusout="open = false">
     <button type="button" class="inline-flex cursor-pointer items-center border-0 bg-transparent p-0" :aria-label="label" :aria-expanded="open"
             @click="open = !open" @focus="open = true" @keydown.escape="open = false">
-      <span class="flex h-4 w-4 flex-none items-center justify-center rounded-full border-[1.5px] font-serif text-[10px] font-bold italic leading-none"
+      <span class="flex h-4 w-4 flex-none items-center justify-center rounded-full border-[1.5px] font-sans text-[10px] font-bold italic leading-none"
             :class="tone === 'light' ? 'border-white/60 text-white hover:border-white' : 'border-edge text-stone hover:border-copper hover:text-copper-dark'">i</span>
     </button>
     <span v-if="open" role="tooltip" class="absolute z-40"

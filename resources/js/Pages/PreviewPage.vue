@@ -221,7 +221,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
       <!-- The nav shows the section from lg up; below that the title stands in for it, as in the app. -->
       <div class="mb-[22px] flex min-w-0 items-center gap-2 lg:hidden">
         <h1 class="m-0 text-[21px] font-bold tracking-[-0.4px] text-navy">Dashboard</h1>
-        <span class="flex h-[18px] w-[18px] flex-none items-center justify-center rounded-full border-[1.5px] border-edge font-serif text-[11px] font-bold italic leading-none text-stone" aria-hidden="true">i</span>
+        <span class="flex h-[18px] w-[18px] flex-none items-center justify-center rounded-full border-[1.5px] border-edge font-sans text-[11px] font-bold italic leading-none text-stone" aria-hidden="true">i</span>
       </div>
 
       <div class="grid items-stretch gap-4 lg:grid-cols-[minmax(290px,1fr)_minmax(0,3fr)]">
