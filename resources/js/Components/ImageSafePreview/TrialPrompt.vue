@@ -76,7 +76,7 @@ function onKey(e) {
           </div>
           <div class="flex flex-wrap items-center justify-end gap-2.5 px-5 py-4">
             <button type="button" class="cursor-pointer rounded-[7px] border border-line bg-white px-4 py-[9px] text-[13px] font-semibold text-slate hover:bg-tint-hover" @click="emit('close')">Not now</button>
-            <a ref="primary" :href="registerHref" class="inline-flex items-center justify-center rounded-[7px] bg-navy px-4 py-[9px] text-[13px] font-semibold text-white no-underline hover:bg-navy-light" data-testid="trial-prompt-link">Start your 7-day free trial</a>
+            <a ref="primary" :href="registerHref" class="inline-flex items-center justify-center rounded-[7px] bg-copper px-4 py-[9px] text-[13px] font-semibold text-white no-underline hover:bg-copper-dark" data-testid="trial-prompt-link">Start your 7-day free trial</a>
           </div>
         </div>
       </div>
