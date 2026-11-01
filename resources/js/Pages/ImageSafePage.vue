@@ -92,7 +92,12 @@ const inventory = [
   { img: 4, risk: 'HIGH', name: 'IMG_1048-scaled.jpg', on: 'Website ↗', link: true, people: 24, checks: [['amber', 'High-resolution file'], ['amber', 'Permission to use']] },
   { img: 1, risk: 'HIGH', name: 'choir-concert.jpg', on: 'Website ↗', link: true, people: 18, checks: [['amber', 'High-resolution file'], ['amber', 'Permission to use']] },
   { img: 2, risk: 'MED', name: 'prospectus.pdf (p. 20)', on: 'Prospectus', people: 3, checks: [['amber', 'Permission to use'], ['amber', 'Name in or near the photo']] },
+  { img: 1, risk: 'HIGH', name: 'sports-day-2026.jpeg', on: 'Website ↗', link: true, people: 12, checks: [['red', 'Single child in shot'], ['amber', 'Location data in file']] },
+  { img: 3, risk: 'MED', name: 'newsletter-july.pdf (p. 2)', on: 'Newsletter', people: 4, checks: [['amber', 'Name in or near the photo']] },
+  { img: 2, risk: 'MED', name: 'year6-residential.jpg', on: 'Website ↗', link: true, people: 7, checks: [['amber', 'High-resolution file'], ['amber', 'Permission to use']] },
+  { img: 4, risk: 'LOW', name: 'harvest-festival.jpg', on: 'Website ↗', link: true, people: 9, checks: [['amber', 'Permission to use']] },
 ]
+const riskColour = { HIGH: '#C42E22', MED: '#C0760B', LOW: '#178049' }
 const ok = '<span style="color:#178049">✓</span>'
 const no = '<span style="color:#C42E22">✕</span>'
 const none = '<span style="color:#8A8474">—</span>'
@@ -100,6 +105,7 @@ const people = [
   { name: 'A. Okonkwo', sub: 'Updated 21 Oct 2026 · CSV import', avatar: '#c9a58a,#8f8f86', year: 'Y5', web: ok, social: ok, found: '2', foundStyle: 'color:#1B2536', status: 'Approved', statusStyle: 'background:#E6F3EB;color:#178049' },
   { name: 'H. Begum', sub: 'Updated 20 Oct 2026 · Manual edit', avatar: '#b58e75,#9a9a92', year: 'Y3', web: no, social: no, found: '3', foundStyle: 'color:#C42E22;font-weight:700', status: 'Refused — do not use', statusStyle: 'background:#C42E22;color:#fff', rowStyle: 'background:#FBE9E7' },
   { name: 'T. Walsh', sub: 'Left July 2025 · retention 12 months', avatar: '#d1b49a,#8a9aa1', year: '—', web: ok, social: none, found: '4', foundStyle: 'color:#C0760B;font-weight:700', status: 'Leaver · remove by Jul 2026', statusStyle: 'background:#FBF1E2;color:#C0760B' },
+  { name: 'S. Ahmed', sub: 'Updated 18 Oct 2026 · Manual edit', avatar: '#c4a28c,#93a0a6', year: 'Y4', web: no, social: no, found: '3', foundStyle: 'color:#C42E22;font-weight:700', status: 'Never publish', statusStyle: 'background:#C42E22;color:#fff' },
   { name: 'J. Patel', sub: 'Updated 21 Oct 2026 · CSV import', avatar: '#bfa087,#9db1a8', year: 'Y6', web: ok, social: no, found: '1', foundStyle: 'color:#1B2536', status: 'Website only', statusStyle: 'background:#E6F3EB;color:#178049' },
 ]
 const audit = [
@@ -209,7 +215,7 @@ onBeforeUnmount(() => cleanup())
 
 const mono = "font-family:'IBM Plex Mono',monospace"
 const label = `margin:0;${mono};font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:#8A8474`
-const panelStyle = 'grid-area:1/1;aspect-ratio:6/4;background:#fff;border:1px solid #E7E2D6;border-radius:14px;box-shadow:0 30px 60px -30px rgba(27,37,54,.25);overflow:hidden;display:flex;flex-direction:column'
+const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px solid #E7E2D6;border-radius:14px;box-shadow:0 30px 60px -30px rgba(27,37,54,.25);overflow:hidden;display:flex;flex-direction:column'
 </script>
 
 <template>
@@ -352,7 +358,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:6/4;background:#fff;border:1px so
               <div data-row-inv="" :style="mono + ';padding:10px 16px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8A8474;border-bottom:1px solid #E7E2D6'"><span>Image</span><span>Appears on</span><span>People</span><span>Safeguarding checks</span></div>
               <div data-clip="" style="display:flex;flex-direction:column;font-size:12px;flex:1;min-height:0;overflow:hidden">
                 <div v-for="row in inventory" :key="row.name" data-row-inv="" style="padding:8px 16px;border-bottom:1px solid #F1EDE3">
-                  <span style="display:flex;align-items:center;gap:8px;min-width:0"><span :style="`width:28px;height:28px;border-radius:5px;background:url('${photo(row.img)}') center/cover;flex-shrink:0`"></span><span :style="`${mono};background:${row.risk === 'HIGH' ? '#C42E22' : '#C0760B'};color:#fff;font-size:9px;padding:2px 5px;border-radius:4px`">{{ row.risk }}</span><span :style="mono + ';color:#1B2536;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'">{{ row.name }}</span></span>
+                  <span style="display:flex;align-items:center;gap:8px;min-width:0"><span :style="`width:28px;height:28px;border-radius:5px;background:url('${photo(row.img)}') center/cover;flex-shrink:0`"></span><span :style="`${mono};background:${riskColour[row.risk]};color:#fff;font-size:9px;padding:2px 5px;border-radius:4px`">{{ row.risk }}</span><span :style="mono + ';color:#1B2536;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'">{{ row.name }}</span></span>
                   <span :style="row.link ? 'color:#B4702F' : 'color:#8A8474'">{{ row.on }}</span>
                   <span style="display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#F1EDE3;color:#1B2536">{{ row.people }}</span>
                   <span style="display:flex;flex-wrap:wrap;gap:4px"><span v-for="[tone, text] in row.checks" :key="text" :style="`${chip[tone]};padding:2px 7px;border-radius:4px;font-size:11px`">{{ text }}</span></span>
@@ -375,7 +381,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:6/4;background:#fff;border:1px so
                   <p :style="label + ';margin:0 0 2px;display:flex'">Safeguarding checks<span style="margin-left:auto;color:#B4702F;text-transform:none;letter-spacing:0;font-family:Satoshi,sans-serif;font-size:12px">What do these mean?</span></p>
                   <span v-for="[kind, text] in detailChecks" :key="text" :style="`display:flex;align-items:center;gap:8px;border-radius:8px;padding:7px 10px;${checkStyle[kind].row}`"><span :style="`width:16px;height:16px;border-radius:50%;font-size:10px;display:grid;place-items:center;flex-shrink:0;${checkStyle[kind].dot}`">{{ checkStyle[kind].icon }}</span>{{ text }}<span :style="mono + ';margin-left:auto;font-size:10px'">{{ checkStyle[kind].tag }}</span></span>
                   <span style="display:flex;align-items:center;gap:8px;padding:6px 10px;color:#178049;font-size:12px"><span style="width:16px;height:16px;border-radius:50%;background:#E6F3EB;color:#178049;font-size:10px;display:grid;place-items:center;flex-shrink:0">✓</span>5 checks passed<span style="margin-left:auto;color:#8A8474">Show</span></span>
-                  <div style="border-top:1px solid #E7E2D6;padding-top:10px;margin-top:4px">
+                  <div data-clip="" style="border-top:1px solid #E7E2D6;padding-top:10px;margin-top:4px;flex:1 1 auto;min-height:0;overflow:hidden">
                     <p :style="label + ';margin:0 0 8px;display:flex'">People · 6<span style="margin-left:auto;color:#C42E22;text-transform:none;letter-spacing:0;font-family:Satoshi,sans-serif;font-size:12px">4 untagged</span></p>
                     <span style="display:flex;align-items:center;gap:8px;padding:5px 0;color:#1B2536">H. Begum · Y3<span style="margin-left:auto;background:#C42E22;color:#fff;padding:3px 8px;border-radius:999px;font-size:11px">Refused</span></span>
                     <span style="display:flex;align-items:center;gap:8px;padding:5px 0;color:#1B2536">J. Patel · Y6<span style="margin-left:auto;background:#E6F3EB;color:#178049;padding:3px 8px;border-radius:999px;font-size:11px">Approved</span></span>
@@ -555,7 +561,9 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
   [data-row-inv] { grid-template-columns: minmax(0,1.3fr) minmax(0,2fr); }
   [data-row] > :nth-child(2), [data-row] > :nth-child(3), [data-row] > :nth-child(4) { display: none; }
   [data-row-inv] > :nth-child(2), [data-row-inv] > :nth-child(3) { display: none !important; }
-  [data-panel] [data-cols] { grid-template-columns: minmax(0,1fr) !important; }
+  [data-panel] [data-cols] { grid-template-columns: minmax(0,1.2fr) minmax(0,1fr) !important; }
+  [data-panel] { aspect-ratio: 4/3 !important; }
+  [data-panel] span, [data-panel] p { white-space: normal; }
   [data-mock-3] { grid-template-columns: minmax(0,1fr) 280px !important; }
   [data-mock-queue] { display: none !important; }
 }
