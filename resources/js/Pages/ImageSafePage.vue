@@ -230,7 +230,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
           </div>
 
           <!-- Hero product frame: review queue -->
-          <figure role="img" aria-label="The ImageSafe review queue: a ranked list of images, the selected image with detected faces, and its safeguarding checks" style="position:relative;margin:64px auto 0">
+          <figure data-hero-frame="" role="img" aria-label="The ImageSafe review queue: a ranked list of images, the selected image with detected faces, and its safeguarding checks" style="position:relative;margin:64px auto 0">
             <div data-parallax="0.04" style="position:relative;background:#fff;border:1px solid #E7E2D6;border-radius:16px;box-shadow:0 2px 4px rgba(27,37,54,.06),0 24px 48px -16px rgba(27,37,54,.35),0 80px 140px -40px rgba(27,37,54,.5);overflow:hidden">
               <div style="display:flex;align-items:center;gap:16px;padding:12px 18px;border-bottom:1px solid #E7E2D6;background:#F8F6F1">
                 <span style="display:flex;align-items:center;gap:8px;color:#1B2536;font-weight:700;font-size:14px"><svg width="20" height="20" viewBox="0 0 30 30" aria-hidden="true"><circle cx="15" cy="15" r="15" fill="#1B2536" /><path d="M8.5 15.5l4.2 4.2L22 10.5" fill="none" stroke="#B4702F" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /></svg>ImageSafe</span>
@@ -281,7 +281,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
       </section>
 
       <!-- Risk band -->
-      <section style="background:#1B2536;color:#fff;margin-top:-120px;padding-top:200px;padding-bottom:88px">
+      <section data-risk-band="" style="background:#1B2536;color:#fff;margin-top:-120px;padding-top:200px;padding-bottom:88px">
         <div data-pad="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px">
           <div data-reveal="" data-half="" style="max-width:66.666%">
             <h2 data-h2="" style="margin:0 0 18px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#fff;text-wrap:pretty">Your website holds years of photos of pupils. Do you know what's still out there?</h2>
@@ -548,6 +548,8 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
   [data-half] { max-width: none !important; }
   [data-hero-p] { max-width: none !important; font-size: 16px !important; }
   [data-show-sm] { display: inline !important; }
+  [data-hero-frame] { margin-top: 40px !important; }
+  [data-risk-band] { padding-top: 160px !important; padding-bottom: 64px !important; }
   [data-hero-btn] { font-size: 14px !important; padding: 9px 14px !important; }
   [data-risk3] { grid-template-columns: minmax(0,1fr) !important; }
   [data-h1] br { display: none; }
