@@ -19,10 +19,9 @@ const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
 
 // Anchors to sections of the ImageSafe homepage. The leading slash makes them work from other pages too.
 const links = [
-  { to: '/#workflow', key: 'workflow', label: 'How it works' },
-  { to: '/#organisation', key: 'organisation', label: 'Trusts & Schools' },
-  { to: '/#responsible-use', key: 'responsible-use', label: 'Responsible use' },
-  { to: '/#faqs', key: 'faqs', label: 'FAQs' },
+  { to: '/#how', key: 'how', label: 'How it works' },
+  { to: '/#faq', key: 'faq', label: 'FAQs' },
+  { to: '/#preview', key: 'preview', label: 'Free preview' },
 ]
 </script>
 
