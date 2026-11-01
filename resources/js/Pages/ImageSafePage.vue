@@ -281,13 +281,13 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
       </section>
 
       <!-- Risk band -->
-      <section data-risk-band="" style="background:#1B2536;color:#fff;margin-top:-120px;padding-top:200px;padding-bottom:88px">
+      <section data-risk-band="" data-band="" style="background:#1B2536;color:#fff;margin-top:-120px">
         <div data-pad="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px">
           <div data-reveal="" data-half="" style="max-width:66.666%">
-            <h2 data-h2="" style="margin:0 0 18px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#fff;text-wrap:pretty">Your website holds years of photos of pupils. Do you know what's still out there?</h2>
+            <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#fff;text-wrap:pretty">Your website holds years of photos of pupils. Do you know what's still out there?</h2>
             <p data-lead="" style="margin:0;font-size:18px;line-height:1.6;color:#C9C2B2;text-wrap:pretty">Across galleries, news posts and prospectuses, photos remain online long after pupils leave or permissions change. Some include names or high-resolution images that are easy to copy and manipulate using AI. And once an image has been copied, removing it from your website may not be enough.</p>
           </div>
-          <div data-cols="" data-risk3="" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;align-items:stretch;background:#2A3650;border:1px solid #2A3650;border-radius:12px;overflow:hidden;margin-top:44px">
+          <div data-cols="" data-risk3="" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;align-items:stretch;background:#2A3650;border:1px solid #2A3650;border-radius:12px;overflow:hidden;margin-top:48px">
             <div v-for="r in risks" :key="r.title" data-reveal="" style="background:#1B2536;padding:32px 28px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px">
               <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#E7C9A8" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <template v-if="r.icon === 'photos'"><rect x="3" y="7" width="14" height="14" rx="2" /><path d="M7 3h12a2 2 0 0 1 2 2v12" /><circle cx="8" cy="12" r="1.5" /><path d="M3 18l4-4 3 3 3-3 4 4" /></template>
@@ -303,9 +303,9 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
       </section>
 
       <!-- How it works: pinned story -->
-      <section id="how" data-pad="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:96px 32px 96px">
+      <section id="how" data-pad="" data-band="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding-left:32px;padding-right:32px">
         <div data-reveal="" data-half="" style="max-width:66.666%">
-          <h2 data-h2="" style="margin:0 0 14px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">How a school gets from its first scan to a decision it can stand behind</h2>
+          <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">How a school gets from its first scan to a decision it can stand behind</h2>
           <p data-lead="" style="margin:0;font-size:18px;line-height:1.6">Four steps, all in one place. Each one is shown here as it appears in ImageSafe.</p>
         </div>
         <div data-cols="" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start;margin-top:48px">
@@ -448,10 +448,10 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
       </section>
 
       <!-- FAQ -->
-      <section id="faq" style="background:#fff;border-top:1px solid #E7E2D6;border-bottom:1px solid #E7E2D6">
-        <div data-pad="" data-cols="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:88px 32px;display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:56px;align-items:start">
+      <section id="faq" data-band="" style="background:#fff;border-top:1px solid #E7E2D6;border-bottom:1px solid #E7E2D6">
+        <div data-pad="" data-cols="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:56px;align-items:start">
           <div data-reveal="">
-            <h2 data-h2="" style="margin:0 0 14px;font-size:36px;line-height:1.12;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">Questions safeguarding leads ask us</h2>
+            <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">Questions safeguarding leads ask us</h2>
             <p data-lead="" style="margin:0;font-size:18px;line-height:1.6">Straight answers, including on what ImageSafe cannot do. Anything else, <Link href="/contact" style="font-weight:500">ask us directly</Link>.</p>
           </div>
           <div style="display:flex;flex-direction:column;gap:10px" @toggle.capture="closeOtherFaqs">
@@ -464,8 +464,8 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
       </section>
 
       <!-- Free preview -->
-      <section id="preview" style="background:#1B2536;color:#fff">
-        <div data-pad="" data-cols="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:96px 32px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center">
+      <section id="preview" data-band="" style="background:#1B2536;color:#fff">
+        <div data-pad="" data-cols="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center">
           <div data-reveal="">
             <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#fff;text-wrap:balance">Curious what it would find on your site? Find out in under a minute.</h2>
             <p data-lead="" style="margin:0 0 22px;font-size:18px;line-height:1.6;color:#C9C2B2;text-wrap:pretty">Enter your school's website address. ImageSafe scans the first public pages straight away, counts the images containing people, and shows the safeguarding checks they would raise. Nobody is identified, your photos are never stored, and no account is needed.</p>
@@ -496,6 +496,10 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
 </template>
 
 <style scoped>
+/* Every band has the same space above and below its content. The risk band starts
+   120px under the hero image, so its top padding adds that overlap. */
+[data-band] { padding-top: 96px; padding-bottom: 96px; }
+[data-risk-band] { padding-top: 216px; }
 [data-show-sm] { display: none; }
 a { color: #B4702F; text-decoration: none; }
 a:hover { color: #8F5722; }
@@ -549,7 +553,8 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
   [data-hero-p] { max-width: none !important; font-size: 16px !important; }
   [data-show-sm] { display: inline !important; }
   [data-hero-frame] { margin-top: 40px !important; }
-  [data-risk-band] { padding-top: 144px !important; padding-bottom: 64px !important; }
+  [data-band] { padding-top: 64px; padding-bottom: 64px; }
+  [data-risk-band] { padding-top: 152px; }
   [data-hero-btn] { font-size: 14px !important; padding: 9px 14px !important; }
   [data-risk3] { grid-template-columns: minmax(0,1fr) !important; }
   [data-h1] br { display: none; }
