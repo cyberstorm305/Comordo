@@ -313,7 +313,6 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
             <li v-for="(s, i) in steps" :key="s.n" data-step="" :data-active="activeStep === i ? '' : null" :style="s.cta ? 'display:flex;gap:20px;padding:40px 0 0' : 'display:flex;gap:20px;padding:40px 0;min-height:48vh'">
               <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0">
                 <span data-stepnum="" :style="mono + ';min-width:44px;font-size:28px;line-height:1;font-weight:500;color:#C9C2B2;text-align:center;padding-top:6px;transition:color .3s'">{{ s.n }}</span>
-                <span v-if="!s.cta" data-stepline="" style="width:1px;flex:1;background:#E7E2D6;transition:background .3s"></span>
               </div>
               <div style="min-width:0">
                 <h3 style="margin:4px 0 10px;font-size:24px;line-height:1.2;letter-spacing:-.01em;font-weight:700;color:#1B2536">{{ s.title }}</h3>
@@ -506,7 +505,6 @@ a:hover { color: #8F5722; }
 [data-step] { opacity: .42; transition: opacity .4s; }
 [data-step][data-active] { opacity: 1; }
 [data-step][data-active] [data-stepnum] { color: #B4702F !important; }
-[data-step][data-active] [data-stepline] { background: #B4702F !important; }
 [data-parallax] { will-change: transform; }
 @media (min-width: 1440px) { [data-sticky] { top: 88px !important; } [data-panel] { font-size: 13px; } }
 @keyframes is-marquee { from { transform: translateX(0); } to { transform: translateX(-33.3333%); } }
