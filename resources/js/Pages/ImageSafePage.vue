@@ -140,6 +140,12 @@ const faqs = [
   { q: 'What does the instant preview do, and what does it not do?', a: 'It reads the first public pages of your website, counts the photos containing people and shows the checks they would raise. It does not identify anyone or need an account, your photos are never stored, and the results are deleted within 24 hours. A full scan, with permission matching, needs the 7-day trial.' },
 ]
 
+// Only one FAQ open at a time. name="faq" does this natively; this covers older browsers.
+function closeOtherFaqs(e) {
+  if (!e.target.open) return
+  e.currentTarget.querySelectorAll('details[open]').forEach((d) => { if (d !== e.target) d.open = false })
+}
+
 // --- Scroll behaviour: header fade/shrink, reveals, pinned story, hero parallax ---
 const root = ref(null)
 const header = ref(null)
@@ -476,8 +482,8 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
             <h2 data-h2="" style="margin:0 0 14px;font-size:36px;line-height:1.12;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">Questions safeguarding leads ask us</h2>
             <p style="margin:0;font-size:18px;line-height:1.6">Straight answers, including on what ImageSafe cannot do. Anything else, <Link href="/contact" style="font-weight:500">ask us directly</Link>.</p>
           </div>
-          <div style="display:flex;flex-direction:column;gap:10px">
-            <details v-for="f in faqs" :key="f.q" data-reveal="" style="background:#fff;border:1px solid #E7E2D6;border-radius:12px;padding:0 24px">
+          <div style="display:flex;flex-direction:column;gap:10px" @toggle.capture="closeOtherFaqs">
+            <details v-for="f in faqs" :key="f.q" name="faq" data-reveal="" style="background:#fff;border:1px solid #E7E2D6;border-radius:12px;padding:0 24px">
               <summary style="list-style:none;cursor:pointer;display:flex;align-items:center;gap:16px;padding:20px 0;font-size:17px;font-weight:700;color:#1B2536">{{ f.q }}<span aria-hidden="true" style="margin-left:auto;color:#B4702F;font-size:20px;line-height:1;flex-shrink:0">+</span></summary>
               <p style="margin:0;padding:0 0 22px;font-size:16px;line-height:1.6;color:#4A5468;text-wrap:pretty">{{ f.a }}<template v-if="f.link">{{ ' ' }}<Link v-if="f.link.internal" :href="f.link.href" style="font-weight:500">{{ f.link.label }}</Link><a v-else :href="f.link.href" style="font-weight:500">{{ f.link.label }}</a>{{ f.link.after }}</template></p>
             </details>
