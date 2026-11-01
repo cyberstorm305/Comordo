@@ -221,10 +221,10 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
         <div data-pad="" style="position:relative;max-width:var(--is-wide,1180px);margin:0 auto;padding:64px 32px 0">
           <div style="max-width:min(100%,27em);font-size:clamp(40px,4.2vw,84px);margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;gap:30px">
             <h1 data-h1="" style="margin:0;font-size:clamp(40px,4.2vw,84px);line-height:1.02;letter-spacing:-.025em;font-weight:700;color:#1B2536;text-wrap:pretty">Every photo your school <br>publishes is a safeguarding&nbsp;decision.</h1>
-            <p data-hero-p="" style="margin:0;font-size:18px;line-height:1.6;max-width:66.666%;text-wrap:pretty">ImageSafe finds photos of people across your website, prospectuses and newsletters, checking them against permission records and safeguarding guidance. It highlights images that need attention, flags potential AI misuse risks and helps you create safer versions in a click. Your safeguarding lead gets a clear picture of what's online, what needs reviewing and why.</p>
+            <p data-hero-p="" style="margin:0;font-size:18px;line-height:1.6;max-width:66.666%;text-wrap:pretty"><span data-hide-sm="">ImageSafe finds photos of people across your website, prospectuses and newsletters, checking them against permission records and safeguarding guidance. It highlights images that need attention, flags potential AI misuse risks and helps you create safer versions in a click. Your safeguarding lead gets a clear picture of what's online, what needs reviewing and why.</span><span data-show-sm="">ImageSafe finds photos of people across your website and documents, checks them against permissions and safeguarding guidance, and shows you what needs attention.</span></p>
             <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px">
-              <a :href="trialHref" data-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 24px;border-radius:10px">Start your 7-day free trial <span aria-hidden="true">→</span></a>
-              <a href="#preview" data-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#fff;color:#1B2536;font-weight:500;font-size:16px;padding:14px 24px;border-radius:10px;border:1px solid #C9C2B2">Get an instant free preview</a>
+              <a :href="trialHref" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:13px 20px;border-radius:9px">Start your 7-day free trial <span aria-hidden="true">→</span></a>
+              <a href="#preview" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#fff;color:#1B2536;font-weight:500;font-size:16px;padding:12px 18px;border-radius:9px;border:1px solid #C9C2B2">Get an instant free preview</a>
             </div>
             <p style="margin:-12px 0 0;font-size:14px;color:#8A8474">No card needed · First scan in minutes · Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>
           </div>
@@ -496,6 +496,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
 </template>
 
 <style scoped>
+[data-show-sm] { display: none; }
 a { color: #B4702F; text-decoration: none; }
 a:hover { color: #8F5722; }
 [data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity .8s cubic-bezier(.2,.7,.2,1), transform .8s cubic-bezier(.2,.7,.2,1); }
@@ -545,7 +546,9 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
   [data-step] { opacity: 1 !important; min-height: 0 !important; padding: 24px 0 !important; }
   [data-hide-sm] { display: none !important; }
   [data-half] { max-width: none !important; }
-  [data-hero-p] { max-width: none !important; }
+  [data-hero-p] { max-width: none !important; font-size: 16px !important; }
+  [data-show-sm] { display: inline !important; }
+  [data-hero-btn] { font-size: 14px !important; padding: 9px 14px !important; }
   [data-risk3] { grid-template-columns: minmax(0,1fr) !important; }
   [data-h1] br { display: none; }
   [data-h1] { font-size: 34px !important; }
