@@ -31,6 +31,11 @@
   --breakpoint-wide: 1400px;
 }
 
+/* Content width shared by the header, footer and page sections. */
+:root { --is-wide: 1400px; }
+@media (min-width: 1440px) { :root { --is-wide: 1520px; } }
+@media (min-width: 1720px) { :root { --is-wide: 1720px; } }
+
 html {
   scroll-behavior: smooth;
 }
@@ -54,10 +59,10 @@ section[id] {
 }
 
 @layer components {
-  .container-site { @apply max-w-[1240px] mx-auto px-5 sm:px-8; }
+  .container-site { @apply max-w-(--is-wide) mx-auto px-5 sm:px-8; }
   .eyebrow { @apply flex items-center gap-2.5 font-mono text-xs tracking-[0.1em] uppercase text-copper; }
   .eyebrow::before { content: ""; @apply block w-6 h-px bg-copper; }
-  .btn-primary { @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-[15px] font-semibold text-cream bg-navy px-6 py-3.5 rounded-md transition-colors hover:bg-navy-light; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-[15px] font-medium text-white bg-copper px-6 py-3.5 rounded-[10px] transition-colors hover:bg-copper-dark; }
   .btn-outline { @apply inline-flex items-center justify-center whitespace-nowrap text-[15px] font-semibold text-navy px-6 py-3 border border-edge rounded-md transition-colors hover:border-navy hover:bg-white; }
   .section-title { @apply text-[clamp(27px,4.5vw,36px)] font-bold leading-[1.15] tracking-[-0.02em] text-balance; }
   .mock-card { @apply bg-white border border-sand-dark rounded-xl shadow-[0_20px_50px_rgba(27,37,54,0.10)] overflow-hidden; }

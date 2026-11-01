@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import SiteNav from '../Components/SiteNav.vue'
+import SiteHeader from '../Components/SiteHeader.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
 
 const sent = ref(false)
@@ -15,7 +15,7 @@ function submit() {
 
 <template>
   <div class="min-h-screen">
-    <SiteNav />
+    <SiteHeader />
     <section class="border-b border-sand">
       <div class="container-site grid lg:grid-cols-[0.9fr_1.1fr] gap-16 py-[clamp(56px,9vw,96px)]">
         <div class="flex flex-col gap-4.5">

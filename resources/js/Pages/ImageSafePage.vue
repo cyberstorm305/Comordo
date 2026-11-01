@@ -6,10 +6,10 @@ import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import { createPreview } from '@/usePreview.js'
 import SiteFooter from '../Components/SiteFooter.vue'
+import SiteHeader from '../Components/SiteHeader.vue'
 
 const trialHref = identityStartHref
 const signInHref = `${identityBase}/login`
-const logoSrc = new URL('../../../public/imagesafe.svg', import.meta.url).href
 const photo = n => `/images/home/photo-${n}.jpg`
 
 // --- Free preview form ---
@@ -146,9 +146,8 @@ function closeOtherFaqs(e) {
   e.currentTarget.querySelectorAll('details[open]').forEach((d) => { if (d !== e.target) d.open = false })
 }
 
-// --- Scroll behaviour: header fade/shrink, reveals, pinned story, hero parallax ---
+// --- Scroll behaviour: reveals, pinned story, hero parallax ---
 const root = ref(null)
-const header = ref(null)
 const activeStep = ref(0)
 let cleanup = () => {}
 
@@ -156,17 +155,6 @@ onMounted(() => {
   const el = root.value
   const q = s => Array.from(el.querySelectorAll(s))
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-
-  let hraf = 0
-  const onHeader = () => {
-    if (hraf) return
-    hraf = requestAnimationFrame(() => {
-      hraf = 0
-      const y = window.scrollY || document.documentElement.scrollTop || 0
-      header.value.style.setProperty('--hp', Math.min(1, Math.max(0, (y - 8) / 72)).toFixed(3))
-      header.value.toggleAttribute('data-scrolled', y > 40)
-    })
-  }
 
   const reveal = new IntersectionObserver((es) => es.forEach((e) => {
     if (e.isIntersecting) { e.target.setAttribute('data-in', ''); reveal.unobserve(e.target) }
@@ -203,18 +191,14 @@ onMounted(() => {
     })
   }
 
-  window.addEventListener('scroll', onHeader, { passive: true })
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', onScroll)
-  onHeader()
   onScroll()
   cleanup = () => {
-    window.removeEventListener('scroll', onHeader)
     window.removeEventListener('scroll', onScroll)
     window.removeEventListener('resize', onScroll)
     reveal.disconnect()
     cancelAnimationFrame(raf)
-    cancelAnimationFrame(hraf)
   }
 })
 onBeforeUnmount(() => cleanup())
@@ -229,18 +213,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
   <div ref="root" data-root="" style="position:relative;min-height:100vh;background:#F8F6F1;color:#4A5468;overflow-x:clip">
     <div aria-hidden="true" style="position:absolute;inset:0 0 auto 0;height:816px;background:radial-gradient(70% 60% at 50% 0%,rgba(231,201,168,.35),transparent 70%);pointer-events:none"></div>
 
-    <!-- Header -->
-    <header ref="header" data-header="" style="position:sticky;top:0;z-index:40">
-      <div data-pad="" data-header-inner="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px;height:96px;display:flex;align-items:center;gap:28px;transition:height .35s cubic-bezier(.2,.7,.2,1)">
-        <a href="#top" style="display:flex;align-items:center;color:#1B2536">
-          <img data-header-logo="" :src="logoSrc" alt="ImageSafe" style="height:40px;width:auto;display:block;transition:height .35s cubic-bezier(.2,.7,.2,1)">
-        </a>
-        <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
-          <a :href="signInHref" data-btn="" data-header-btn="" style="color:#1B2536;font-size:16px;font-weight:500;padding:12px 18px;border-radius:9px;border:1px solid #C9C2B2;background:transparent;transition:font-size .35s,padding .35s">Sign in</a>
-          <a :href="trialHref" data-btn="" data-header-btn="" style="color:#fff;background:#B4702F;font-size:16px;font-weight:500;padding:13px 20px;border-radius:9px;transition:font-size .35s,padding .35s">Start free trial</a>
-        </div>
-      </div>
-    </header>
+    <SiteHeader />
 
     <main id="top">
       <!-- Hero -->
@@ -535,10 +508,7 @@ a:hover { color: #8F5722; }
 [data-step][data-active] [data-stepnum] { color: #B4702F !important; }
 [data-step][data-active] [data-stepline] { background: #B4702F !important; }
 [data-parallax] { will-change: transform; }
-[data-root] { --is-wide: 1400px; }
-@media (min-width: 1440px) { [data-root] { --is-wide: 1520px; } [data-sticky] { top: 88px !important; } [data-panel] { font-size: 13px; } }
-@media (min-width: 1720px) { [data-root] { --is-wide: 1720px; } }
-@media (min-width: 2000px) { [data-root] { --is-wide: 1900px; } }
+@media (min-width: 1440px) { [data-sticky] { top: 88px !important; } [data-panel] { font-size: 13px; } }
 @keyframes is-marquee { from { transform: translateX(0); } to { transform: translateX(-33.3333%); } }
 [data-marquee-track] { animation: is-marquee 42s linear infinite; }
 [data-marquee]:hover [data-marquee-track] { animation-play-state: paused; }
@@ -546,10 +516,6 @@ a:hover { color: #8F5722; }
 summary::-webkit-details-marker { display: none; }
 summary span[aria-hidden] { transition: transform .2s; }
 details[open] summary span[aria-hidden] { transform: rotate(45deg); }
-[data-header] { --hp: 0; background: rgba(248,246,241,var(--hp)); box-shadow: 0 1px 0 rgba(231,226,214,var(--hp)); }
-[data-header][data-scrolled] [data-header-inner] { height: 64px !important; }
-[data-header][data-scrolled] [data-header-logo] { height: 28px !important; }
-[data-header][data-scrolled] [data-header-btn] { font-size: 14px !important; padding: 9px 14px !important; }
 [data-btn] { white-space: nowrap; transition: background-color .2s, color .2s, border-color .2s, transform .25s cubic-bezier(.2,.7,.2,1); }
 [data-btn]:hover { transform: translateY(-1px); }
 [data-panel] span, [data-panel] p, [data-mock-3] span { white-space: nowrap; }
@@ -575,9 +541,6 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
 }
 @media (max-width: 900px) {
   [data-clip] { -webkit-mask-image: none; mask-image: none; }
-  [data-header-inner] { height: 72px !important; }
-  [data-header-logo] { height: 30px !important; }
-  [data-header-btn] { font-size: 14px !important; padding: 9px 14px !important; }
   [data-cols] { grid-template-columns: minmax(0,1fr) !important; }
   [data-sticky] { position: static !important; height: auto !important; display: flex !important; flex-direction: column; gap: 20px; }
   [data-panel] { position: static !important; opacity: 1 !important; transform: none !important; pointer-events: auto !important; height: auto !important; aspect-ratio: auto !important; }

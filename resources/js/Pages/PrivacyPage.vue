@@ -1,5 +1,5 @@
 <script setup>
-import SiteNav from '../Components/SiteNav.vue'
+import SiteHeader from '../Components/SiteHeader.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
 
 // Structured template copy — have this reviewed by your DPO / legal adviser before launch.
@@ -18,7 +18,7 @@ const sections = [
 
 <template>
   <div class="min-h-screen">
-    <SiteNav />
+    <SiteHeader />
     <section class="border-b border-sand">
       <div class="container-site max-w-[880px] py-[clamp(48px,8vw,80px)] flex flex-col gap-10">
         <div class="flex flex-col gap-4">

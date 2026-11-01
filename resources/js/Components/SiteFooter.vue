@@ -1,13 +1,11 @@
 <script setup>
 import { identityBase } from '@/identity.js'
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
-// Pages that set --is-wide (the ImageSafe homepage) widen the footer to match.
-const wide = { maxWidth: 'var(--is-wide, 1240px)' }
 </script>
 
 <template>
   <footer class="border-t border-sand">
-    <div class="container-site py-10 pb-7 flex flex-wrap items-center justify-between gap-6" :style="wide">
+    <div class="container-site py-10 pb-7 flex flex-wrap items-center justify-between gap-6">
       <div class="flex flex-wrap items-center gap-2.5">
         <img :src="logoSrc" alt="Comordo" class="h-[30px] w-auto block">
         <div class="text-base text-stone ml-2">ImageSafe is a Comordo product.</div>
@@ -23,7 +21,7 @@ const wide = { maxWidth: 'var(--is-wide, 1240px)' }
       </nav>
     </div>
     <div class="border-t border-sand">
-      <div class="container-site py-4 flex flex-wrap justify-between gap-3 font-mono text-[11.5px] text-mist" :style="wide">
+      <div class="container-site py-4 flex flex-wrap justify-between gap-3 font-mono text-[11.5px] text-mist">
         <div>© 2026 Comordo Ltd · Registered in England and Wales · Company no. 1729746</div>
         <div class="flex items-center gap-5">
           <div class="flex items-center gap-3.5">
