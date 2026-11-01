@@ -308,7 +308,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
           <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">How a school gets from its first scan to a decision it can stand behind</h2>
           <p data-lead="" style="margin:0;font-size:18px;line-height:1.6">Four steps, all in one place. Each one is shown here as it appears in ImageSafe.</p>
         </div>
-        <div data-cols="" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start;margin-top:48px">
+        <div data-cols="" data-how-cols="" style="display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:start;margin-top:48px">
           <ol data-steps="" style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column">
             <li v-for="(s, i) in steps" :key="s.n" data-step="" :data-active="activeStep === i ? '' : null" :style="s.cta ? 'display:flex;gap:20px;padding:40px 0 0' : 'display:flex;gap:20px;padding:40px 0;min-height:48vh'">
               <div style="display:flex;flex-direction:column;align-items:center;gap:10px;flex-shrink:0">
@@ -327,7 +327,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
 
           <div data-sticky="" aria-hidden="true" style="position:sticky;top:96px;display:grid">
             <!-- Panel 1: inventory -->
-            <div data-panel="" :data-active="activeStep === 0 ? '' : null" :style="panelStyle">
+            <div data-panel="" aria-hidden="true" :data-active="activeStep === 0 ? '' : null" :style="panelStyle">
               <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #E7E2D6;background:#F8F6F1;font-size:12px;flex-wrap:wrap">
                 <span data-hide-md="" style="border:1px solid #E7E2D6;background:#fff;border-radius:7px;padding:6px 10px;color:#8A8474;min-width:160px">⌕ Search filename or page…</span>
                 <span style="display:flex;gap:6px"><span style="background:#1B2536;color:#fff;padding:5px 9px;border-radius:999px">All 101</span><span style="border:1px solid #C42E22;color:#C42E22;padding:5px 9px;border-radius:999px">High 35</span><span style="border:1px solid #C0760B;color:#C0760B;padding:5px 9px;border-radius:999px">Medium 63</span><span data-hide-md="" style="border:1px solid #178049;color:#178049;padding:5px 9px;border-radius:999px">Low 3</span></span>
@@ -346,7 +346,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
             </div>
 
             <!-- Panel 2: image detail -->
-            <div data-panel="" :data-active="activeStep === 1 ? '' : null" :style="panelStyle">
+            <div data-panel="" aria-hidden="true" :data-active="activeStep === 1 ? '' : null" :style="panelStyle">
               <div style="display:flex;align-items:center;gap:12px;padding:11px 16px;background:#C42E22;color:#fff;font-size:13px"><span :style="mono + ';background:rgba(255,255,255,.2);padding:2px 8px;border-radius:999px;font-size:11px'">HIGH</span><span :style="mono + ';font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'">prospectus-2026.pdf (page 19)</span><span data-hide-sm="" style="opacity:.85;font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">linked from /about-us/prospectus/</span><span style="margin-left:auto;border:1px solid rgba(255,255,255,.5);padding:4px 10px;border-radius:6px;font-size:12px;white-space:nowrap">Check again</span></div>
               <div data-cols="" style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px;padding:14px;flex:1;min-height:0">
                 <div style="position:relative;border-radius:10px;overflow:hidden;background:#d9cfbf;min-height:200px">
@@ -371,7 +371,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
             </div>
 
             <!-- Panel 3: People & permissions -->
-            <div data-panel="" :data-active="activeStep === 2 ? '' : null" :style="panelStyle">
+            <div data-panel="" aria-hidden="true" :data-active="activeStep === 2 ? '' : null" :style="panelStyle">
               <div style="display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid #E7E2D6;background:#F8F6F1;font-size:12px;flex-wrap:wrap">
                 <span data-hide-md="" style="border:1px solid #E7E2D6;background:#fff;border-radius:7px;padding:6px 10px;color:#8A8474;min-width:150px">⌕ Search by name or year…</span>
                 <span style="display:flex;gap:6px"><span style="background:#1B2536;color:#fff;padding:5px 9px;border-radius:999px">All 412</span><span style="border:1px solid #C9C2B2;color:#1B2536;padding:5px 9px;border-radius:999px">Pupils 389</span><span data-hide-md="" style="border:1px solid #C9C2B2;color:#1B2536;padding:5px 9px;border-radius:999px">Staff 23</span></span>
@@ -392,7 +392,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
             </div>
 
             <!-- Panel 4: decision + audit -->
-            <div data-panel="" :data-active="activeStep === 3 ? '' : null" :style="panelStyle">
+            <div data-panel="" aria-hidden="true" :data-active="activeStep === 3 ? '' : null" :style="panelStyle">
               <div style="padding:12px 16px;border-bottom:1px solid #E7E2D6;display:flex;flex-direction:column;gap:8px">
                 <div data-decisions="" style="display:flex;gap:8px;font-size:13px;flex-wrap:wrap">
                   <span style="flex:1;min-width:150px;display:flex;align-items:center;gap:8px;border:2px solid #B4702F;border-radius:8px;padding:9px 12px;color:#1B2536;font-weight:500;background:#FDF8F2"><span style="width:12px;height:12px;border-radius:50%;border:4px solid #B4702F;flex-shrink:0"></span>Remove from website<span :style="mono + ';margin-left:auto;font-size:10px;color:#B4702F'">REC</span><span :style="mono + ';font-size:10px;border:1px solid #C9C2B2;padding:1px 5px;border-radius:3px;color:#8A8474'">1</span></span>
@@ -531,6 +531,11 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
 [data-preview-input]:focus { outline: 2px solid #B4702F; outline-offset: 1px; }
 [data-preview-error] { margin: 0; padding: 12px 14px; background: #F4E2DC; border-radius: 8px; font-size: 14px; line-height: 1.5; color: #9A3B2A; }
 @media (max-width: 1180px) {
+  [data-mock-3] { grid-template-columns: minmax(0,1fr) 280px !important; }
+  [data-mock-queue] { display: none !important; }
+}
+/* Tablet: squeeze the step panels to fit. Phones scroll them sideways at full size instead. */
+@media (min-width: 901px) and (max-width: 1180px) {
   [data-hide-md] { display: none !important; }
   [data-row] { grid-template-columns: minmax(0,2fr) 64px minmax(0,1.3fr); }
   [data-row-inv] { grid-template-columns: minmax(0,1.3fr) minmax(0,2fr); }
@@ -539,14 +544,20 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
   [data-panel] [data-cols] { grid-template-columns: minmax(0,1.2fr) minmax(0,1fr) !important; }
   [data-panel] { aspect-ratio: 4/3 !important; }
   [data-panel] span, [data-panel] p { white-space: normal; }
-  [data-mock-3] { grid-template-columns: minmax(0,1fr) 280px !important; }
-  [data-mock-queue] { display: none !important; }
 }
 @media (max-width: 900px) {
-  [data-clip] { -webkit-mask-image: none; mask-image: none; }
-  [data-cols] { grid-template-columns: minmax(0,1fr) !important; }
-  [data-sticky] { position: static !important; height: auto !important; display: flex !important; flex-direction: column; gap: 20px; }
-  [data-panel] { position: static !important; opacity: 1 !important; transform: none !important; pointer-events: auto !important; height: auto !important; aspect-ratio: auto !important; }
+  [data-cols]:not([data-panel] *) { grid-template-columns: minmax(0,1fr) !important; }
+  /* Each step's panel sits straight after its step: the list and the panel stack
+     drop out of the layout so steps and panels interleave by order. */
+  [data-how-cols] { gap: 0 !important; margin-top: 24px !important; }
+  [data-steps], [data-sticky] { display: contents !important; }
+  [data-steps] > li:nth-child(1) { order: 1; } [data-sticky] > [data-panel]:nth-child(1) { order: 2; }
+  [data-steps] > li:nth-child(2) { order: 3; } [data-sticky] > [data-panel]:nth-child(2) { order: 4; }
+  [data-steps] > li:nth-child(3) { order: 5; } [data-sticky] > [data-panel]:nth-child(3) { order: 6; }
+  [data-steps] > li:nth-child(4) { order: 7; } [data-sticky] > [data-panel]:nth-child(4) { order: 8; }
+  /* The panel keeps its desktop layout at a fixed size and scrolls sideways. */
+  [data-panel] { grid-area: auto !important; position: static !important; opacity: 1 !important; transform: none !important; pointer-events: auto !important; aspect-ratio: auto !important; height: 440px; overflow-x: auto !important; overflow-y: hidden !important; overscroll-behavior-x: contain; margin-bottom: 8px; }
+  [data-panel] > * { min-width: 760px; }
   [data-step] { opacity: 1 !important; min-height: 0 !important; padding: 24px 0 !important; }
   [data-hide-sm] { display: none !important; }
   [data-half] { max-width: none !important; }
@@ -559,10 +570,8 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
   [data-risk3] { grid-template-columns: minmax(0,1fr) !important; }
   [data-h1] br { display: none; }
   [data-h1] { font-size: 34px !important; }
-  [data-decisions] > span { flex-basis: 100% !important; }
-  [data-panel] span, [data-panel] p, [data-mock-3] span { white-space: normal; }
-  [data-audit] { grid-template-columns: 92px minmax(0,1fr) !important; }
-  [data-audit] > :nth-child(2), [data-audit] > :nth-child(4) { display: none; }
+  [data-decisions]:not([data-panel] *) > span { flex-basis: 100% !important; }
+  [data-mock-3] span { white-space: normal; }
   [data-h2] { font-size: 26px !important; }
   [data-lead] { font-size: 16px !important; }
   [data-pad] { padding-left: 20px !important; padding-right: 20px !important; }
