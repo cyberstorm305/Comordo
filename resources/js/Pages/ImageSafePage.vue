@@ -223,7 +223,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
             <h1 data-h1="" style="margin:0;font-size:clamp(40px,4.2vw,84px);line-height:1.02;letter-spacing:-.025em;font-weight:700;color:#1B2536;text-wrap:pretty">Every photo your school <br>publishes is a safeguarding&nbsp;decision.</h1>
             <p data-hero-p="" style="margin:0;font-size:18px;line-height:1.6;max-width:66.666%;text-wrap:pretty"><span data-hide-sm="">ImageSafe finds photos of people across your website, prospectuses and newsletters, checking them against permission records and safeguarding guidance. It highlights images that need attention, flags potential AI misuse risks and helps you create safer versions in a click. Your safeguarding lead gets a clear picture of what's online, what needs reviewing and why.</span><span data-show-sm="">ImageSafe finds photos of people across your website and documents, checks them against permissions and safeguarding guidance, and shows you what needs attention.</span></p>
             <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px">
-              <a :href="trialHref" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:13px 20px;border-radius:9px">Start your 7-day free trial <span aria-hidden="true">→</span></a>
+              <a :href="trialHref" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:12px 20px;border-radius:9px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
               <a href="#preview" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#fff;color:#1B2536;font-weight:500;font-size:16px;padding:12px 18px;border-radius:9px;border:1px solid #C9C2B2">Get an instant free preview</a>
             </div>
             <p style="margin:-12px 0 0;font-size:14px;color:#8A8474">No card needed · First scan in minutes · Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>
@@ -318,7 +318,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
                 <h3 style="margin:4px 0 10px;font-size:24px;line-height:1.2;letter-spacing:-.01em;font-weight:700;color:#1B2536">{{ s.title }}</h3>
                 <p v-for="(para, k) in s.body" :key="k" :style="`margin:0 0 ${k < s.body.length - 1 ? 14 : 0}px;font-size:16px;line-height:1.6;text-wrap:pretty`">{{ para }}</p>
                 <template v-if="s.cta">
-                  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:22px"><a :href="trialHref" data-btn="" style="display:inline-flex;align-items:center;gap:8px;background:#B4702F;color:#fff;font-weight:500;font-size:15px;padding:12px 20px;border-radius:10px">Start your 7-day free trial</a><a href="#preview" style="display:inline-flex;align-items:center;font-weight:500;font-size:15px;padding:12px 4px">Get an instant free preview →</a></div>
+                  <div style="display:flex;flex-wrap:wrap;gap:12px;margin-top:22px"><a :href="trialHref" data-btn="" style="display:inline-flex;align-items:center;gap:8px;background:#B4702F;color:#fff;font-weight:500;font-size:15px;padding:12px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial</a><a href="#preview" style="display:inline-flex;align-items:center;font-weight:500;font-size:15px;padding:12px 4px">Get an instant free preview →</a></div>
                   <p style="margin:12px 0 0;font-size:14px;color:#8A8474">Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>
                 </template>
               </div>
@@ -484,7 +484,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
             <p v-if="previewError" role="alert" data-preview-error="">Please enter a full school website address, like <b>www.yourschool.org.uk</b>.</p>
             <p v-if="previewNeedsConfirm" role="alert" data-preview-error="">Please confirm you have permission to scan this website.</p>
             <p v-if="previewFailure" role="alert" data-preview-error="">{{ errorCopy[previewFailure] }}</p>
-            <button type="submit" data-btn="" :disabled="previewStarting" :style="`font-family:Satoshi,sans-serif;background:#B4702F;color:#fff;border:0;border-radius:10px;padding:15px 20px;font-size:16px;font-weight:500;cursor:${previewStarting ? 'progress' : 'pointer'};margin-top:4px`">{{ previewStarting ? 'Scanning your first pages…' : 'Scan my website now →' }}</button>
+            <button type="submit" data-btn="" :disabled="previewStarting" :style="`font-family:Satoshi,sans-serif;background:#B4702F;color:#fff;border:1px solid transparent;border-radius:10px;padding:15px 20px;font-size:16px;font-weight:500;cursor:${previewStarting ? 'progress' : 'pointer'};margin-top:4px`">{{ previewStarting ? 'Scanning your first pages…' : 'Scan my website now →' }}</button>
             <p style="margin:0;font-size:13px;color:#8A8474;line-height:1.5">Already have an account? <a :href="signInHref" style="font-weight:500">Sign in</a> to run a full scan of your school. Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>
           </form>
         </div>
@@ -567,7 +567,7 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
   [data-hero-frame] { margin-top: 40px !important; }
   [data-band] { padding-top: 64px; padding-bottom: 64px; }
   [data-risk-band] { padding-top: 152px; }
-  [data-hero-btn] { font-size: 14px !important; padding: 9px 14px !important; }
+  [data-btn] { font-size: 14px !important; padding: 9px 14px !important; border-radius: 9px !important; }
   [data-risk3] { grid-template-columns: minmax(0,1fr) !important; }
   [data-h1] br { display: none; }
   [data-h1] { font-size: 34px !important; }

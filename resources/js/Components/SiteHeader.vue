@@ -49,7 +49,7 @@ onBeforeUnmount(() => {
 [data-header-btn]:hover { transform: translateY(-1px); }
 [data-secondary] { color: #1B2536; padding: 12px 18px; border: 1px solid #C9C2B2; background: transparent; }
 [data-secondary]:hover { border-color: #1B2536; }
-[data-primary] { color: #fff; background: #B4702F; padding: 13px 20px; }
+[data-primary] { color: #fff; background: #B4702F; padding: 12px 18px; border: 1px solid transparent; }
 [data-primary]:hover { background: #8F5722; }
 [data-header][data-scrolled] [data-header-inner] { height: 64px; }
 [data-header][data-scrolled] [data-header-logo] { height: 28px; }

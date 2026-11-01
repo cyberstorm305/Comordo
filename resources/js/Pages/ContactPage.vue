@@ -40,7 +40,7 @@ const topics = ['General enquiry', 'ImageSafe', 'Register interest in Compli', '
             </label>
             <label class="flex flex-col gap-1.5"><span class="text-[13px] font-semibold">Message</span><textarea v-model="form.message" rows="5" class="field resize-y" placeholder="Tell us a little about your schools and what you need."></textarea></label>
             <p v-if="err" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] text-[#9A3B2A] m-0"><b>!</b> Please add your name and a valid email address.</p>
-            <button type="submit" class="btn-primary w-full !py-3.5">Send message →</button>
+            <button type="submit" class="btn-primary w-full">Send message →</button>
           </form>
           <div v-else class="flex flex-col items-center text-center gap-4 py-10">
             <span class="w-[60px] h-[60px] rounded-full bg-[#E7F0EA] flex items-center justify-center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#3F7E63" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>

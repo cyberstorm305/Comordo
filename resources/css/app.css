@@ -62,8 +62,8 @@ section[id] {
   .container-site { @apply max-w-(--is-wide) mx-auto px-5 sm:px-8; }
   .eyebrow { @apply flex items-center gap-2.5 font-mono text-xs tracking-[0.1em] uppercase text-copper; }
   .eyebrow::before { content: ""; @apply block w-6 h-px bg-copper; }
-  .btn-primary { @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-[15px] font-medium text-white bg-copper px-6 py-3.5 rounded-[10px] transition-colors hover:bg-copper-dark; }
-  .btn-outline { @apply inline-flex items-center justify-center whitespace-nowrap text-[15px] font-semibold text-navy px-6 py-3 border border-edge rounded-md transition-colors hover:border-navy hover:bg-white; }
+  .btn-primary { @apply inline-flex items-center justify-center gap-2 whitespace-nowrap text-[15px] font-medium text-white bg-copper px-6 py-3.5 border border-transparent rounded-[10px] transition-colors hover:bg-copper-dark max-[900px]:text-[14px] max-[900px]:leading-[1.5] max-[900px]:px-3.5 max-[900px]:py-[9px] max-[900px]:rounded-[9px]; }
+  .btn-outline { @apply inline-flex items-center justify-center whitespace-nowrap text-[15px] font-semibold text-navy px-6 py-3 border border-edge rounded-md transition-colors hover:border-navy hover:bg-white max-[900px]:text-[14px] max-[900px]:leading-[1.5] max-[900px]:px-3.5 max-[900px]:py-[9px] max-[900px]:rounded-[9px]; }
   .section-title { @apply text-[clamp(27px,4.5vw,36px)] font-bold leading-[1.15] tracking-[-0.02em] text-balance; }
   .mock-card { @apply bg-white border border-sand-dark rounded-xl shadow-[0_20px_50px_rgba(27,37,54,0.10)] overflow-hidden; }
   .pill { font-family: var(--font-mono); font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; border-radius: 9999px; padding: 0.25rem 0.625rem; border-width: 1px; border-style: solid; }

@@ -44,7 +44,7 @@ function submit() {
               </label>
             </div>
             <p v-if="err" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] text-[#9A3B2A] m-0"><b>!</b> Please add your name and a valid email address.</p>
-            <button type="submit" class="btn-primary w-full !py-3.5">Request a demo →</button>
+            <button type="submit" class="btn-primary w-full">Request a demo →</button>
             <p class="text-xs text-stone text-center m-0">We&rsquo;ll reply with a couple of times within one working day.</p>
           </form>
           <div v-else class="flex flex-col items-center text-center gap-4 py-10">
