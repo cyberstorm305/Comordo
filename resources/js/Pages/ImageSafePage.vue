@@ -558,7 +558,8 @@ details[open] summary span[aria-hidden] { transform: rotate(45deg); }
   /* The panel keeps its desktop layout at a fixed size and scrolls sideways. */
   [data-panel] { grid-area: auto !important; position: static !important; opacity: 1 !important; transform: none !important; pointer-events: auto !important; aspect-ratio: auto !important; height: 440px; overflow-x: auto !important; overflow-y: hidden !important; overscroll-behavior-x: contain; margin-bottom: 8px; }
   [data-panel] > * { min-width: 760px; }
-  [data-step] { opacity: 1 !important; min-height: 0 !important; padding: 24px 0 !important; }
+  [data-step] { opacity: 1 !important; min-height: 0 !important; padding: 24px 0 !important; gap: 12px !important; }
+  [data-stepnum] { font-size: 16px !important; min-width: 0 !important; padding-top: 5px !important; color: #B4702F !important; }
   [data-hide-sm] { display: none !important; }
   [data-half] { max-width: none !important; }
   [data-hero-p] { max-width: none !important; font-size: 16px !important; }
