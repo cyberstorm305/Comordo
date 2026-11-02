@@ -24,7 +24,7 @@ const total = computed(() => perSchool.value * schools.value)
 const savings = computed(() => subtotal.value - total.value)
 const cadence = computed(() => (billing.value === 'monthly' ? { short: 'month', abbr: 'mo', billed: 'Billed monthly' } : { short: 'year', abbr: 'yr', billed: 'Billed annually' }))
 const schoolsText = computed(() => (schools.value === 1 ? '1 school' : schools.value + ' schools'))
-const trialEnd = new Date(Date.now() + 14 * 86400000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
+const trialEnd = new Date(Date.now() + 7 * 86400000).toLocaleDateString('en-GB', { day: 'numeric', month: 'long' })
 const firstName = computed(() => name.value.trim().split(/\s+/)[0] || 'there')
 
 const stepIdx = computed(() => ({ details: 0, connecting: 1, payment: 1, processing: 1, done: 2 })[step.value])
