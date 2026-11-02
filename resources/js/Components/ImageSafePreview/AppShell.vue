@@ -8,12 +8,12 @@
 <script setup>
 const logoSrc = new URL('../../../../public/imagesafe.svg', import.meta.url).href
 import { inject } from 'vue'
-import { identityBase } from '@/identity.js'
+import { identityStartHref } from '@/identity.js'
 
 defineProps({ host: { type: String, default: '' } })
 
 const openTrial = inject('openTrial')
-const registerHref = `${identityBase}/start`
+const registerHref = identityStartHref
 const tabs = [
   { label: 'Dashboard' },
   { label: 'Inventory', feature: 'Inventory' },

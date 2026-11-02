@@ -9,7 +9,7 @@
 -->
 <script setup>
 import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
-import { identityBase } from '@/identity.js'
+import { identityStartHref } from '@/identity.js'
 import { imagesafeBase } from '@/imagesafe.js'
 
 const props = defineProps({
@@ -20,7 +20,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['close'])
 
-const registerHref = `${identityBase}/start`
+const registerHref = identityStartHref
 
 // { summary: [lines], checks: [{ key, name, looks, why, fix }] }, fetched once per page.
 // {high} and {medium} in the summary are shown as the coloured risk words.

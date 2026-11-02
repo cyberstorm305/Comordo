@@ -6,7 +6,7 @@
 <script setup>
 import { computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch as vueWatch } from 'vue'
 import { Head } from '@inertiajs/vue3'
-import { identityBase } from '@/identity.js'
+import { identityStartHref } from '@/identity.js'
 import { usePreview } from '@/usePreview.js'
 import AppShell from '../Components/ImageSafePreview/AppShell.vue'
 import QueueCard from '../Components/ImageSafePreview/QueueCard.vue'
@@ -22,7 +22,7 @@ import { appReview, loadAppReview, matchesFilter, toAppImage } from '../Componen
 
 const props = defineProps({ id: { type: String, required: true } })
 
-const registerHref = `${identityBase}/start`
+const registerHref = identityStartHref
 const { state, progress, result, error, watch: watchPreview } = usePreview()
 
 // Trial prompt, opened by every locked tab and action.

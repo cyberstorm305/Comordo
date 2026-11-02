@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue'
-import { identityBase, identityStartHref } from '@/identity.js'
+import { identityStartHref, identityLoginHref } from '@/identity.js'
 defineProps({
   active: { type: String, default: '' },
   ctaLabel: { type: String, default: 'Get started' },
@@ -36,7 +36,7 @@ const links = [
           :class="active === l.key ? 'text-navy font-bold' : 'text-slate hover:text-navy'">{{ l.label }}</a>
       </nav>
       <div class="hidden lg:flex items-center gap-3">
-        <a :href="`${identityBase}/login`" class="text-sm font-semibold text-navy px-4.5 py-2.5 border border-edge rounded-md hover:border-navy hover:bg-white">Sign in</a>
+        <a :href="identityLoginHref" class="text-sm font-semibold text-navy px-4.5 py-2.5 border border-edge rounded-md hover:border-navy hover:bg-white">Sign in</a>
         <a :href="ctaHref" class="btn-primary !py-2.5 !px-5 !text-sm group">{{ ctaLabel }}
           <span class="transition-transform group-hover:translate-x-1">
             <svg width="7" height="11" viewBox="0 0 7 11" fill="none"><path d="M1 1l4.6 4.5L1 10" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -56,7 +56,7 @@ const links = [
         <a v-for="l in links" :key="l.key" :href="l.to" class="text-base font-semibold text-navy py-3.5 border-b border-sand">{{ l.label }}</a>
         <div class="flex flex-col gap-2.5 mt-4">
           <a :href="ctaHref" class="btn-primary text-center">{{ ctaLabel }}</a>
-          <a :href="`${identityBase}/login`" class="btn-outline text-center bg-white">Sign in</a>
+          <a :href="identityLoginHref" class="btn-outline text-center bg-white">Sign in</a>
         </div>
       </div>
     </div>

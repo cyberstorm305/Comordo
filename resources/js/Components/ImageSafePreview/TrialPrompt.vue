@@ -5,7 +5,7 @@
 -->
 <script setup>
 import { computed, nextTick, ref, watch, onBeforeUnmount } from 'vue'
-import { identityBase } from '@/identity.js'
+import { identityStartHref } from '@/identity.js'
 
 const props = defineProps({
   feature: { type: String, default: null },
@@ -13,7 +13,7 @@ const props = defineProps({
 })
 const emit = defineEmits(['close'])
 
-const registerHref = `${identityBase}/start`
+const registerHref = identityStartHref
 const FEATURES = {
   'People & Permissions': 'Add pupils and staff with their photo permissions, and ImageSafe matches them to the faces it finds.',
   'Recording decisions': 'Record what you decide for each photo, and why, so every image has an audit trail.',

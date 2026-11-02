@@ -1,6 +1,5 @@
 <script setup>
-import { identityBase } from '@/identity.js'
-const identityLoginHref = `${identityBase}/login`
+import { identityLoginHref } from '@/identity.js'
 const logoSrc = new URL('../../../public/comordo-light.svg', import.meta.url).href
 </script>
 

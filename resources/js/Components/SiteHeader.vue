@@ -2,7 +2,7 @@
 // Site header from the ImageSafe homepage design: transparent at the top, then fades
 // to cream and shrinks as the page scrolls.
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { identityBase, identityStartHref } from '@/identity.js'
+import { identityStartHref, identityLoginHref } from '@/identity.js'
 
 const logoSrc = new URL('../../../public/imagesafe.svg', import.meta.url).href
 const header = ref(null)
@@ -34,7 +34,7 @@ onBeforeUnmount(() => {
         <img data-header-logo="" :src="logoSrc" alt="ImageSafe">
       </Link>
       <div class="ml-auto flex items-center gap-2.5">
-        <a :href="`${identityBase}/login`" data-header-btn="" data-secondary="">Sign in</a>
+        <a :href="identityLoginHref" data-header-btn="" data-secondary="">Sign in</a>
         <a :href="identityStartHref" data-header-btn="" data-primary="">Start free trial</a>
       </div>
     </div>

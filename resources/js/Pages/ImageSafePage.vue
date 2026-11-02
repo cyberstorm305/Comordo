@@ -1,7 +1,7 @@
 <script setup>
 // ImageSafe homepage, built from the Claude Design handoff (design_handoff_imagesafe_homepage).
 // Styles stay inline, as in the handoff, so values can be checked against the design one to one.
-import { identityBase, identityStartHref } from '@/identity.js'
+import { identityStartHref, identityLoginHref } from '@/identity.js'
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { Head, router } from '@inertiajs/vue3'
 import { createPreview } from '@/usePreview.js'
@@ -9,7 +9,7 @@ import SiteFooter from '../Components/SiteFooter.vue'
 import SiteHeader from '../Components/SiteHeader.vue'
 
 const trialHref = identityStartHref
-const signInHref = `${identityBase}/login`
+const signInHref = identityLoginHref
 const photo = n => `/images/home/photo-${n}.jpg`
 
 // --- Free preview form ---

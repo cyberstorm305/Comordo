@@ -1,5 +1,5 @@
 <script setup>
-import { identityBase } from '@/identity.js'
+import { identityLoginHref } from '@/identity.js'
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
 </script>
 
@@ -17,7 +17,7 @@ const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
         <Link href="/privacy" class="text-stone hover:text-navy">Privacy</Link>
         <Link href="/terms" class="text-stone hover:text-navy">Terms</Link>
         <Link href="/contact" class="text-stone hover:text-navy">Contact</Link>
-        <a :href="`${identityBase}/login`" class="text-stone hover:text-navy">Sign in</a>
+        <a :href="identityLoginHref" class="text-stone hover:text-navy">Sign in</a>
       </nav>
     </div>
     <div class="border-t border-sand">
