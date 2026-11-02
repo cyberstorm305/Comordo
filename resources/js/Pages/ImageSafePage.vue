@@ -65,16 +65,16 @@ const queue = [
 const heroFaces = [
   { left: '9%', top: '23%', width: '13%', label: 'Unknown' },
   { left: '36.5%', top: '23%', width: '13%', label: 'Unknown' },
-  { left: '64.5%', top: '24%', width: '13%', label: 'A. Okonkwo · Y5', tone: 'green' },
+  { left: '64.5%', top: '24%', width: '13%', label: 'A. Thompson · Y5', tone: 'green' },
   { left: '82.5%', top: '20%', width: '14%', label: 'Unknown' },
 ]
 const detailFaces = [
   { left: '5%', top: '21%', width: '12%', label: 'Unknown' },
   { left: '26%', top: '23%', width: '12%', label: 'Unknown' },
-  { left: '39%', top: '13%', width: '13%', label: 'H. Begum · Y3', tone: 'red' },
+  { left: '39%', top: '13%', width: '13%', label: 'H. Clarke · Y3', tone: 'red' },
   { left: '56%', top: '10%', width: '11%', label: 'Unknown' },
   { left: '66%', top: '24%', width: '12%', label: 'Unknown' },
-  { left: '84%', top: '16%', width: '13%', label: 'J. Patel · Y6', tone: 'green' },
+  { left: '77.5%', top: '20%', width: '13%', label: 'J. Patel · Y6', tone: 'green' },
 ]
 const faceTone = { green: '#178049', red: '#C42E22' }
 const checkStyle = {
@@ -102,8 +102,8 @@ const ok = '<span style="color:#178049">✓</span>'
 const no = '<span style="color:#C42E22">✕</span>'
 const none = '<span style="color:#8A8474">—</span>'
 const people = [
-  { name: 'A. Okonkwo', sub: 'Updated 21 Oct 2026 · CSV import', avatar: '#c9a58a,#8f8f86', year: 'Y5', web: ok, social: ok, found: '2', foundStyle: 'color:#1B2536', status: 'Approved', statusStyle: 'background:#E6F3EB;color:#178049' },
-  { name: 'H. Begum', sub: 'Updated 20 Oct 2026 · Manual edit', avatar: '#b58e75,#9a9a92', year: 'Y3', web: no, social: no, found: '3', foundStyle: 'color:#C42E22;font-weight:700', status: 'Refused — do not use', statusStyle: 'background:#C42E22;color:#fff', rowStyle: 'background:#FBE9E7' },
+  { name: 'A. Thompson', sub: 'Updated 21 Oct 2026 · CSV import', avatar: '#c9a58a,#8f8f86', year: 'Y5', web: ok, social: ok, found: '2', foundStyle: 'color:#1B2536', status: 'Approved', statusStyle: 'background:#E6F3EB;color:#178049' },
+  { name: 'H. Clarke', sub: 'Updated 20 Oct 2026 · Manual edit', avatar: '#b58e75,#9a9a92', year: 'Y3', web: no, social: no, found: '3', foundStyle: 'color:#C42E22;font-weight:700', status: 'Refused — do not use', statusStyle: 'background:#C42E22;color:#fff', rowStyle: 'background:#FBE9E7' },
   { name: 'T. Walsh', sub: 'Left July 2025 · retention 12 months', avatar: '#d1b49a,#8a9aa1', year: '—', web: ok, social: none, found: '4', foundStyle: 'color:#C0760B;font-weight:700', status: 'Leaver · remove by Jul 2026', statusStyle: 'background:#FBF1E2;color:#C0760B' },
   { name: 'S. Ahmed', sub: 'Updated 18 Oct 2026 · Manual edit', avatar: '#c4a28c,#93a0a6', year: 'Y4', web: no, social: no, found: '3', foundStyle: 'color:#C42E22;font-weight:700', status: 'Never publish', statusStyle: 'background:#C42E22;color:#fff' },
   { name: 'J. Patel', sub: 'Updated 21 Oct 2026 · CSV import', avatar: '#bfa087,#9db1a8', year: 'Y6', web: ok, social: no, found: '1', foundStyle: 'color:#1B2536', status: 'Website only', statusStyle: 'background:#E6F3EB;color:#178049' },
@@ -271,7 +271,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
                   <div style="margin-top:auto;border-top:1px solid #E7E2D6;padding-top:10px">
                     <p :style="label + ';margin:0 0 6px'">People · 4</p>
                     <span style="display:flex;align-items:center;gap:8px;color:#4A5468">3 untagged faces<span style="margin-left:auto;background:#F1EDE3;color:#1B2536;padding:3px 8px;border-radius:999px;font-size:11px">Unknown</span></span>
-                    <span style="display:flex;align-items:center;gap:8px;color:#1B2536;margin-top:4px">A. Okonkwo · Y5<span style="margin-left:auto;background:#E6F3EB;color:#178049;padding:3px 8px;border-radius:999px;font-size:11px">Approved</span></span>
+                    <span style="display:flex;align-items:center;gap:8px;color:#1B2536;margin-top:4px">A. Thompson · Y5<span style="margin-left:auto;background:#E6F3EB;color:#178049;padding:3px 8px;border-radius:999px;font-size:11px">Approved</span></span>
                   </div>
                 </div>
               </div>
@@ -361,7 +361,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
                   <span style="display:flex;align-items:center;gap:8px;padding:6px 10px;color:#178049;font-size:12px"><span style="width:16px;height:16px;border-radius:50%;background:#E6F3EB;color:#178049;font-size:10px;display:grid;place-items:center;flex-shrink:0">✓</span>5 checks passed<span style="margin-left:auto;color:#8A8474">Show</span></span>
                   <div data-clip="" style="border-top:1px solid #E7E2D6;padding-top:10px;margin-top:4px;flex:1 1 auto;min-height:0;overflow:hidden">
                     <p :style="label + ';margin:0 0 8px;display:flex'">People · 6<span style="margin-left:auto;color:#C42E22;text-transform:none;letter-spacing:0;font-family:Satoshi,sans-serif;font-size:12px">4 untagged</span></p>
-                    <span style="display:flex;align-items:center;gap:8px;padding:5px 0;color:#1B2536">H. Begum · Y3<span style="margin-left:auto;background:#C42E22;color:#fff;padding:3px 8px;border-radius:999px;font-size:11px">Refused</span></span>
+                    <span style="display:flex;align-items:center;gap:8px;padding:5px 0;color:#1B2536">H. Clarke · Y3<span style="margin-left:auto;background:#C42E22;color:#fff;padding:3px 8px;border-radius:999px;font-size:11px">Refused</span></span>
                     <span style="display:flex;align-items:center;gap:8px;padding:5px 0;color:#1B2536">J. Patel · Y6<span style="margin-left:auto;background:#E6F3EB;color:#178049;padding:3px 8px;border-radius:999px;font-size:11px">Approved</span></span>
                     <span style="display:flex;align-items:center;gap:8px;padding:5px 0;color:#4A5468">⌕ 4 untagged faces<span style="margin-left:auto;background:#F1EDE3;color:#1B2536;padding:3px 8px;border-radius:999px;font-size:11px">Unknown</span></span>
                   </div>
