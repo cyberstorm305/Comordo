@@ -5,6 +5,7 @@
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { Head } from '@inertiajs/vue3'
 import { identityStartHref } from '@/identity.js'
+import PreviewBand from '../Components/PreviewBand.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
 import SiteHeader from '../Components/SiteHeader.vue'
 
@@ -189,6 +190,9 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
           </div>
         </div>
       </section>
+
+      <!-- Free preview -->
+      <PreviewBand />
     </main>
 
     <SiteFooter />
