@@ -8,6 +8,7 @@ use Inertia\Inertia;
 // Route::get('/', fn () => Inertia::render('HomePage'))->name('home');
 Route::get('/', fn () => Inertia::render('ImageSafePage'))->name('home');
 Route::redirect('/imagesafe', '/', 301)->name('imagesafe');
+Route::get('/pricing', fn () => Inertia::render('PricingPage'))->name('pricing');
 Route::get('/compli', fn () => Inertia::render('CompliPage'))->name('compli');
 Route::get('/contact', fn () => Inertia::render('ContactPage'))->name('contact');
 Route::get('/demo', fn () => Inertia::render('DemoPage'))->name('demo');

@@ -12,6 +12,7 @@ const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
       </div>
       <nav class="flex flex-wrap gap-x-6 gap-y-4 text-[13px]">
         <Link href="/" class="text-stone hover:text-navy">ImageSafe</Link>
+        <Link href="/pricing" class="text-stone hover:text-navy">Pricing</Link>
         <!-- Hidden while ImageSafe is the homepage; restore for the joint marketing site (see BACKLOG.md). -->
         <!-- <Link href="/compli" class="text-stone hover:text-navy">Compli</Link> -->
         <Link href="/privacy" class="text-stone hover:text-navy">Privacy</Link>
