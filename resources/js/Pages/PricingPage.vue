@@ -175,8 +175,21 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
         </div>
       </section>
 
+      <!-- Sign-up call to action -->
+      <section data-band="" style="background:#1B2536;color:#fff">
+        <div data-pad="" data-reveal="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px">
+          <h2 data-h2="" style="margin:0;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#fff;text-wrap:balance">Try ImageSafe free for 7 days</h2>
+          <p data-lead="" style="margin:0;max-width:40em;font-size:18px;line-height:1.6;color:#C9C2B2;text-wrap:pretty">Create your account, run your first full scan and see which photos need attention.</p>
+          <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;margin-top:6px">
+            <a :href="trialHref" data-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:12px 20px;border-radius:9px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
+            <a href="#preview" style="display:inline-flex;align-items:center;font-weight:500;font-size:16px;padding:12px 4px;color:#E7C9A8">Get an instant free preview →</a>
+          </div>
+          <p style="margin:-6px 0 0;font-size:14px;color:#C9C2B2">No card needed · First scan in minutes · Prefer a conversation? <Link href="/demo" style="font-weight:500;color:#E7C9A8">Book a demo</Link></p>
+        </div>
+      </section>
+
       <!-- What's included -->
-      <section data-band="" style="background:#fff;border-top:1px solid #E7E2D6">
+      <section data-band="" style="background:#fff">
         <div data-pad="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px">
           <div data-reveal="" data-half="" style="max-width:66.666%">
             <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">Every school gets all of ImageSafe</h2>
