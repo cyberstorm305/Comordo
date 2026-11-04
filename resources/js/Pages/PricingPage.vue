@@ -54,10 +54,16 @@ const included = [
   { title: 'Keep a clear record', body: 'Track reviews, decisions and actions, with reports for safeguarding teams and governors.' },
 ]
 
-// Questions people ask before buying. The answers are the homepage FAQ's, word for word.
+// Questions people ask before buying. The trial-end answer follows Identity's trial and
+// billing behaviour: results kept, scanning, uploads and decisions paused until a live
+// subscription; a card given at sign-up starts the subscription when the trial ends.
 const faqs = [
-  { q: 'What’s the difference between the free preview and the trial?', a: 'The preview reads the first public pages of your website, counts the photos containing people and shows the checks they would raise. It does not identify anyone or need an account, your photos are never stored, and the results are deleted after 24 hours. A full scan, with permission matching, needs the 7-day trial.' },
-  { q: 'Does it connect to our MIS?', a: 'Today, consent records come in by CSV import, using the template we provide; most schools export this from their MIS in a few minutes. Direct connections for Arbor, Bromcom and SIMS are in development.', link: { href: 'mailto:hello@comordo.com?subject=MIS%20connection%20interest', label: 'Register your interest', after: ' and we will tell you when yours is ready.' } },
+  { q: 'Can I try ImageSafe before paying?', a: 'Yes. You can try ImageSafe free for 7 days, with no payment card needed.' },
+  { q: 'What’s the difference between a free preview and a trial?', a: 'The preview checks the first public pages of your website without an account. The trial gives you access to a full scan, permission checking and the wider ImageSafe tools.' },
+  { q: 'Do I need to connect my school’s MIS?', a: 'No. You can import consent records using our CSV template. Direct integrations with Arbor, Bromcom and SIMS are in development.', link: { href: 'mailto:hello@comordo.com?subject=MIS%20connection%20interest', label: 'Register your interest', after: ' and we will tell you when yours is ready.' } },
+  { q: 'Does every school get the same features?', a: 'Yes. Every school gets the full ImageSafe platform. There are no feature tiers or paid extras. Trusts simply benefit from lower prices per school.' },
+  { q: 'How does pricing work for trusts?', a: 'The more schools in your trust, the less you pay per school. Use the calculator above to see your price and any applicable discounts.' },
+  { q: 'What happens when my free trial ends?', a: 'Your scan results are kept, but scanning, uploads and recording decisions pause until you subscribe. We’ll email you two days before the trial ends, and you can subscribe from your account whenever you’re ready. If you added a payment card when you signed up, your subscription starts when the trial ends.' },
 ]
 function closeOtherFaqs(e) {
   if (!e.target.open) return
