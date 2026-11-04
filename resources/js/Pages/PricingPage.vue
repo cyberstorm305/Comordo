@@ -135,6 +135,7 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                     <span :style="`font-size:14px;font-weight:${b.active ? 700 : 500};color:${b.active ? '#1B2536' : '#4A5468'}`">{{ b.off }}</span>
                   </div>
                 </div>
+                <p style="margin:0;font-size:14px;line-height:1.6;color:#8A8474">Estimates use £12.50 per school a month (£150 a year) and the bands above. Need something different? <Link href="/contact" style="font-weight:500">Talk to us</Link>.</p>
               </div>
 
               <!-- Single school -->
@@ -146,6 +147,7 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                   <li style="display:flex;gap:10px"><span style="color:#B4702F">—</span>Safer versions in a click</li>
                   <li style="display:flex;gap:10px"><span style="color:#B4702F">—</span>Audit log and governors’ reports</li>
                 </ul>
+                <p style="margin:0;font-size:14px;line-height:1.6;color:#8A8474">Estimates use £12.50 a month (£150 a year). Need something different? <Link href="/contact" style="font-weight:500">Talk to us</Link>.</p>
               </div>
 
               <!-- Result -->
@@ -171,7 +173,6 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
               </div>
             </div>
           </div>
-          <p data-reveal="" style="margin:20px 0 0;font-size:14px;line-height:1.6;color:#8A8474;max-width:48em">Estimates use £12.50 per school a month (£150 a year) and the bands above. Need something different? <Link href="/contact" style="font-weight:500">Talk to us</Link>.</p>
         </div>
       </section>
 
