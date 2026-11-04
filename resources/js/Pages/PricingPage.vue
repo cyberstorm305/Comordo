@@ -116,12 +116,12 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
       <!-- Estimate calculator -->
       <section id="estimate" data-band="" style="position:relative;scroll-margin-top:40px">
         <div data-pad="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px">
-          <div data-reveal="" data-half="" style="max-width:66.666%">
-            <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">See what ImageSafe would cost your school or trust</h2>
-            <p data-lead="" style="margin:0;font-size:18px;line-height:1.6;text-wrap:pretty">Use the slider to choose your number of schools and see your price instantly. The more schools you have, the less you pay per school.</p>
-          </div>
-
-          <div data-reveal="" style="margin-top:48px;background:#fff;border:1px solid #E7E2D6;border-radius:14px;box-shadow:0 30px 60px -30px rgba(27,37,54,.25);overflow:hidden">
+          <div data-reveal="" style="background:#fff;border:1px solid #E7E2D6;border-radius:14px;box-shadow:0 30px 60px -30px rgba(27,37,54,.25);overflow:hidden">
+            <!-- Intro -->
+            <div data-calc-intro="" style="padding:32px 32px 0;max-width:46em">
+              <h2 style="margin:0 0 10px;font-size:24px;line-height:1.2;letter-spacing:-.01em;font-weight:700;color:#1B2536;text-wrap:balance">See what ImageSafe would cost your school or trust</h2>
+              <p style="margin:0;font-size:16px;line-height:1.6;text-wrap:pretty">Use the slider to choose your number of schools and see your price instantly. The more schools you have, the less you pay per school.</p>
+            </div>
             <!-- Toggles -->
             <div data-calc-top="" style="padding:24px 32px;border-bottom:1px solid #E7E2D6;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
               <div role="group" aria-label="School or trust" :style="segWrap + ';flex:1 1 300px;max-width:440px'">
@@ -301,6 +301,7 @@ input[type="range"]:focus-visible, button:focus-visible, a:focus-visible { outli
 @media (max-width: 480px) {
   [data-bands] { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
   [data-calc-top], [data-calc-body] { padding: 20px !important; }
+  [data-calc-intro] { padding: 20px 20px 0 !important; }
   [data-result] { padding: 24px !important; }
 }
 @media (prefers-reduced-motion: reduce) {
