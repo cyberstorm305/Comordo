@@ -55,7 +55,7 @@ const included = [
 ]
 
 // Questions people ask before buying. The trial-end answer follows Identity's trial and
-// billing behaviour: results kept, scanning, uploads and decisions paused until a live
+// billing behaviour: results kept and viewable, scanning and every change paused until a live
 // subscription; a card given at sign-up starts the subscription when the trial ends.
 const faqs = [
   { q: 'Can I try ImageSafe before paying?', a: 'Yes. You can try ImageSafe free for 7 days, with no payment card needed.' },
@@ -63,7 +63,7 @@ const faqs = [
   { q: 'Do I need to connect my school’s MIS?', a: 'No. You can import consent records using our CSV template. Direct integrations with Arbor, Bromcom and SIMS are in development.', link: { href: 'mailto:hello@comordo.com?subject=MIS%20connection%20interest', label: 'Register your interest', after: ' and we will tell you when yours is ready.' } },
   { q: 'Does every school get the same features?', a: 'Yes. Every school gets the full ImageSafe platform. There are no feature tiers or paid extras. Trusts simply benefit from lower prices per school.' },
   { q: 'How does pricing work for trusts?', a: 'The more schools in your trust, the less you pay per school. Use the calculator above to see your price and any applicable discounts.' },
-  { q: 'What happens when my free trial ends?', a: 'Your scan results are kept, but scanning, uploads and recording decisions pause until you subscribe. We’ll email you two days before the trial ends, and you can subscribe from your account whenever you’re ready. If you added a payment card when you signed up, your subscription starts when the trial ends.' },
+  { q: 'What happens when my free trial ends?', a: 'Your results are kept and you can still view them, but scanning and all changes, such as tagging people or recording decisions, pause until you subscribe. We’ll email you two days before the trial ends, and you can subscribe from your account whenever you’re ready. If you added a payment card when you signed up, your subscription starts when the trial ends.' },
 ]
 function closeOtherFaqs(e) {
   if (!e.target.open) return
