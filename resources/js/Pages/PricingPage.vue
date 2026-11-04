@@ -69,6 +69,8 @@ const mono = "font-family:'IBM Plex Mono',monospace"
 const label = `margin:0;${mono};font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8A8474`
 const darkLabel = `margin:0;${mono};font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#E7C9A8`
 const seg = on => `flex:1;font-family:Satoshi,sans-serif;font-size:15px;font-weight:500;padding:10px 16px;border-radius:8px;border:0;cursor:pointer;white-space:nowrap;${on ? 'background:#1B2536;color:#fff' : 'background:transparent;color:#4A5468'}`
+// Stacks a calculator state in a shared grid cell; the inactive one is hidden but keeps its size.
+const layer = on => `grid-area:1/1;visibility:${on ? 'visible' : 'hidden'}`
 const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;border-radius:10px;padding:4px'
 </script>
 
@@ -120,11 +122,15 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
             </div>
 
             <div data-cols="" data-calc-body="" style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center;padding:32px">
-              <!-- Trust: slider and bands -->
-              <div v-if="mode === 'trust'" style="display:flex;flex-direction:column;gap:22px">
+              <!-- Both modes are laid out in the same cell and the hidden one keeps its space,
+                   so the calculator is always as tall as its tallest state. -->
+              <div style="display:grid;align-items:center">
+                <!-- Trust: slider and bands -->
+                <div :inert="mode !== 'trust'" :style="layer(mode === 'trust') + ';display:flex;flex-direction:column;gap:22px'">
                 <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
                   <label for="calc-schools" style="font-size:20px;font-weight:700;color:#1B2536">How many schools in your trust?</label>
-                  <p style="margin:0;display:flex;align-items:baseline;gap:6px"><span style="font-size:40px;line-height:1;font-weight:700;letter-spacing:-.02em;color:#1B2536">{{ schools }}</span><span style="font-size:14px;color:#8A8474">schools</span></p>
+                  <p style="margin:0;display:flex;align-items:baseline;gap:6px"><!-- Fixed width, so the question beside it wraps the same for 2 and 80. -->
+                    <span style="min-width:2ch;text-align:right;font-variant-numeric:tabular-nums;font-size:40px;line-height:1;font-weight:700;letter-spacing:-.02em;color:#1B2536">{{ schools }}</span><span style="font-size:14px;color:#8A8474">schools</span></p>
                 </div>
                 <div>
                   <input id="calc-schools" v-model.number="schools" type="range" min="2" max="80" step="1" style="width:100%;accent-color:#B4702F;cursor:pointer">
@@ -139,8 +145,8 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                 <p style="margin:0;font-size:14px;line-height:1.6;color:#8A8474">Estimates use £12.50 per school a month (£150 a year) and the bands above. Need something different? <Link href="/contact" style="font-weight:500">Talk to us</Link>.</p>
               </div>
 
-              <!-- Single school -->
-              <div v-else style="display:flex;flex-direction:column;gap:14px">
+                <!-- Single school -->
+                <div :inert="mode !== 'single'" :style="layer(mode === 'single') + ';display:flex;flex-direction:column;gap:14px'">
                 <h3 style="margin:0;font-size:24px;line-height:1.2;letter-spacing:-.01em;font-weight:700;color:#1B2536">One school</h3>
                 <p style="margin:0;font-size:16px;line-height:1.6;text-wrap:pretty">A single school reviewing and recording its own image decisions, with all of ImageSafe. One flat price, billed monthly or yearly.</p>
                 <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:16px;line-height:1.6">
@@ -150,27 +156,36 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                 </ul>
                 <p style="margin:0;font-size:14px;line-height:1.6;color:#8A8474">Estimates use £12.50 a month (£150 a year). Need something different? <Link href="/contact" style="font-weight:500">Talk to us</Link>.</p>
               </div>
+              </div>
 
               <!-- Result -->
-              <div aria-live="polite" data-result="" style="background:#1B2536;color:#fff;border-radius:14px;padding:32px;display:flex;flex-direction:column;gap:16px">
-                <template v-if="mode === 'trust'">
+              <div data-result-stack="" style="display:grid">
+                <div aria-live="polite" data-result="" :inert="mode !== 'trust'" :style="layer(mode === 'trust') + ';background:#1B2536;color:#fff;border-radius:14px;padding:32px;display:flex;flex-direction:column;gap:16px'">
                   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
                     <p :style="darkLabel">Per school</p>
-                    <span v-if="disc > 0" :style="`${mono};font-size:11px;color:#fff;background:#B4702F;padding:4px 10px;border-radius:99px`">{{ Math.round(disc * 100) }}% off</span>
+                    <span :style="`${mono};font-size:11px;color:#fff;background:#B4702F;padding:4px 10px;border-radius:99px;visibility:${disc > 0 ? 'visible' : 'hidden'}`">{{ Math.round(disc * 100) }}% off</span>
                   </div>
                   <p style="margin:0;display:flex;align-items:baseline;gap:10px;flex-wrap:wrap">
                     <span style="font-size:28px;font-weight:700;letter-spacing:-.01em">{{ gbp(perSchool) }}</span>
                     <s v-if="disc > 0" style="font-size:16px;color:#8A8474">{{ gbp(baseRate) }}</s>
-                    <span style="font-size:14px;color:#C9C2B2">/ school · {{ cadence.short }} · × {{ schools }} schools</span>
+                    <!-- On its own line, so the height never depends on how long the price is. -->
+                    <span style="flex-basis:100%;font-size:14px;color:#C9C2B2">/ school · {{ cadence.short }} · × {{ schools }} schools</span>
                   </p>
                   <div style="height:1px;background:#2A3650"></div>
-                </template>
-                <p :style="darkLabel">Estimated total</p>
-                <p style="margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:clamp(36px,3.4vw,48px);line-height:1;font-weight:700;letter-spacing:-.02em">{{ gbp(mode === 'trust' ? total : baseRate) }}</span><span style="font-size:16px;color:#C9C2B2">/ {{ cadence.short }}</span></p>
-                <p v-if="mode === 'trust' && disc > 0" style="margin:0;font-size:16px;line-height:1.6;color:#E7C9A8;font-weight:500">You save {{ gbp(savings) }} {{ cadence.per }} on the full price per school.</p>
-                <p v-if="mode === 'single'" style="margin:0;font-size:16px;line-height:1.6;color:#C9C2B2">For one school, with all of ImageSafe.</p>
-                <a :href="trialHref" data-btn="" style="margin-top:6px;display:flex;align-items:center;justify-content:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
-                <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in minutes</p>
+                  <p :style="darkLabel">Estimated total</p>
+                  <p style="margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:clamp(36px,3.4vw,48px);line-height:1;font-weight:700;letter-spacing:-.02em">{{ gbp(total) }}</span><span style="font-size:16px;color:#C9C2B2">/ {{ cadence.short }}</span></p>
+                  <!-- Kept in the layout at full price too, so crossing a band doesn't change the height. -->
+                  <p :style="`margin:0;font-size:16px;line-height:1.6;color:#E7C9A8;font-weight:500;white-space:nowrap;visibility:${disc > 0 ? 'visible' : 'hidden'}`">You save {{ gbp(savings) }} {{ cadence.per }}.</p>
+                  <a :href="trialHref" data-btn="" style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
+                  <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in minutes</p>
+                </div>
+                <div aria-live="polite" data-result="" :inert="mode !== 'single'" :style="layer(mode === 'single') + ';background:#1B2536;color:#fff;border-radius:14px;padding:32px;display:flex;flex-direction:column;gap:16px'">
+                  <p :style="darkLabel">Estimated total</p>
+                  <p style="margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:clamp(36px,3.4vw,48px);line-height:1;font-weight:700;letter-spacing:-.02em">{{ gbp(baseRate) }}</span><span style="font-size:16px;color:#C9C2B2">/ {{ cadence.short }}</span></p>
+                  <p style="margin:0;font-size:16px;line-height:1.6;color:#C9C2B2">For one school, with all of ImageSafe.</p>
+                  <a :href="trialHref" data-btn="" style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
+                  <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in minutes</p>
+                </div>
               </div>
             </div>
           </div>
