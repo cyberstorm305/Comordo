@@ -102,8 +102,8 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
       <section style="position:relative">
         <div data-pad="" style="position:relative;max-width:var(--is-wide,1180px);margin:0 auto;padding:64px 32px 0">
           <div style="max-width:min(100%,27em);font-size:clamp(40px,4.2vw,84px);margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;gap:30px">
-            <h1 data-h1="" style="margin:0;font-size:clamp(40px,4.2vw,84px);line-height:1.02;letter-spacing:-.025em;font-weight:700;color:#1B2536;text-wrap:balance">Image safeguarding from <br>£10.00 per month.</h1>
-            <p data-hero-p="" style="margin:0;font-size:18px;line-height:1.6;max-width:66.666%;text-wrap:pretty">Whether you’re one school or part of a trust, you get everything ImageSafe has to offer. No setup fees or complicated plans. And the more schools in your trust, the less you pay per school.</p>
+            <h1 data-h1="" style="margin:0;font-size:clamp(40px,4.2vw,84px);line-height:1.02;letter-spacing:-.025em;font-weight:700;color:#1B2536;text-wrap:balance">Image safeguarding peace of mind <br>for a low monthly cost.</h1>
+            <p data-hero-p="" style="margin:0;font-size:18px;line-height:1.6;max-width:66.666%;text-wrap:pretty">Whether you’re one school or part of a trust, you get everything ImageSafe has to offer from as low as £10&nbsp;per&nbsp;month.</p>
             <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px">
               <a :href="trialHref" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:12px 20px;border-radius:9px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
               <a href="#estimate" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#fff;color:#1B2536;font-weight:500;font-size:16px;padding:12px 18px;border-radius:9px;border:1px solid #C9C2B2">Estimate your price</a>
