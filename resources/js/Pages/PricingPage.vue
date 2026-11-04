@@ -36,10 +36,11 @@ const savings = computed(() => (baseRate.value - perSchool.value) * schools.valu
 const bands = computed(() => {
   const s = schools.value
   return [
-    { range: '2–9', off: 'Full price', active: s <= 9 },
-    { range: '10–19', off: '10% off', active: s >= 10 && s <= 19 },
-    { range: '20–29', off: '16% off', active: s >= 20 && s <= 29 },
-    { range: '30+', off: '20% off', active: s >= 30 },
+    // start: where the slider jumps when the band is clicked.
+    { range: '2–9', off: 'Full price', start: 2, active: s <= 9 },
+    { range: '10–19', off: '10% off', start: 10, active: s >= 10 && s <= 19 },
+    { range: '20–29', off: '16% off', start: 20, active: s >= 20 && s <= 29 },
+    { range: '30+', off: '20% off', start: 30, active: s >= 30 },
   ]
 })
 
@@ -129,11 +130,11 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                   <input id="calc-schools" v-model.number="schools" type="range" min="2" max="80" step="1" style="width:100%;accent-color:#B4702F;cursor:pointer">
                   <div :style="`display:flex;justify-content:space-between;${mono};font-size:11px;color:#8A8474;margin-top:8px`"><span>2</span><span>80</span></div>
                 </div>
-                <div data-bands="" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#E7E2D6;border:1px solid #E7E2D6;border-radius:12px;overflow:hidden">
-                  <div v-for="b in bands" :key="b.range" :style="`background:${b.active ? '#F9F1E6' : '#fff'};padding:14px 8px;display:flex;flex-direction:column;gap:4px;text-align:center`">
+                <div data-bands="" role="group" aria-label="Jump to a price band" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:#E7E2D6;border:1px solid #E7E2D6;border-radius:12px;overflow:hidden">
+                  <button v-for="b in bands" :key="b.range" type="button" data-band-btn="" :aria-pressed="b.active" :aria-label="`${b.range} schools, ${b.off}`" :style="`font-family:Satoshi,sans-serif;border:0;cursor:pointer;background:${b.active ? '#F9F1E6' : '#fff'};padding:14px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center`" @click="schools = b.start">
                     <span :style="`${mono};font-size:11px;color:${b.active ? '#B4702F' : '#8A8474'}`">{{ b.range }}</span>
                     <span :style="`font-size:14px;font-weight:${b.active ? 700 : 500};color:${b.active ? '#1B2536' : '#4A5468'}`">{{ b.off }}</span>
-                  </div>
+                  </button>
                 </div>
                 <p style="margin:0;font-size:14px;line-height:1.6;color:#8A8474">Estimates use £12.50 per school a month (£150 a year) and the bands above. Need something different? <Link href="/contact" style="font-weight:500">Talk to us</Link>.</p>
               </div>
@@ -223,6 +224,9 @@ a:hover { color: #8F5722; }
 [data-btn] { white-space: nowrap; transition: background-color .2s, color .2s, border-color .2s, transform .25s cubic-bezier(.2,.7,.2,1); }
 [data-btn]:hover { transform: translateY(-1px); }
 [data-seg] { transition: background-color .2s, color .2s; }
+[data-band-btn] { transition: background-color .2s; }
+[data-band-btn][aria-pressed="false"]:hover { background: #F8F6F1 !important; }
+[data-band-btn]:focus-visible { outline-offset: -2px; }
 input[type="range"]:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid #B4702F; outline-offset: 3px; }
 @media (max-width: 1180px) {
   [data-inc3] { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
