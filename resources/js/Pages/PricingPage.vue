@@ -56,7 +56,7 @@ const included = [
 
 // Questions people ask before buying. The answers are the homepage FAQ's, word for word.
 const faqs = [
-  { q: 'What’s the difference between the free preview and the trial?', a: 'The preview reads the first public pages of your website, counts the photos containing people and shows the checks they would raise. It does not identify anyone or need an account, your photos are never stored, and the results are deleted within 24 hours. A full scan, with permission matching, needs the 7-day trial.' },
+  { q: 'What’s the difference between the free preview and the trial?', a: 'The preview reads the first public pages of your website, counts the photos containing people and shows the checks they would raise. It does not identify anyone or need an account, your photos are never stored, and the results are deleted after 24 hours. A full scan, with permission matching, needs the 7-day trial.' },
   { q: 'Does it connect to our MIS?', a: 'Today, consent records come in by CSV import, using the template we provide; most schools export this from their MIS in a few minutes. Direct connections for Arbor, Bromcom and SIMS are in development.', link: { href: 'mailto:hello@comordo.com?subject=MIS%20connection%20interest', label: 'Register your interest', after: ' and we will tell you when yours is ready.' } },
 ]
 function closeOtherFaqs(e) {
