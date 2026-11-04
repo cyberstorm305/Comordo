@@ -1,11 +1,25 @@
 <script setup>
-// The "Curious what it would find on your site?" band: the instant free preview form.
+// The instant free preview band ("Curious what it would find on your site?" on the homepage).
 // Shared by the ImageSafe homepage and the pricing page. Styles stay inline, as in the
 // homepage handoff.
 import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { identityLoginHref } from '@/identity.js'
 import { createPreview } from '@/usePreview.js'
+
+// The copy defaults to the homepage's; a page can pass its own.
+defineProps({
+  heading: { type: String, default: 'Curious what it would find on your site? Find out in under a minute.' },
+  lead: { type: String, default: "Enter your school's website address. ImageSafe scans the first public pages straight away, counts the images containing people, and shows the safeguarding checks they would raise. Nobody is identified, your photos are never stored, and no account is needed." },
+  points: {
+    type: Array,
+    default: () => [
+      'Results on screen in under a minute, from the first pages of your website',
+      'No faces identified, no permission records needed',
+      'Reads public pages only; changes nothing on your site',
+    ],
+  },
+})
 
 const signInHref = identityLoginHref
 const mono = "font-family:'IBM Plex Mono',monospace"
@@ -61,12 +75,10 @@ onBeforeUnmount(() => reveal?.disconnect())
   <section ref="band" id="preview" data-band="" style="background:#1B2536;color:#fff">
     <div data-pad="" data-cols="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:56px;align-items:center">
       <div data-reveal="">
-        <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#fff;text-wrap:balance">Curious what it would find on your site? Find out in under a minute.</h2>
-        <p data-lead="" style="margin:0 0 22px;font-size:18px;line-height:1.6;color:#C9C2B2;text-wrap:pretty">Enter your school's website address. ImageSafe scans the first public pages straight away, counts the images containing people, and shows the safeguarding checks they would raise. Nobody is identified, your photos are never stored, and no account is needed.</p>
+        <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#fff;text-wrap:balance">{{ heading }}</h2>
+        <p data-lead="" style="margin:0 0 22px;font-size:18px;line-height:1.6;color:#C9C2B2;text-wrap:pretty">{{ lead }}</p>
         <ul style="margin:0;padding:0;list-style:none;display:flex;flex-direction:column;gap:10px;font-size:16px;line-height:1.6;color:#E7C9A8">
-          <li style="display:flex;gap:10px"><span>—</span>Results on screen in under a minute, from the first pages of your website</li>
-          <li style="display:flex;gap:10px"><span>—</span>No faces identified, no permission records needed</li>
-          <li style="display:flex;gap:10px"><span>—</span>Reads public pages only; changes nothing on your site</li>
+          <li v-for="point in points" :key="point" style="display:flex;gap:10px"><span>—</span>{{ point }}</li>
         </ul>
       </div>
       <form data-reveal="" novalidate style="background:#F8F6F1;color:#4A5468;border-radius:14px;padding:32px;display:flex;flex-direction:column;gap:16px;box-shadow:0 30px 60px -30px rgba(0,0,0,.5)" @submit.prevent="requestPreview">

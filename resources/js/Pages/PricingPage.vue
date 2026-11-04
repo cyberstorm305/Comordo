@@ -46,13 +46,23 @@ const bands = computed(() => {
 
 // Every claim here is one the ImageSafe homepage already makes.
 const included = [
-  { title: 'Find every photo of people', body: 'Across your website, prospectuses and newsletters, re-scanned weekly.' },
-  { title: 'Match against permissions', body: 'Consent records come in by CSV, with separate website and social media permissions.' },
-  { title: 'Safeguarding checks', body: 'Close-ups, lone children, names near faces and potential AI-misuse risks, flagged for review.' },
-  { title: 'Safer versions in a click', body: 'Blur faces without consent and remove location data.' },
-  { title: 'People profiles', body: 'Every appearance of a pupil or member of staff, tracked against their profile.' },
-  { title: 'A record you can show', body: 'Every decision and who made it, in an audit log and governors’ reports.' },
+  { title: 'Find photos you may have forgotten', body: 'Scan your website, prospectuses and newsletters, with weekly checks for new images.' },
+  { title: 'Check who’s in them', body: 'Match photos against permission records, including separate website and social media consent.' },
+  { title: 'Spot safeguarding risks', body: 'Flag close-ups, named photos and potential AI misuse risks for your staff to review.' },
+  { title: 'Create safer versions', body: 'Blur faces without consent and remove hidden location data in a click.' },
+  { title: 'See where everyone appears', body: 'Find every photo linked to a pupil or member of staff, all in one place.' },
+  { title: 'Keep a clear record', body: 'Track reviews, decisions and actions, with reports for safeguarding teams and governors.' },
 ]
+
+// Questions people ask before buying. The answers are the homepage FAQ's, word for word.
+const faqs = [
+  { q: 'What’s the difference between the free preview and the trial?', a: 'The preview reads the first public pages of your website, counts the photos containing people and shows the checks they would raise. It does not identify anyone or need an account, your photos are never stored, and the results are deleted within 24 hours. A full scan, with permission matching, needs the 7-day trial.' },
+  { q: 'Does it connect to our MIS?', a: 'Today, consent records come in by CSV import, using the template we provide; most schools export this from their MIS in a few minutes. Direct connections for Arbor, Bromcom and SIMS are in development.', link: { href: 'mailto:hello@comordo.com?subject=MIS%20connection%20interest', label: 'Register your interest', after: ' and we will tell you when yours is ready.' } },
+]
+function closeOtherFaqs(e) {
+  if (!e.target.open) return
+  e.currentTarget.querySelectorAll('details[open]').forEach((d) => { if (d !== e.target) d.open = false })
+}
 
 // Reveal on scroll, as on the homepage.
 const root = ref(null)
@@ -86,13 +96,13 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
       <section style="position:relative">
         <div data-pad="" style="position:relative;max-width:var(--is-wide,1180px);margin:0 auto;padding:64px 32px 0">
           <div style="max-width:min(100%,27em);font-size:clamp(40px,4.2vw,84px);margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;gap:30px">
-            <h1 data-h1="" style="margin:0;font-size:clamp(40px,4.2vw,84px);line-height:1.02;letter-spacing:-.025em;font-weight:700;color:#1B2536;text-wrap:balance">ImageSafe pricing, for one school <br>or a whole trust.</h1>
-            <p data-hero-p="" style="margin:0;font-size:18px;line-height:1.6;max-width:66.666%;text-wrap:pretty">One ImageSafe licence per school, billed monthly or yearly. Every school gets all of ImageSafe. The only thing that changes is the price per school, which falls as your trust grows.</p>
+            <h1 data-h1="" style="margin:0;font-size:clamp(40px,4.2vw,84px);line-height:1.02;letter-spacing:-.025em;font-weight:700;color:#1B2536;text-wrap:balance">Image safeguarding from <br>£12.50 per school a month.</h1>
+            <p data-hero-p="" style="margin:0;font-size:18px;line-height:1.6;max-width:66.666%;text-wrap:pretty">Whether you’re one school or part of a trust, you get everything ImageSafe has to offer. No setup fees or complicated plans. And the more schools in your trust, the less you pay per school.</p>
             <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px">
               <a :href="trialHref" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:12px 20px;border-radius:9px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
               <a href="#estimate" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#fff;color:#1B2536;font-weight:500;font-size:16px;padding:12px 18px;border-radius:9px;border:1px solid #C9C2B2">Estimate your price</a>
             </div>
-            <p style="margin:-12px 0 0;font-size:14px;color:#8A8474">£12.50 per school a month · Down to £10 as your trust grows · No setup fee</p>
+            <p style="margin:-12px 0 0;font-size:14px;color:#8A8474">No card needed · Down to £10 per school a month as your trust grows</p>
           </div>
         </div>
       </section>
@@ -101,8 +111,8 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
       <section id="estimate" data-band="" style="position:relative;scroll-margin-top:40px">
         <div data-pad="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px">
           <div data-reveal="" data-half="" style="max-width:66.666%">
-            <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">Estimate your price</h2>
-            <p data-lead="" style="margin:0;font-size:18px;line-height:1.6;text-wrap:pretty">The price per school falls in bands as your trust grows. Set your number of schools to see where you’d land, then start your free trial. No call needed.</p>
+            <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">See what ImageSafe would cost your school or trust</h2>
+            <p data-lead="" style="margin:0;font-size:18px;line-height:1.6;text-wrap:pretty">Use the slider to choose your number of schools and see your price instantly. The more schools you have, the less you pay per school.</p>
           </div>
 
           <div data-reveal="" style="margin-top:48px;background:#fff;border:1px solid #E7E2D6;border-radius:14px;box-shadow:0 30px 60px -30px rgba(27,37,54,.25);overflow:hidden">
@@ -175,7 +185,7 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                   <p :style="darkLabel">Estimated total</p>
                   <p style="margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:clamp(36px,3.4vw,48px);line-height:1;font-weight:700;letter-spacing:-.02em">{{ gbp(total) }}</span><span style="font-size:16px;color:#C9C2B2">/ {{ cadence.short }}</span></p>
                   <!-- Kept in the layout at full price too, so crossing a band doesn't change the height. -->
-                  <p :style="`margin:0;font-size:16px;line-height:1.6;color:#E7C9A8;font-weight:500;white-space:nowrap;visibility:${disc > 0 ? 'visible' : 'hidden'}`">You save {{ gbp(savings) }} {{ cadence.per }}.</p>
+                  <p :style="`margin:0;font-size:16px;line-height:1.6;color:#E7C9A8;font-weight:500;white-space:nowrap;visibility:${disc > 0 ? 'visible' : 'hidden'}`">Total saving: {{ gbp(savings) }} {{ cadence.per }}</p>
                   <a :href="trialHref" data-btn="" style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
                   <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in minutes</p>
                 </div>
@@ -192,25 +202,12 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
         </div>
       </section>
 
-      <!-- Sign-up call to action: straight after the calculator, on the same background -->
-      <section data-band="" style="padding-top:0">
-        <div data-pad="" data-reveal="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px;display:flex;flex-direction:column;align-items:center;text-align:center;gap:22px">
-          <h2 data-h2="" style="margin:0;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:balance">Try ImageSafe free for 7 days</h2>
-          <p data-lead="" style="margin:0;max-width:40em;font-size:18px;line-height:1.6;text-wrap:pretty">Create your account, run your first full scan and see which photos need attention.</p>
-          <div style="display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px;margin-top:6px">
-            <a :href="trialHref" data-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:12px 20px;border-radius:9px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
-            <a href="#preview" style="display:inline-flex;align-items:center;font-weight:500;font-size:16px;padding:12px 4px">Get an instant free preview →</a>
-          </div>
-          <p style="margin:-6px 0 0;font-size:14px;color:#8A8474">No card needed · First scan in minutes · Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>
-        </div>
-      </section>
-
       <!-- What's included -->
       <section data-band="" style="background:#fff;border-top:1px solid #E7E2D6">
         <div data-pad="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px">
           <div data-reveal="" data-half="" style="max-width:66.666%">
-            <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">Every school gets all of ImageSafe</h2>
-            <p data-lead="" style="margin:0;font-size:18px;line-height:1.6;text-wrap:pretty">There are no feature tiers. Single schools and large trusts use the same ImageSafe; larger trusts simply pay less per school.</p>
+            <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">Everything included. For every school.</h2>
+            <p data-lead="" style="margin:0;font-size:18px;line-height:1.6;text-wrap:pretty">Every school gets the same tools to find, review and manage photos of pupils and staff.</p>
           </div>
           <div data-inc3="" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1px;background:#E7E2D6;border:1px solid #E7E2D6;border-radius:12px;overflow:hidden;margin-top:48px">
             <div v-for="f in included" :key="f.title" data-reveal="" style="background:#fff;padding:32px 28px;display:flex;flex-direction:column;gap:10px">
@@ -221,8 +218,28 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
         </div>
       </section>
 
+      <!-- FAQ: same layout as the homepage's -->
+      <section data-band="" style="border-top:1px solid #E7E2D6">
+        <div data-pad="" data-cols="" style="max-width:var(--is-wide,1180px);margin:0 auto;padding:0 32px;display:grid;grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:56px;align-items:start">
+          <div data-reveal="">
+            <h2 data-h2="" style="margin:0 0 16px;font-size:40px;line-height:1.1;letter-spacing:-.02em;font-weight:700;color:#1B2536;text-wrap:pretty">Before you start</h2>
+            <p data-lead="" style="margin:0;font-size:18px;line-height:1.6">Anything else, <Link href="/contact" style="font-weight:500">ask us directly</Link>.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px" @toggle.capture="closeOtherFaqs">
+            <details v-for="f in faqs" :key="f.q" name="faq" data-reveal="" style="background:#fff;border:1px solid #E7E2D6;border-radius:12px;padding:0 24px">
+              <summary style="list-style:none;cursor:pointer;display:flex;align-items:center;gap:16px;padding:20px 0;font-size:17px;font-weight:700;color:#1B2536">{{ f.q }}<span aria-hidden="true" style="margin-left:auto;color:#B4702F;font-size:20px;line-height:1;flex-shrink:0">+</span></summary>
+              <p style="margin:0;padding:0 0 22px;font-size:16px;line-height:1.6;color:#4A5468;text-wrap:pretty">{{ f.a }}<template v-if="f.link">{{ ' ' }}<a :href="f.link.href" style="font-weight:500">{{ f.link.label }}</a>{{ f.link.after }}</template></p>
+            </details>
+          </div>
+        </div>
+      </section>
+
       <!-- Free preview -->
-      <PreviewBand />
+      <PreviewBand
+        heading="See what ImageSafe finds on your website."
+        lead="Enter your school’s website address to get a quick preview of the photos and potential safeguarding concerns on its first public pages."
+        :points="['No account needed, no photos stored and nothing changed on your website.']"
+      />
     </main>
 
     <SiteFooter />
@@ -242,6 +259,9 @@ a:hover { color: #8F5722; }
 [data-band-btn] { transition: background-color .2s; }
 [data-band-btn][aria-pressed="false"]:hover { background: #F8F6F1 !important; }
 [data-band-btn]:focus-visible { outline-offset: -2px; }
+summary::-webkit-details-marker { display: none; }
+summary span[aria-hidden] { transition: transform .2s; }
+details[open] summary span[aria-hidden] { transform: rotate(45deg); }
 input[type="range"]:focus-visible, button:focus-visible, a:focus-visible { outline: 2px solid #B4702F; outline-offset: 3px; }
 @media (max-width: 1180px) {
   [data-inc3] { grid-template-columns: repeat(2,minmax(0,1fr)) !important; }
