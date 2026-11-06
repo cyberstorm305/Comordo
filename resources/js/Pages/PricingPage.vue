@@ -14,7 +14,6 @@ const trialHref = identityStartHref
 // --- Estimate calculator ---
 // A licence is £150 per school a year. A volume discount (6 / 12 / 16%) plus a flat 4%
 // applies from 10 schools, so the visible bands are 0 / 10 / 16 / 20% off.
-// Same numbers as SignUpPage.vue.
 const BASE = 150
 const OVERALL = 0.04
 const mode = ref('trust') // trust | single
