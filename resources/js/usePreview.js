@@ -14,26 +14,57 @@ async function fetchJson(url, options = {}) {
   const t = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
   try {
     const res = await fetch(url, { ...options, signal: controller.signal })
-    const data = res.ok ? await res.json() : null
+    const data = await res.json().catch(() => null)
     return { status: res.status, ok: res.ok, data }
   } finally {
     clearTimeout(t)
   }
 }
 
-// Starts a preview. Resolves to { id } or { error: 'blocked' | 'limited' | 'busy' }.
-export async function createPreview(url) {
+// Starts a preview. Resolves to { id, lead } or { error: 'email' | 'blocked' | 'limited' | 'busy' }.
+export async function createPreview(url, email) {
   try {
     const res = await fetchJson(`${imagesafeBase}/api/v1/previews`, {
       method: 'POST',
       headers: json,
-      body: JSON.stringify({ url, confirmed: true }),
+      body: JSON.stringify({ url, email, confirmed: true }),
     })
     if (res.status === 429) return { error: 'limited' }
-    if (res.status === 422) return { error: 'blocked' }
+    if (res.status === 422) return { error: res.data?.errors?.email ? 'email' : 'blocked' }
     if (!res.ok) return { error: 'busy' }
     const id = res.data?.id
-    return id ? { id } : { error: 'busy' }
+    return id ? { id, lead: res.data.lead } : { error: 'busy' }
+  } catch {
+    return { error: 'busy' }
+  }
+}
+
+// Asks for the confirmation email. Resolves to { status: 'sent' | 'verified' } or { error: 'limited' | 'busy' }.
+export async function requestPreviewEmail(id, lead) {
+  try {
+    const res = await fetchJson(`${imagesafeBase}/api/v1/previews/${encodeURIComponent(id)}/email`, {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ lead }),
+    })
+    if (res.status === 429) return { error: 'limited' }
+    return res.ok && res.data?.status ? { status: res.data.status } : { error: 'busy' }
+  } catch {
+    return { error: 'busy' }
+  }
+}
+
+// Confirms the email from the link. Resolves to { status: 'verified' } or { error: 'expired' | 'invalid' | 'busy' }.
+export async function verifyPreviewEmail(id, lead, token) {
+  try {
+    const res = await fetchJson(`${imagesafeBase}/api/v1/previews/${encodeURIComponent(id)}/email/verify`, {
+      method: 'POST',
+      headers: json,
+      body: JSON.stringify({ lead, token }),
+    })
+    if (res.status === 404) return { error: 'expired' }
+    if (res.status === 422) return { error: 'invalid' }
+    return res.ok ? { status: 'verified' } : { error: 'busy' }
   } catch {
     return { error: 'busy' }
   }

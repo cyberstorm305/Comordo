@@ -16,6 +16,7 @@ import DecisionPanel from '../Components/ImageSafePreview/DecisionPanel.vue'
 import SafeVersion from '../Components/ImageSafePreview/SafeVersion.vue'
 import PeoplePanel from '../Components/ImageSafePreview/PeoplePanel.vue'
 import TrialPrompt from '../Components/ImageSafePreview/TrialPrompt.vue'
+import KeepPreviewBanner from '../Components/ImageSafePreview/KeepPreviewBanner.vue'
 import TagFaceModal from '../Components/ImageSafePreview/TagFaceModal.vue'
 import { DEMO_PEOPLE } from '../Components/ImageSafePreview/demoPeople.js'
 import { appReview, loadAppReview, matchesFilter, toAppImage } from '../Components/ImageSafePreview/appReview.js'
@@ -209,7 +210,7 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
       <div class="mx-auto mb-3 flex h-11 w-11 items-center justify-center rounded-full text-xl font-bold"
            :class="error === 'expired' ? 'bg-hair text-stone' : 'bg-bad-pale text-bad'" aria-hidden="true">{{ error === 'expired' ? '⏱' : '!' }}</div>
       <h1 class="m-0 mb-1.5 text-base font-bold" data-testid="error-message">{{ errorCopy[error] || errorCopy.busy }}</h1>
-      <p v-if="error === 'expired'" class="m-0 text-[13px] leading-relaxed text-stone">Previews last 24 hours. Run a new one from the homepage.</p>
+      <p v-if="error === 'expired'" class="m-0 text-[13px] leading-relaxed text-stone">Previews last 24 hours, or 24 hours from confirming your email. Run a new one from the homepage.</p>
       <div class="mt-5 flex flex-wrap justify-center gap-2.5">
         <a href="/#preview" class="inline-flex items-center rounded-[7px] border border-line bg-white px-4 py-[9px] text-[13px] font-semibold text-slate no-underline hover:bg-tint-hover" data-testid="error-home-link">{{ error === 'expired' ? 'Run a new preview' : 'Try again' }}</a>
         <a v-if="error === 'busy'" href="/demo" class="inline-flex items-center rounded-[7px] border border-line bg-white px-4 py-[9px] text-[13px] font-semibold text-copper no-underline hover:bg-tint-hover">Book a demo</a>
@@ -218,6 +219,8 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
     </div>
 
     <template v-else>
+      <KeepPreviewBanner :id="id" :done="state === 'done'" />
+
       <!-- The nav shows the section from lg up; below that the title stands in for it, as in the app. -->
       <div class="mb-[22px] flex min-w-0 items-center gap-2 lg:hidden">
         <h1 class="m-0 text-[21px] font-bold tracking-[-0.4px] text-navy">Dashboard</h1>
