@@ -33,6 +33,8 @@ const perSchool = computed(() => (BASE * (1 - disc.value)) / div.value)
 const baseRate = computed(() => BASE / div.value)
 const total = computed(() => perSchool.value * schools.value)
 const savings = computed(() => (baseRate.value - perSchool.value) * schools.value)
+// Subscribing without a trial: Identity's form creates the account, then its upgrade wizard takes what was chosen here.
+const skipHref = computed(() => `${identityStartHref}&subscribe=1&kind=${mode.value === 'trust' ? 'trust' : 'school'}&schools=${mode.value === 'trust' ? schools.value : 1}&cycle=${billing.value}`)
 const bands = computed(() => {
   const s = schools.value
   return [
@@ -104,11 +106,6 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
           <div style="max-width:min(100%,27em);font-size:clamp(40px,4.2vw,84px);margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;gap:30px">
             <h1 data-h1="" style="margin:0;font-size:clamp(40px,4.2vw,84px);line-height:1.02;letter-spacing:-.025em;font-weight:700;color:#1B2536;text-wrap:balance">Image safeguarding peace of mind <br>for a low monthly cost.</h1>
             <p data-hero-p="" style="margin:0;font-size:18px;line-height:1.6;max-width:66.666%;text-wrap:pretty">Whether you’re one school or part of a trust, you get everything ImageSafe has to offer from as low as £10&nbsp;per&nbsp;month. No setup fees or complicated plans. And the more schools in your trust, the less you pay per school.</p>
-            <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px">
-              <a :href="trialHref" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:12px 20px;border-radius:9px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
-              <a href="#estimate" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#fff;color:#1B2536;font-weight:500;font-size:16px;padding:12px 18px;border-radius:9px;border:1px solid #C9C2B2">Estimate your price</a>
-            </div>
-            <p style="margin:-12px 0 0;font-size:14px;color:#8A8474">No card needed · Down to £10 per school a month as your trust grows</p>
           </div>
         </div>
       </section>
@@ -119,8 +116,7 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
           <div data-reveal="" style="background:#fff;border:1px solid #E7E2D6;border-radius:14px;box-shadow:0 30px 60px -30px rgba(27,37,54,.25);overflow:hidden">
             <!-- Intro -->
             <div data-calc-intro="" style="padding:32px 32px 0;max-width:46em">
-              <h2 style="margin:0 0 10px;font-size:24px;line-height:1.2;letter-spacing:-.01em;font-weight:700;color:#1B2536;text-wrap:balance">See what ImageSafe would cost your school or trust</h2>
-              <p style="margin:0;font-size:16px;line-height:1.6;text-wrap:pretty">Use the slider to choose your number of schools and see your price instantly. The more schools you have, the less you pay per school.</p>
+              <h2 style="margin:0;font-size:24px;line-height:1.2;letter-spacing:-.01em;font-weight:700;color:#1B2536;text-wrap:balance">See what ImageSafe would cost your school or trust</h2>
             </div>
             <!-- Toggles -->
             <div data-calc-top="" style="padding:24px 32px;border-bottom:1px solid #E7E2D6;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap">
@@ -192,8 +188,9 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                   <p style="margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:clamp(36px,3.4vw,48px);line-height:1;font-weight:700;letter-spacing:-.02em">{{ gbp(total) }}</span><span style="font-size:16px;color:#C9C2B2">/ {{ cadence.short }}</span></p>
                   <!-- Kept in the layout at full price too, so crossing a band doesn't change the height. -->
                   <p :style="`margin:0;font-size:16px;line-height:1.6;color:#E7C9A8;font-weight:500;white-space:nowrap;visibility:${disc > 0 ? 'visible' : 'hidden'}`">Total saving: {{ gbp(savings) }} {{ cadence.per }}</p>
-                  <a :href="trialHref" data-btn="" style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
+                  <a :href="`${trialHref}&kind=trust`" data-btn="" style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
                   <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in minutes</p>
+                  <a :href="skipHref" data-skip-trial="" style="font-size:14px;color:#E7C9A8;text-align:center;text-decoration:underline">Ready now? Subscribe without a trial</a>
                 </div>
                 <div aria-live="polite" data-result="" :inert="mode !== 'single'" :style="layer(mode === 'single') + ';background:#1B2536;color:#fff;border-radius:14px;padding:32px;display:flex;flex-direction:column;gap:16px'">
                   <p :style="darkLabel">Estimated total</p>
@@ -201,6 +198,7 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                   <p style="margin:0;font-size:16px;line-height:1.6;color:#C9C2B2">For one school, with all of ImageSafe.</p>
                   <a :href="trialHref" data-btn="" style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
                   <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in minutes</p>
+                  <a :href="skipHref" data-skip-trial="" style="font-size:14px;color:#E7C9A8;text-align:center;text-decoration:underline">Ready now? Subscribe without a trial</a>
                 </div>
               </div>
             </div>
