@@ -36,12 +36,10 @@
 @media (min-width: 1440px) { :root { --is-wide: 1520px; } }
 @media (min-width: 1720px) { :root { --is-wide: 1720px; } }
 
-html {
-  scroll-behavior: smooth;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
+/* Only while following a link within the page (app.js). Set all the time, it would also
+   animate the jump to the top when moving to another page. */
+@media (prefers-reduced-motion: no-preference) {
+  html[data-smooth-scroll] { scroll-behavior: smooth; }
 }
 
 body {
