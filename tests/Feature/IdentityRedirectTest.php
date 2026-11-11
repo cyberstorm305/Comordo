@@ -19,6 +19,6 @@ class IdentityRedirectTest extends TestCase
         $identity = config('services.comordo.identity_url');
 
         $this->get('/login')->assertRedirect($identity.'/login?product=imagesafe');
-        $this->get('/buy')->assertRedirect($identity.'/register?product=imagesafe');
+        $this->get('/buy')->assertRedirect($identity.'/start?product=imagesafe');
     }
 }
