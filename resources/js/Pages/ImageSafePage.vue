@@ -103,6 +103,7 @@ const faqs = [
   { q: 'How does it fit with KCSIE and DfE guidance?', a: 'ImageSafe is built around Keeping Children Safe in Education and DfE guidance on using images of pupils. It gives DSLs a record of who appears in each published photograph, whether permission exists, what was considered, what was decided and by whom: a review process you can show governors or an inspector.' },
   { q: 'Where does the face analysis happen, and what is kept?', a: "On ImageSafe's own servers, never a third-party AI service. Downloaded website images are deleted straight after analysis. Face data is encrypted and removed 90 days after a photo leaves your website. Your school stays in control of its data; Comordo only processes it under UK GDPR. Results are shown only to authorised staff and every action is logged. ICO guidance on biometric data, children's information and DPIAs is linked inside the product.", link: { href: '/privacy', label: 'Read our privacy notice →', internal: true } },
   { q: 'What does the instant preview do, and what does it not do?', a: 'It reads the first public pages of your website, counts the photos containing people and shows the checks they would raise. It does not identify anyone or need an account, your photos are never stored, and the results are deleted after 24 hours. A full scan, with permission matching, needs the 7-day trial.' },
+  { q: 'How long does a scan take?', a: 'The instant preview shows its results in under a minute. A full scan of your school’s website usually takes 10 to 20 minutes, depending on how many pages and photos it has. After that, scans run overnight on a schedule you set.' },
 ]
 
 // Only one FAQ open at a time. name="faq" does this natively; this covers older browsers.
@@ -191,7 +192,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
               <a :href="trialHref" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:12px 20px;border-radius:9px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
               <a href="#preview" data-btn="" data-hero-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#fff;color:#1B2536;font-weight:500;font-size:16px;padding:12px 18px;border-radius:9px;border:1px solid #C9C2B2">Get an instant free preview</a>
             </div>
-            <p style="margin:-12px 0 0;font-size:14px;color:#8A8474">No card needed · First scan in minutes · Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>
+            <p style="margin:-12px 0 0;font-size:14px;color:#8A8474">No card needed · First scan in 10–20 minutes · Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>
           </div>
 
           <!-- Hero product frame: review queue -->

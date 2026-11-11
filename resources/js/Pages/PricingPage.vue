@@ -61,6 +61,7 @@ const included = [
 const faqs = [
   { q: 'Can I try ImageSafe before paying?', a: 'Yes. You can try ImageSafe free for 7 days, with no payment card needed.' },
   { q: 'What’s the difference between a free preview and a trial?', a: 'The preview checks the first public pages of your website without an account. The trial gives you access to a full scan, permission checking and the wider ImageSafe tools.' },
+  { q: 'How long does a scan take?', a: 'The instant preview shows its results in under a minute. A full scan of your school’s website usually takes 10 to 20 minutes, depending on how many pages and photos it has. After that, scans run overnight on a schedule you set.' },
   { q: 'Do I need to connect my school’s MIS?', a: 'No. You can import consent records using our CSV template. Direct integrations with Arbor, Bromcom and SIMS are in development.', link: { href: 'mailto:hello@comordo.com?subject=MIS%20connection%20interest', label: 'Register your interest', after: ' and we will tell you when yours is ready.' } },
   { q: 'Does every school get the same features?', a: 'Yes. Every school gets the full ImageSafe platform. There are no feature tiers or paid extras. Trusts simply benefit from lower prices per school.' },
   { q: 'How does pricing work for trusts?', a: 'The more schools in your trust, the less you pay per school. Use the calculator above to see your price and any applicable discounts.' },
@@ -188,7 +189,7 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                   <!-- Kept in the layout at full price too, so crossing a band doesn't change the height. -->
                   <p :style="`margin:0;font-size:16px;line-height:1.6;color:#E7C9A8;font-weight:500;white-space:nowrap;visibility:${disc > 0 ? 'visible' : 'hidden'}`">Total saving: {{ gbp(savings) }} {{ cadence.per }}</p>
                   <a :href="`${trialHref}&kind=trust`" data-btn="" style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
-                  <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in minutes</p>
+                  <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in 10–20 minutes</p>
                   <a :href="skipHref" data-skip-trial="" style="font-size:14px;color:#E7C9A8;text-align:center;text-decoration:underline">Ready now? Subscribe without a trial</a>
                 </div>
                 <div aria-live="polite" data-result="" :inert="mode !== 'single'" :style="layer(mode === 'single') + ';background:#1B2536;color:#fff;border-radius:14px;padding:32px;display:flex;flex-direction:column;gap:16px'">
@@ -196,7 +197,7 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
                   <p style="margin:0;display:flex;align-items:baseline;gap:8px;flex-wrap:wrap"><span style="font-size:clamp(36px,3.4vw,48px);line-height:1;font-weight:700;letter-spacing:-.02em">{{ gbp(baseRate) }}</span><span style="font-size:16px;color:#C9C2B2">/ {{ cadence.short }}</span></p>
                   <p style="margin:0;font-size:16px;line-height:1.6;color:#C9C2B2">For one school, with all of ImageSafe.</p>
                   <a :href="trialHref" data-btn="" style="margin-top:auto;display:flex;align-items:center;justify-content:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:14px 20px;border-radius:10px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
-                  <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in minutes</p>
+                  <p style="margin:0;font-size:14px;color:#C9C2B2;text-align:center">No card needed · First scan in 10–20 minutes</p>
                   <a :href="skipHref" data-skip-trial="" style="font-size:14px;color:#E7C9A8;text-align:center;text-decoration:underline">Ready now? Subscribe without a trial</a>
                 </div>
               </div>
@@ -214,7 +215,7 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
             <a :href="trialHref" data-btn="" style="display:inline-flex;align-items:center;gap:10px;background:#B4702F;color:#fff;font-weight:500;font-size:16px;padding:12px 20px;border-radius:9px;border:1px solid transparent">Start your 7-day free trial <span aria-hidden="true">→</span></a>
             <a href="#preview" style="display:inline-flex;align-items:center;font-weight:500;font-size:16px;padding:12px 4px">Get an instant free preview →</a>
           </div>
-          <p style="margin:-6px 0 0;font-size:14px;color:#8A8474">No card needed · First scan in minutes · Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>
+          <p style="margin:-6px 0 0;font-size:14px;color:#8A8474">No card needed · First scan in 10–20 minutes · Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>
         </div>
       </section>
 
