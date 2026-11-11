@@ -21,5 +21,5 @@ Route::get('/preview/{id}', fn (string $id) => Inertia::render('PreviewPage', ['
 Route::redirect('/login', config('services.comordo.identity_url').'/login?product=imagesafe')->name('login');
 Route::redirect('/signup', config('services.comordo.identity_url').'/start?product=imagesafe')->name('signup');
 Route::redirect('/start', config('services.comordo.identity_url').'/start?product=imagesafe')->name('start');
-Route::redirect('/buy', config('services.comordo.identity_url').'/register?product=imagesafe')->name('buy');
+Route::redirect('/buy', config('services.comordo.identity_url').'/start?product=imagesafe')->name('buy');
 Route::redirect('/account', config('services.comordo.identity_url').'/dashboard')->name('account');
