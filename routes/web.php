@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Support\Seo;
 use App\Support\Site;
 use Illuminate\Support\Facades\Route;
@@ -11,6 +12,7 @@ Route::get('/imagesafe', fn () => Site::is('comordo')
     ? Inertia::render('ImageSafeOverviewPage')
     : redirect('/', 301))->name('imagesafe');
 Route::get('/contact', fn () => Inertia::render('ContactPage'))->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->middleware('throttle:5,1')->name('contact.store');
 Route::get('/privacy', fn () => Inertia::render('PrivacyPage'))->name('privacy');
 Route::get('/terms', fn () => Inertia::render('TermsPage'))->name('terms');
 
