@@ -1,10 +1,10 @@
 <script setup>
-import SiteHeader from '../Components/SiteHeader.vue'
+import PageHeader from '../Components/PageHeader.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
 
 // Structured template copy — have this reviewed by your legal adviser before launch.
 const sections = [
-  { t: 'Who we are', p: ['Comordo ("we", "us", "our") provides digital assurance products for UK schools and multi-academy trusts: ImageSafe, an image audit and safeguarding review workspace, and Compli, a website compliance workspace (launching soon).', 'Comordo is operated by Comordo Ltd, a company registered in England and Wales (company no. 1729746).'] },
+  { t: 'Who we are', p: ['Comordo ("we", "us", "our") provides digital assurance products for UK schools and multi-academy trusts: ImageSafe, an image audit and safeguarding review workspace.', 'Comordo is operated by Comordo Ltd, a company registered in England and Wales (company no. 1729746).'] },
   { t: 'The agreement', p: ['These terms govern your organisation\u2019s subscription to and use of Comordo products. By creating an account or using the services you agree to these terms on behalf of your organisation.'] },
   { t: 'Accounts and access', p: ['One Comordo account covers every product your organisation licenses. You are responsible for keeping credentials secure, for the actions taken under your users\u2019 accounts, and for ensuring access is limited to appropriate staff.'] },
   { t: 'Subscriptions, trials and billing', p: ['Licences are per school, billed monthly or yearly through Stripe. New accounts start with a 7-day free trial with no card required; nothing is charged until you choose to upgrade.', 'Schools may be added mid-term and are billed pro-rata. Volume discounts apply automatically as your school count crosses each band.'] },
@@ -24,7 +24,7 @@ const sections = [
 
 <template>
   <div class="min-h-screen">
-    <SiteHeader />
+    <PageHeader />
     <section class="border-b border-sand">
       <div class="container-site max-w-[880px] py-[clamp(48px,8vw,80px)] flex flex-col gap-10">
         <div class="flex flex-col gap-4">

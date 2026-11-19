@@ -7,3 +7,4 @@ export const identityProduct = 'imagesafe'
 export const identityHref = path => `${identityBase}${path}?product=${identityProduct}`
 export const identityStartHref = identityHref('/start')
 export const identityLoginHref = identityHref('/login')
+export const identityDashboardHref = `${identityBase}/dashboard`

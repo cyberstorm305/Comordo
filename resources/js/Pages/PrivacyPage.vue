@@ -1,11 +1,14 @@
 <script setup>
-import SiteHeader from '../Components/SiteHeader.vue'
+import { computed } from 'vue'
+import PageHeader from '../Components/PageHeader.vue'
+import { useSite } from '@/site.js'
 import SiteFooter from '../Components/SiteFooter.vue'
 
 // Structured template copy — have this reviewed by your DPO / legal adviser before launch.
-const sections = [
-  { t: 'Who we are', p: ['Comordo Ltd (company no. 1729746, England and Wales) provides digital assurance products for UK schools and multi-academy trusts. This policy explains how we handle personal data across our website, ImageSafe and, at launch, Compli.'] },
-  { t: 'What we collect', p: ['Account data: names, work email addresses, organisation details and login credentials for the staff who use Comordo.', 'Service data: the content our products process on your behalf — website content and documents (Compli), published imagery, detected faces and the authorised reference records your organisation manages (ImageSafe), plus review notes, statuses and audit history.', 'Billing data: subscription and invoicing records, processed by Stripe. We never store full card details.'] },
+const { isComordo } = useSite()
+const allSections = [
+  { t: 'Who we are', p: ['Comordo Ltd (company no. 1729746, England and Wales) provides digital assurance products for UK schools and multi-academy trusts. This policy explains how we handle personal data across our website and ImageSafe.'] },
+  { t: 'What we collect', p: ['Account data: names, work email addresses, organisation details and login credentials for the staff who use Comordo.', 'Service data: the content our products process on your behalf — published imagery, detected faces and the authorised reference records your organisation manages (ImageSafe), plus review notes, statuses and audit history.', 'Billing data: subscription and invoicing records, processed by Stripe. We never store full card details.'] },
   { t: 'Free website previews', p: ['When you run a free ImageSafe website preview, we collect your email address, the website address you enter, the date you agreed to this and a scrambled form of your IP address. Comordo is the data controller for this information.', 'We use your email address to send your preview confirmation and link and, because a free preview is offered on this basis, to contact you about ImageSafe and our other products. We only contact addresses that have been confirmed. You can opt out at any time by emailing hello@comordo.com, and we will stop contacting you and delete your details.', 'A preview is deleted 24 hours after it runs, or 24 hours after you confirm your email if that is later. Addresses that are not confirmed are deleted within 48 hours. Confirmed addresses are kept for up to 24 months.'] },
   { t: 'Biometric and children\u2019s data', p: ['ImageSafe can compare detected faces against reference records your organisation creates and controls. This may constitute biometric data relating to children. Your organisation is the data controller for this processing and is responsible for its lawful basis and any required assessments; Comordo processes it only on your documented instructions, as a processor.'] },
   { t: 'How we use data', p: ['To provide and secure the services, surface observations for staff review, maintain audit histories, manage subscriptions and respond to support requests. Automation surfaces information; decisions are always made by your staff.'] },
@@ -16,11 +19,12 @@ const sections = [
   { id: 'cookies', t: 'Cookies and analytics', p: ['This website uses cookies that it needs to work, such as keeping forms secure. These are always on.', 'With your permission, we also use Google Analytics, loaded through Google Tag Manager, to understand how people use the site so we can improve it. Analytics cookies are only set if you choose “Accept analytics”; if you reject them or make no choice, they are not set. Google processes this data on our behalf.', 'You can change your choice at any time with “Cookie settings” at the bottom of every page.'] },
   { t: 'Contact', p: ['Privacy questions: hello@comordo.com. You can also complain to the ICO, though we\u2019d welcome the chance to resolve concerns first.'] },
 ]
+const sections = computed(() => allSections.filter(s => !(isComordo.value && s.t === 'Free website previews')))
 </script>
 
 <template>
   <div class="min-h-screen">
-    <SiteHeader />
+    <PageHeader />
     <section class="border-b border-sand">
       <div class="container-site max-w-[880px] py-[clamp(48px,8vw,80px)] flex flex-col gap-10">
         <div class="flex flex-col gap-4">
