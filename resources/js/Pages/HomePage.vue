@@ -2,8 +2,9 @@
 import { ref } from 'vue'
 import SiteNav from '../Components/SiteNav.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
+import { imagesafeSiteUrl } from '@/site.js'
 
-const demoHref = 'https://imagesafe.co.uk/demo'
+const demoHref = `${imagesafeSiteUrl}/demo`
 
 const openFaq = ref(0)
 const faqs = [

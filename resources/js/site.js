@@ -7,3 +7,7 @@ export function useSite() {
   const isComordo = computed(() => site.value === 'comordo')
   return { site, isComordo }
 }
+
+// ImageSafe's own marketing site (imagesafe.co.uk in production). deploy.sh bakes each target's
+// URL in at build time, so a staging build links to staging rather than to the live site.
+export const imagesafeSiteUrl = (import.meta.env.VITE_MARKETING_URL || 'https://imagesafe.co.uk').replace(/\/$/, '')
