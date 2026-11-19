@@ -26,12 +26,24 @@ class StaticSiteEndpointsTest extends TestCase
         ], $over);
     }
 
+    private array $dirs = [];
+
     private function tmpDir(): string
     {
         $d = sys_get_temp_dir().'/comordo-test-'.bin2hex(random_bytes(4));
         mkdir($d);
+        $this->dirs[] = $d;
 
         return $d;
+    }
+
+    protected function tearDown(): void
+    {
+        foreach ($this->dirs as $d) {
+            array_map('unlink', glob($d.'/*') ?: []);
+            @rmdir($d);
+        }
+        $this->dirs = [];
     }
 
     public function test_validation_matches_the_laravel_form(): void
@@ -176,5 +188,39 @@ class StaticSiteEndpointsTest extends TestCase
     {
         $out = shell_exec(escapeshellarg(PHP_BINARY).' '.escapeshellarg(__DIR__.'/../../resources/static-site/_lib.php'));
         $this->assertSame('', (string) $out);
+    }
+
+    public function test_broken_config_returns_null(): void
+    {
+        $d = $this->tmpDir();
+        file_put_contents($d.'/bad.php', '<?php return [ "a" => ;');
+        $this->assertNull(comordo_config($d.'/bad.php'));
+        file_put_contents($d.'/throws.php', '<?php throw new RuntimeException("x");');
+        $this->assertNull(comordo_config($d.'/throws.php'));
+    }
+
+    public function test_honeypot_zero_is_fake_success_without_sending(): void
+    {
+        $called = false;
+        $http = function () use (&$called) {
+            $called = true;
+
+            return ['status' => 200, 'body' => []];
+        };
+        $r = comordo_handle_contact($this->valid(['website' => '0']), [], ['postmark_token' => 't'], $http);
+        $this->assertSame(['status' => 200, 'body' => ['ok' => true]], $r);
+        $this->assertFalse($called);
+    }
+
+    public function test_non_array_tags_become_empty(): void
+    {
+        $r = comordo_mailchimp_member('a@b.co', ['api_key' => 'k-us1', 'audience_id' => 'a', 'tags' => 'oops']);
+        $this->assertSame([], $r['payload']['tags']);
+    }
+
+    public function test_empty_datacentre_suffix_is_not_configured(): void
+    {
+        $r = comordo_handle_subscribe(['email' => 'a@b.co', 'consent' => true], ['mailchimp' => ['api_key' => 'abc-', 'audience_id' => 'x']], fn () => ['status' => 200, 'body' => []]);
+        $this->assertSame([500, 'Newsletter signup is not configured yet.'], [$r['status'], $r['body']['message']]);
     }
 }

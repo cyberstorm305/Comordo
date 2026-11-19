@@ -15,7 +15,13 @@ function comordo_config(string $path): ?array
     if (!is_file($path)) {
         return null;
     }
-    $config = (static fn () => include $path)();
+    try {
+        $config = (static fn () => include $path)();
+    } catch (Throwable $e) {
+        error_log('comordo config unreadable: ' . $e->getMessage());
+
+        return null;
+    }
 
     return is_array($config) ? $config : null;
 }
@@ -131,7 +137,6 @@ function comordo_http_json(string $method, string $url, array $headers, array $b
     ]);
     $raw = curl_exec($ch);
     $status = (int) curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
-    curl_close($ch);
 
     if ($raw === false) {
         return ['status' => 0, 'body' => null];
@@ -144,11 +149,12 @@ function comordo_mailchimp_member(string $email, array $mc): array
 {
     $key = (string) ($mc['api_key'] ?? '');
     $dc = substr(strrchr($key, '-') ?: '', 1);
+    $tags = is_array($mc['tags'] ?? null) ? array_values($mc['tags']) : [];
     $payload = [
         'email_address' => $email,
         'status_if_new' => 'subscribed',
         'status' => 'subscribed',
-        'tags' => array_values($mc['tags'] ?? []),
+        'tags' => $tags,
     ];
 
     return [
@@ -175,7 +181,7 @@ function comordo_handle_contact(array $in, array $server, ?array $config, ?calla
         error_log('comordo contact: rate limiting skipped: ' . $e->getMessage());
     }
 
-    if (!empty($in['website'])) {
+    if (trim((string) ($in['website'] ?? '')) !== '') {
         return ['status' => 200, 'body' => ['ok' => true]];
     }
 
@@ -223,7 +229,7 @@ function comordo_handle_subscribe(array $in, ?array $config, ?callable $http = n
     $mc = is_array($config['mailchimp'] ?? null) ? $config['mailchimp'] : [];
     $key = is_string($mc['api_key'] ?? null) ? $mc['api_key'] : '';
     $audience = is_string($mc['audience_id'] ?? null) ? $mc['audience_id'] : '';
-    if ($key === '' || $audience === '' || !str_contains($key, '-')) {
+    if ($key === '' || $audience === '' || substr(strrchr($key, '-') ?: '', 1) === '') {
         error_log('comordo subscribe: mailchimp not configured');
 
         return ['status' => 500, 'body' => ['ok' => false, 'message' => 'Newsletter signup is not configured yet.']];

@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+ini_set('display_errors', '0');
+ob_start();
 define('COMORDO_STATIC', true);
 require __DIR__ . '/_lib.php';
 
@@ -20,6 +22,13 @@ if (!is_array($in)) {
     $in = [];
 }
 
-$result = comordo_handle_contact($in, $_SERVER, comordo_config(dirname(__DIR__) . '/comordo-config.php'));
+try {
+    $result = comordo_handle_contact($in, $_SERVER, comordo_config(dirname(__DIR__) . '/comordo-config.php'));
+} catch (Throwable $e) {
+    error_log('comordo contact: ' . $e->getMessage());
+    $result = ['status' => 502, 'body' => ['ok' => false, 'message' => COMORDO_CONTACT_FAILURE]];
+}
+
+ob_end_clean();
 http_response_code($result['status']);
 echo json_encode($result['body'], JSON_UNESCAPED_UNICODE);
