@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use App\Support\Seo;
+use App\Support\Site;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -19,6 +20,7 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
+            'site' => Site::key(),
             'flash' => [
                 'status' => $request->session()->get('status'),
             ],
