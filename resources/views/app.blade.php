@@ -22,9 +22,9 @@
                 }
             } catch (e) {}
         </script>
-        @if (config('seo.gtm_id'))
+        @if (\App\Support\Seo::config('gtm_id'))
         {{-- Google Tag Manager --}}
-        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ config('seo.gtm_id') }}');</script>
+        <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ \App\Support\Seo::config('gtm_id') }}');</script>
         @endif
 
         <title>{{ $seo['title'] }}</title>
@@ -32,7 +32,7 @@
         <meta name="robots" content="{{ $seo['robots'] }}">
         <link rel="canonical" href="{{ $seo['canonical'] }}">
 
-        {{-- Link previews (Open Graph / Twitter): always ImageSafe. --}}
+        {{-- Link previews (Open Graph / Twitter): the current site's own name and image. --}}
         <meta property="og:type" content="website">
         <meta property="og:site_name" content="{{ $seo['site_name'] }}">
         <meta property="og:locale" content="en_GB">
@@ -71,8 +71,8 @@
         @inertiaHead
     </head>
     <body class="antialiased">
-        @if (config('seo.gtm_id'))
-        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('seo.gtm_id') }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+        @if (\App\Support\Seo::config('gtm_id'))
+        <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ \App\Support\Seo::config('gtm_id') }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         @endif
         @inertia
     </body>

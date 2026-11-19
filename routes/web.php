@@ -25,7 +25,7 @@ Route::middleware('site:imagesafe')->group(function () {
 
 // Search engines: only production is indexed; staging and local tell every crawler to stay out.
 Route::get('/robots.txt', fn () => response(app()->isProduction()
-    ? "User-agent: *\nDisallow: /preview/\n\nSitemap: ".rtrim((string) config('app.url'), '/')."/sitemap.xml\n"
+    ? "User-agent: *\n".(Site::is('comordo') ? "Disallow:\n" : "Disallow: /preview/\n")."\nSitemap: ".rtrim((string) config('app.url'), '/')."/sitemap.xml\n"
     : "User-agent: *\nDisallow: /\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']))->name('robots');
 Route::get('/sitemap.xml', fn () => response()->view('sitemap', ['pages' => Seo::sitemap()])
     ->header('Content-Type', 'application/xml; charset=UTF-8'))->name('sitemap');
