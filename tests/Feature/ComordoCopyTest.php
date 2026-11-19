@@ -6,12 +6,6 @@ use Tests\TestCase;
 
 class ComordoCopyTest extends TestCase
 {
-    /** Files not yet cleaned of Compli; Task 4 removes this list and its use. */
-    private const PENDING_TASK_4 = [
-        'Pages/HomePage.vue',
-        'Pages/ImageSafeOverviewPage.vue',
-    ];
-
     private const FILES = [
         'Pages/HomePage.vue',
         'Pages/ImageSafeOverviewPage.vue',
@@ -26,10 +20,6 @@ class ComordoCopyTest extends TestCase
     public function test_no_compli_in_comordo_page_sources(): void
     {
         foreach (self::FILES as $file) {
-            if (in_array($file, self::PENDING_TASK_4, true)) {
-                continue;
-            }
-
             $path = resource_path('js/'.$file);
             $this->assertFileExists($path, $file);
 
@@ -40,5 +30,24 @@ class ComordoCopyTest extends TestCase
 
             $this->assertSame(0, preg_match('/\bCompli\b/', $source), "{$file} mentions Compli");
         }
+    }
+
+    public function test_no_partner_logos_or_quotes_on_comordo_home(): void
+    {
+        $source = file_get_contents(resource_path('js/Pages/HomePage.vue'));
+
+        $this->assertStringNotContainsString('oat.svg', $source);
+        $this->assertStringNotContainsString('hsat.svg', $source);
+        $this->assertStringNotContainsString('<blockquote', $source);
+    }
+
+    public function test_overview_page_links_to_imagesafe_and_start(): void
+    {
+        $path = resource_path('js/Pages/ImageSafeOverviewPage.vue');
+        $this->assertFileExists($path);
+
+        $source = file_get_contents($path);
+        $this->assertStringContainsString('https://imagesafe.co.uk', $source);
+        $this->assertMatchesRegularExpression('/import\s*\{[^}]*\bidentityStartHref\b[^}]*\}\s*from\s*[\'"]@\/identity\.js[\'"]/', $source);
     }
 }

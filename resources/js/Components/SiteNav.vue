@@ -19,7 +19,7 @@ const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
       </Link>
       <nav class="hidden lg:flex items-center gap-7 text-sm font-medium">
         <div class="relative" @mouseenter="productsOpen = true" @mouseleave="productsOpen = false" @focusout="$event.currentTarget.contains($event.relatedTarget) || (productsOpen = false)">
-          <button type="button" class="flex items-center gap-1.5 text-slate hover:text-navy" :class="active === 'products' && 'text-navy font-bold'" aria-haspopup="true" :aria-expanded="productsOpen" @click="productsOpen = !productsOpen" @keydown.esc="productsOpen = false">Products
+          <button type="button" class="flex items-center gap-1.5 text-slate hover:text-navy" :class="['products', 'imagesafe'].includes(active) && 'text-navy font-bold'" aria-haspopup="true" :aria-expanded="productsOpen" @click="productsOpen = !productsOpen" @keydown.esc="productsOpen = false">Products
             <svg width="10" height="6" viewBox="0 0 10 6" fill="none"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
           <div v-if="productsOpen" class="absolute left-0 top-full pt-2">
