@@ -13,13 +13,14 @@ const allSections = [
   { t: 'Biometric and children\u2019s data', p: ['ImageSafe can compare detected faces against reference records your organisation creates and controls. This may constitute biometric data relating to children. Your organisation is the data controller for this processing and is responsible for its lawful basis and any required assessments; Comordo processes it only on your documented instructions, as a processor.'] },
   { t: 'How we use data', p: ['To provide and secure the services, surface observations for staff review, maintain audit histories, manage subscriptions and respond to support requests. Automation surfaces information; decisions are always made by your staff.'] },
   { t: 'Sharing', p: ['We share data only with the sub-processors needed to run the services (hosting, email, payments via Stripe), each under contract. We do not sell personal data.'] },
+  { t: 'Newsletter', p: ['If you sign up to our newsletter, we store your email address in Mailchimp, which sends our emails on our behalf. We use it only to email you about Comordo’s products and news. Every email has an unsubscribe link, or email hello@comordo.com and we will remove you.'] },
   { t: 'Retention', p: ['Service data is retained while your subscription is active and made available for export for 30 days after termination, then deleted. Audit histories follow the same schedule unless you ask us to remove them sooner.'] },
   { t: 'Your rights', p: ['Individuals have the usual UK GDPR rights — access, rectification, erasure, restriction, portability and objection. Requests about school-controlled data should go to the school or trust; we support controllers in responding.'] },
   { t: 'Security', p: ['Access to service data is role-based and logged. We review access, encryption and infrastructure controls regularly, and we\u2019re happy to walk data protection teams through the detail on a call.'] },
   { id: 'cookies', t: 'Cookies and analytics', p: ['This website uses cookies that it needs to work, such as keeping forms secure. These are always on.', 'With your permission, we also use Google Analytics, loaded through Google Tag Manager, to understand how people use the site so we can improve it. Analytics cookies are only set if you choose “Accept analytics”; if you reject them or make no choice, they are not set. Google processes this data on our behalf.', 'You can change your choice at any time with “Cookie settings” at the bottom of every page.'] },
   { t: 'Contact', p: ['Privacy questions: hello@comordo.com. You can also complain to the ICO, though we\u2019d welcome the chance to resolve concerns first.'] },
 ]
-const sections = computed(() => allSections.filter(s => !(isComordo.value && s.t === 'Free website previews')))
+const sections = computed(() => allSections.filter(s => (isComordo.value ? s.t !== 'Free website previews' : s.t !== 'Newsletter')))
 </script>
 
 <template>
