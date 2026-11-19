@@ -14,7 +14,7 @@ This app serves two public sites, chosen per deploy by the `SITE` env value:
 - `SITE=imagesafe` (the default when unset): imagesafe.co.uk. Staging and production use this.
 - `SITE=comordo`: the Comordo corporate site on comordo.com. Each site has its own routes and SEO config (`config/seo-comordo.php` for the corporate site); the other site's routes return 404.
 
-The corporate site also needs `APP_URL=https://comordo.com`, `COMORDO_IDENTITY_URL` and, at build time, `VITE_IDENTITY_URL`. Its contact form (`POST /contact`) emails hello@comordo.com through the app mailer.
+The corporate site also needs `APP_URL=https://comordo.com`, `COMORDO_IDENTITY_URL` and, at build time, `VITE_IDENTITY_URL` and `VITE_IMAGESAFE_SITE_URL` (where its ImageSafe links go; `deploy.sh --target comordo` sets both). Behind a proxy that doesn't pass the visitor's IP itself (comordo.com's host is Cloudflare → nginx → Apache), set `TRUSTED_PROXIES` to the proxy's IP plus Cloudflare's ranges (see `config/trustedproxy.php`). Its contact form (`POST /contact`) emails hello@comordo.com through the app mailer.
 
 To preview the corporate site locally without editing the env file, build the assets and serve it on a free port:
 

@@ -47,7 +47,7 @@ class ComordoCopyTest extends TestCase
         $this->assertFileExists($path);
 
         $source = file_get_contents($path);
-        // Links go to ImageSafe's own site: imagesafe.co.uk unless the build sets VITE_MARKETING_URL.
+        // Links go to ImageSafe's own site: imagesafe.co.uk unless the build sets VITE_IMAGESAFE_SITE_URL.
         $this->assertMatchesRegularExpression('/import\s*\{[^}]*\bimagesafeSiteUrl\b[^}]*\}\s*from\s*[\'"]@\/site\.js[\'"]/', $source);
         $this->assertStringContainsString("'https://imagesafe.co.uk'", file_get_contents(resource_path('js/site.js')));
         $this->assertMatchesRegularExpression('/import\s*\{[^}]*\bidentityStartHref\b[^}]*\}\s*from\s*[\'"]@\/identity\.js[\'"]/', $source);

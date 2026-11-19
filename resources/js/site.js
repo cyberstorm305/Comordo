@@ -9,5 +9,6 @@ export function useSite() {
 }
 
 // ImageSafe's own marketing site (imagesafe.co.uk in production). deploy.sh bakes each target's
-// URL in at build time, so a staging build links to staging rather than to the live site.
-export const imagesafeSiteUrl = (import.meta.env.VITE_MARKETING_URL || 'https://imagesafe.co.uk').replace(/\/$/, '')
+// URL in at build time (IMAGESAFE_SITE_URL, else MARKETING_URL), so a staging build links to
+// staging and a comordo.com build links to imagesafe.co.uk rather than to itself.
+export const imagesafeSiteUrl = (import.meta.env.VITE_IMAGESAFE_SITE_URL || 'https://imagesafe.co.uk').replace(/\/$/, '')
