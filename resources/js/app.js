@@ -4,6 +4,8 @@ import { createInertiaApp, Link, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import CookieBanner from './Components/CookieBanner.vue';
+import StaticLink from './Components/StaticLink.vue';
+import { isStaticExport } from './site.js';
 
 // Titles come from config/seo.php or seo-comordo.php (shared as props.seo), the same place as the server-rendered
 // title and link-preview tags, so pages don't set their own.
@@ -32,7 +34,7 @@ createInertiaApp({
     setup({ el, App, props, plugin }) {
         createApp({ render: () => [h(App, props), h(CookieBanner)] })
             .use(plugin)
-            .component('Link', Link)
+            .component('Link', isStaticExport ? StaticLink : Link)
             .mount(el);
     },
 });

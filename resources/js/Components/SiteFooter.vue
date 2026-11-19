@@ -1,6 +1,7 @@
 <script setup>
 import { identityLoginHref, identityDashboardHref } from '@/identity.js'
 import { useSite } from '@/site.js'
+import NewsletterForm from './NewsletterForm.vue'
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
 const { isComordo } = useSite()
 const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cookie-settings'))
@@ -8,6 +9,11 @@ const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cooki
 
 <template>
   <footer class="border-t border-sand">
+    <div v-if="isComordo" class="border-b border-sand">
+      <div class="container-site py-10">
+        <NewsletterForm />
+      </div>
+    </div>
     <div class="container-site py-10 pb-7 flex flex-wrap items-center justify-between gap-6">
       <div class="flex flex-wrap items-center gap-2.5">
         <img :src="logoSrc" alt="Comordo" class="h-[30px] w-auto block">

@@ -2,18 +2,50 @@
 import { computed, ref } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
 import PageHeader from '../Components/PageHeader.vue'
-import { useSite, imagesafeSiteUrl } from '@/site.js'
+import { useSite, imagesafeSiteUrl, isStaticExport } from '@/site.js'
 import SiteFooter from '../Components/SiteFooter.vue'
 
 const { isComordo } = useSite()
 const page = usePage()
-const sent = computed(() => page.props.flash?.status === 'contact-sent')
+const staticSent = ref(false)
+const sent = computed(() => staticSent.value || page.props.flash?.status === 'contact-sent')
+const staticErrors = ref({})
+const staticProcessing = ref(false)
+const errors = computed(() => (isStaticExport ? staticErrors.value : form.errors))
+const processing = computed(() => (isStaticExport ? staticProcessing.value : form.processing))
+const failureMessage = 'We couldn\'t send your message just now. Please email hello@comordo.com directly.'
 const form = useForm({ name: '', email: '', org: '', topic: 'General enquiry', message: '', website: '' })
 const err = ref(false)
 function submit() {
   if (!form.name.trim() || !/.+@.+\..+/.test(form.email.trim())) { err.value = true; return }
   err.value = false
+  if (isStaticExport) { submitStatic(); return }
   form.post('/contact', { preserveScroll: true, onSuccess: () => form.reset() })
+}
+// Static export: there is no Laravel, so post JSON to the PHP endpoint and read {ok, errors?, message?}.
+async function submitStatic() {
+  staticErrors.value = {}
+  staticProcessing.value = true
+  try {
+    const res = await fetch('/contact.php', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+      body: JSON.stringify({ name: form.name, email: form.email, org: form.org, topic: form.topic, message: form.message, website: form.website }),
+    })
+    const data = await res.json().catch(() => ({}))
+    if (res.ok && data.ok) {
+      staticSent.value = true
+      form.reset()
+    } else if (data.errors && Object.keys(data.errors).length) {
+      staticErrors.value = data.errors
+    } else {
+      staticErrors.value = { form: data.message || failureMessage }
+    }
+  } catch {
+    staticErrors.value = { form: failureMessage }
+  } finally {
+    staticProcessing.value = false
+  }
 }
 const topics = ['General enquiry', 'ImageSafe', 'Data protection & security', 'Billing & licences', 'Press']
 </script>
@@ -45,8 +77,8 @@ const topics = ['General enquiry', 'ImageSafe', 'Data protection & security', 'B
             <div class="absolute -left-[9999px] w-px h-px overflow-hidden" aria-hidden="true"><label>Website <input v-model="form.website" type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
             <label class="flex flex-col gap-1.5"><span class="text-[13px] font-semibold">Message</span><textarea v-model="form.message" rows="5" class="field resize-y" placeholder="Tell us a little about your schools and what you need."></textarea></label>
             <p v-if="err" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] text-[#9A3B2A] m-0"><b>!</b> Please add your name and a valid email address.</p>
-            <p v-for="(msg, key) in form.errors" :key="key" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] text-[#9A3B2A] m-0"><b>!</b> {{ msg }}</p>
-            <button type="submit" class="btn-primary w-full" :disabled="form.processing">Send message →</button>
+            <p v-for="(msg, key) in errors" :key="key" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#F4E2DC] rounded-lg text-[13.5px] text-[#9A3B2A] m-0"><b>!</b> {{ msg }}</p>
+            <button type="submit" class="btn-primary w-full" :disabled="processing">Send message →</button>
           </form>
           <div v-else class="flex flex-col items-center text-center gap-4 py-10">
             <span class="w-[60px] h-[60px] rounded-full bg-[#E7F0EA] flex items-center justify-center"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#3F7E63" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span>
