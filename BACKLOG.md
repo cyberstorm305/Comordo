@@ -1,20 +1,17 @@
 # Backlog
 
-## Joint Comordo marketing site for all products
+## Joint Comordo marketing site: done
 
-The site currently markets ImageSafe only. `/` renders `ImageSafePage.vue` and the nav is anchor links to its sections. The multi-product pieces are kept, not deleted, so they can come back when Compli, OnlineRevison and future products are ready to market together.
+The corporate site is built. The same app serves either site, chosen per deploy by the `SITE` env value (`imagesafe`, the default, or `comordo`). Each site has its own routes and SEO config, and the other site's routes return 404. See the README for running it locally and `docs/production-checklist.md` in the workspace repo for the comordo.com deploy.
 
-What is parked:
+How to add a product to the corporate site:
 
-- `resources/js/Pages/HomePage.vue`: the joint Comordo homepage (products overview, FAQs). Its route is commented out in `routes/web.php`.
-- Product page links in the nav (`resources/js/Components/SiteNav.vue`), commented out above the anchor links.
-- The Compli link in the footer (`resources/js/Components/SiteFooter.vue`), commented out.
-- `resources/js/Pages/CompliPage.vue`: still reachable at `/compli`, but not linked from the nav or footer.
+1. Add a product card to the "Our products" section of `resources/js/Pages/HomePage.vue`, linking to the product's overview page (the ImageSafe card is the pattern).
+2. Add the overview page as a Vue page in `resources/js/Pages/` (copy `ImageSafeOverviewPage.vue`) and its route in `routes/web.php`, rendered only when `Site::is('comordo')`.
+3. Add the page to `config/seo-comordo.php` under `pages` (title, description and `sitemap` priority), which also puts it in the sitemap.
+4. Link it from the nav and footer (`SiteNav.vue`, `SiteFooter.vue`) and extend the feature and SEO tests (titles, canonical, sitemap, 404 on the ImageSafe site).
 
-To bring the joint site back:
+Follow-ups:
 
-1. In `routes/web.php`, restore the `HomePage` route on `/` and give ImageSafe its own route on `/imagesafe` again (remove the redirect).
-2. In `SiteNav.vue`, restore the commented-out product links and remove the ImageSafe anchor links, or move the anchors into an in-page nav on `ImageSafePage.vue`.
-3. Restore the Compli link in `SiteFooter.vue` and point the ImageSafe link back at `/imagesafe`.
-4. In `ImageSafePage.vue`, change the nav CTA back to `/imagesafe#preview`, and point the "Explore ImageSafe" link in `DemoPage.vue` back at `/imagesafe`.
-5. Add OnlineRevison to the products section of `HomePage.vue` and to the nav.
+- `favicon` and `icon-512` are the ImageSafe tick-box mark and are also served on comordo.com. Give Comordo its own mark.
+- `CompliPage.vue` is still reachable at `/compli` but not linked from either site. Link it from the corporate site when Compli is ready to market.

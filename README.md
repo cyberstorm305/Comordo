@@ -7,6 +7,24 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
+## Two sites, one app
+
+This app serves two public sites, chosen per deploy by the `SITE` env value:
+
+- `SITE=imagesafe` (the default when unset): imagesafe.co.uk. Staging and production use this.
+- `SITE=comordo`: the Comordo corporate site on comordo.com. Each site has its own routes and SEO config (`config/seo-comordo.php` for the corporate site); the other site's routes return 404.
+
+The corporate site also needs `APP_URL=https://comordo.com`, `COMORDO_IDENTITY_URL` and, at build time, `VITE_IDENTITY_URL`. Its contact form (`POST /contact`) emails hello@comordo.com through the app mailer.
+
+To preview the corporate site locally without editing the env file, build the assets and serve it on a free port:
+
+```bash
+ddev exec npm run build
+SITE=comordo SESSION_DRIVER=file CACHE_STORE=file APP_URL=http://127.0.0.1:8099 php artisan serve --port=8099
+```
+
+Deploy notes for comordo.com are in `docs/production-checklist.md` in the workspace repo.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
