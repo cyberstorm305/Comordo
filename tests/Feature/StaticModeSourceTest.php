@@ -35,4 +35,31 @@ class StaticModeSourceTest extends TestCase
         $this->assertStringContainsString('I agree that Comordo may store my details and contact me about its products and news, in line with the', $form);
         $this->assertStringContainsString('href="/privacy"', $form);
     }
+
+    public function test_contact_page_and_static_endpoint_agree_on_field_names(): void
+    {
+        $contact = $this->js('Pages/ContactPage.vue');
+        $this->assertSame(1, preg_match('/JSON\.stringify\(\{(.*?)\}\)/s', $contact, $m));
+        preg_match_all('/(\w+):/', $m[1], $keys);
+        $this->assertEqualsCanonicalizing(['name', 'email', 'org', 'topic', 'message', 'website'], $keys[1]);
+
+        $lib = file_get_contents(base_path('resources/static-site/_lib.php'));
+        foreach ($keys[1] as $key) {
+            $this->assertMatchesRegularExpression('/\$in\[\''.$key.'\'\]|\$(?:str|v)\(\''.$key.'\'\)/', $lib, "_lib.php never reads '{$key}'");
+        }
+    }
+
+    public function test_newsletter_form_and_subscribe_handler_agree_on_field_names(): void
+    {
+        $form = $this->js('Components/NewsletterForm.vue');
+        $this->assertSame(1, preg_match('/JSON\.stringify\(\{(.*?)\}\)/s', $form, $m));
+        preg_match_all('/(\w+):/', $m[1], $keys);
+        $this->assertEqualsCanonicalizing(['email', 'consent'], $keys[1]);
+
+        $lib = file_get_contents(base_path('resources/static-site/_lib.php'));
+        $this->assertSame(1, preg_match('/function comordo_handle_subscribe.*/s', $lib, $h));
+        foreach ($keys[1] as $key) {
+            $this->assertStringContainsString("\$in['{$key}']", $h[0]);
+        }
+    }
 }

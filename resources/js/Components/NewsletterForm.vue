@@ -10,7 +10,7 @@ const processing = ref(false)
 async function submit() {
   error.value = ''
   if (!/.+@.+\..+/.test(email.value.trim())) { error.value = 'Please enter a valid email address so we can reach you.'; return }
-  if (!consent.value) { error.value = 'Please tick the box to confirm you\'re happy for us to contact you.'; return }
+  if (!consent.value) { error.value = 'Please tick the box to confirm you’re happy for us to contact you.'; return }
   processing.value = true
   try {
     const res = await fetch('/subscribe.php', {
@@ -22,10 +22,10 @@ async function submit() {
     if (res.ok && data.ok) {
       done.value = true
     } else {
-      error.value = data.message || 'We couldn\'t register that email right now. Please try again shortly.'
+      error.value = data.message || 'We couldn’t register that email right now. Please try again shortly.'
     }
   } catch {
-    error.value = 'We couldn\'t register that email right now. Please try again shortly.'
+    error.value = 'We couldn’t register that email right now. Please try again shortly.'
   } finally {
     processing.value = false
   }
@@ -35,7 +35,7 @@ async function submit() {
 <template>
   <div class="max-w-[560px] flex flex-col gap-3">
     <h2 class="text-[20px] font-bold tracking-[-0.02em] m-0">Stay in touch</h2>
-    <p v-if="done" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#E7F0EA] rounded-lg text-[13.5px] text-[#2F6149] m-0" role="status">Thanks — you're on the list.</p>
+    <p v-if="done" class="flex gap-2.5 items-baseline px-3.5 py-3 bg-[#E7F0EA] rounded-lg text-[13.5px] text-[#2F6149] m-0" role="status">Thanks — you’re on the list.</p>
     <form v-else class="flex flex-col gap-3" novalidate @submit.prevent="submit">
       <div class="flex flex-col sm:flex-row gap-3">
         <label class="flex-1 flex flex-col gap-1.5">

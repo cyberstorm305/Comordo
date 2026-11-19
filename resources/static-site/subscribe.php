@@ -26,7 +26,7 @@ try {
     $result = comordo_handle_subscribe($in, comordo_config(dirname(__DIR__) . '/comordo-config.php'));
 } catch (Throwable $e) {
     error_log('comordo subscribe: ' . $e->getMessage());
-    $result = ['status' => 500, 'body' => ['ok' => false, 'message' => 'We could not register that email right now. Please try again shortly.']];
+    $result = ['status' => 500, 'body' => ['ok' => false, 'message' => 'We couldn’t register that email right now. Please try again shortly.']];
 }
 
 ob_end_clean();

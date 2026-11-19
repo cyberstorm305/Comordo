@@ -19,7 +19,7 @@ class StaticSiteEndpointsTest extends TestCase
         return array_merge([
             'name' => 'Sinéad O\'Brien',
             'email' => 'sinead@example.org',
-            'organisation' => 'Example School',
+            'org' => 'Example School',
             'topic' => 'Data protection & security',
             'message' => 'Hello <b>&</b>',
             'website' => '',
@@ -56,6 +56,13 @@ class StaticSiteEndpointsTest extends TestCase
         $this->assertArrayHasKey('message', $e);
         $this->assertSame("That's too long.", $e['message']);
         $this->assertSame('Please add your name.', comordo_validate_contact($this->valid(['name' => '']))['name']);
+    }
+
+    public function test_organisation_over_190_characters_is_rejected(): void
+    {
+        $this->assertSame([], comordo_validate_contact($this->valid(['org' => str_repeat('a', 190)])));
+        $e = comordo_validate_contact($this->valid(['org' => str_repeat('a', 191)]));
+        $this->assertSame("That's too long.", $e['org']);
     }
 
     public function test_contact_email_is_plain_text_and_unescaped(): void
@@ -170,10 +177,10 @@ class StaticSiteEndpointsTest extends TestCase
         $this->assertSame(['status' => 200, 'body' => ['ok' => true]], $r);
 
         $r = comordo_handle_subscribe(['email' => 'bad', 'consent' => true], $cfg, $ok);
-        $this->assertSame([422, 'Please enter a valid email address.'], [$r['status'], $r['body']['message']]);
+        $this->assertSame([422, 'Please enter a valid email address so we can reach you.'], [$r['status'], $r['body']['message']]);
 
         $r = comordo_handle_subscribe(['email' => 'a@b.co'], $cfg, $ok);
-        $this->assertSame([422, 'Please confirm you are happy for us to contact you.'], [$r['status'], $r['body']['message']]);
+        $this->assertSame([422, 'Please tick the box to confirm you’re happy for us to contact you.'], [$r['status'], $r['body']['message']]);
 
         foreach ([null, [], ['mailchimp' => ['api_key' => 'nodash', 'audience_id' => 'x']]] as $bad) {
             $r = comordo_handle_subscribe(['email' => 'a@b.co', 'consent' => true], $bad, $ok);
@@ -181,7 +188,7 @@ class StaticSiteEndpointsTest extends TestCase
         }
 
         $r = comordo_handle_subscribe(['email' => 'a@b.co', 'consent' => true], $cfg, fn () => ['status' => 400, 'body' => []]);
-        $this->assertSame([502, 'We could not register that email right now. Please try again shortly.'], [$r['status'], $r['body']['message']]);
+        $this->assertSame([502, 'We couldn’t register that email right now. Please try again shortly.'], [$r['status'], $r['body']['message']]);
     }
 
     public function test_lib_cannot_be_requested_directly(): void

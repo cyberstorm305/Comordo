@@ -45,8 +45,8 @@ function comordo_validate_contact(array $in): array
         $errors['email'] = "That's too long.";
     }
 
-    if (mb_strlen($str('organisation')) > 190) {
-        $errors['organisation'] = "That's too long.";
+    if (mb_strlen($str('org')) > 190) {
+        $errors['org'] = "That's too long.";
     }
 
     if (!in_array($str('topic'), COMORDO_TOPICS, true)) {
@@ -102,7 +102,7 @@ function comordo_contact_email(array $in): array
 {
     $v = static fn (string $k): string => is_string($in[$k] ?? null) ? trim($in[$k]) : '';
     $topic = $v('topic');
-    $org = $v('organisation');
+    $org = $v('org');
 
     return [
         'From' => 'Comordo <hello@comordo.com>',
@@ -220,10 +220,10 @@ function comordo_handle_subscribe(array $in, ?array $config, ?callable $http = n
     $consent = filter_var($in['consent'] ?? false, FILTER_VALIDATE_BOOLEAN);
 
     if ($email === '' || strlen($email) > 190 || filter_var($email, FILTER_VALIDATE_EMAIL) === false) {
-        return ['status' => 422, 'body' => ['ok' => false, 'message' => 'Please enter a valid email address.']];
+        return ['status' => 422, 'body' => ['ok' => false, 'message' => 'Please enter a valid email address so we can reach you.']];
     }
     if (!$consent) {
-        return ['status' => 422, 'body' => ['ok' => false, 'message' => 'Please confirm you are happy for us to contact you.']];
+        return ['status' => 422, 'body' => ['ok' => false, 'message' => 'Please tick the box to confirm you’re happy for us to contact you.']];
     }
 
     $mc = is_array($config['mailchimp'] ?? null) ? $config['mailchimp'] : [];
@@ -245,7 +245,7 @@ function comordo_handle_subscribe(array $in, ?array $config, ?callable $http = n
     if ($res['status'] < 200 || $res['status'] >= 300) {
         error_log('comordo subscribe: Mailchimp failed with status ' . $res['status']);
 
-        return ['status' => 502, 'body' => ['ok' => false, 'message' => 'We could not register that email right now. Please try again shortly.']];
+        return ['status' => 502, 'body' => ['ok' => false, 'message' => 'We couldn’t register that email right now. Please try again shortly.']];
     }
 
     return ['status' => 200, 'body' => ['ok' => true]];
