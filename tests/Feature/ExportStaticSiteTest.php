@@ -3,10 +3,13 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\File;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
 class ExportStaticSiteTest extends TestCase
 {
+    private string $base;
+
     private string $out;
 
     private string $build;
@@ -15,9 +18,10 @@ class ExportStaticSiteTest extends TestCase
     {
         parent::setUp();
 
-        $base = sys_get_temp_dir().'/site-export-test-'.bin2hex(random_bytes(6));
-        $this->out = $base.'/out';
-        $this->build = $base.'/build';
+        // The command only writes inside storage/, so the test folders live there too.
+        $this->base = storage_path('site-export-test-'.bin2hex(random_bytes(6)));
+        $this->out = $this->base.'/out';
+        $this->build = $this->base.'/build';
 
         // A minimal Vite build: a manifest for the two entry points and their asset files.
         File::ensureDirectoryExists($this->build.'/assets');
@@ -31,14 +35,14 @@ class ExportStaticSiteTest extends TestCase
 
     protected function tearDown(): void
     {
-        File::deleteDirectory(dirname($this->out));
+        File::deleteDirectory($this->base);
 
         parent::tearDown();
     }
 
-    private function export(array $options = []): int
+    private function export(array $options = [], ?string $out = null, ?string $build = null): int
     {
-        return $this->artisan('site:export', ['out' => $this->out, '--build' => $this->build, ...$options])->run();
+        return $this->artisan('site:export', ['out' => $out ?? $this->out, '--build' => $build ?? $this->build, ...$options])->run();
     }
 
     public function test_export_writes_every_comordo_page(): void
@@ -84,9 +88,17 @@ class ExportStaticSiteTest extends TestCase
 
     public function test_export_contains_only_public_files(): void
     {
-        $this->assertSame(0, $this->export());
+        // A dotfile in a public subfolder (like .DS_Store) is not part of the site.
+        $dotfile = public_path('images/.export-test-dotfile');
+        File::put($dotfile, 'x');
 
-        foreach (['.env', 'index.php', 'vendor', 'storage', 'artisan', 'hot'] as $absent) {
+        try {
+            $this->assertSame(0, $this->export());
+        } finally {
+            File::delete($dotfile);
+        }
+
+        foreach (['.env', 'index.php', 'vendor', 'storage', 'artisan', 'hot', 'images/.export-test-dotfile'] as $absent) {
             $this->assertFileDoesNotExist($this->out.'/'.$absent);
         }
         foreach (['contact.php', 'subscribe.php', '_lib.php', 'comordo.svg', 'images/og-comordo.png'] as $present) {
@@ -120,10 +132,93 @@ class ExportStaticSiteTest extends TestCase
 
     public function test_export_leaves_the_app_as_it_was(): void
     {
+        $sessionBefore = $this->app->make('session.store');
+        $cacheBefore = $this->app->make('cache.store');
+        $appUrl = config('app.url');
+
         $this->assertSame(0, $this->export());
 
         $this->assertSame('testing', $this->app->environment());
         $this->assertSame('imagesafe', config('site.key'));
+        $this->assertSame($appUrl, config('app.url'));
+        $this->assertSame('array', config('session.driver'));
+        $this->assertSame('array', config('cache.default'));
         $this->assertSame(base_path('public'), public_path());
+        // The session and cache the export used are dropped, not left for the next caller.
+        $this->assertNotSame($sessionBefore, $this->app->make('session.store'));
+        $this->assertNotSame($cacheBefore, $this->app->make('cache.store'));
+    }
+
+    /**
+     * Folders --force must never empty, and a file in each that must survive.
+     * Never run these against a command without the output guard.
+     */
+    public static function forbiddenOutputs(): array
+    {
+        return [
+            'relative project root' => ['.', 'artisan'],
+            'filesystem root' => ['/', 'artisan'],
+            'project root' => ['@base', 'artisan'],
+            'public' => ['@public', 'public/index.php'],
+            'public via storage/..' => ['storage/../public', 'public/index.php'],
+            'storage itself' => ['@storage', 'storage'],
+        ];
+    }
+
+    #[DataProvider('forbiddenOutputs')]
+    public function test_refuses_output_outside_storage(string $out, string $survivor): void
+    {
+        $out = match ($out) {
+            '@base' => base_path(),
+            '@public' => public_path(),
+            '@storage' => storage_path(),
+            default => $out,
+        };
+        File::put($this->base.'/sentinel.txt', 'keep');
+
+        $this->assertNotSame(0, $this->export(['--force' => true], $out));
+
+        $this->assertFileExists($this->base.'/sentinel.txt');
+        $this->assertFileExists(base_path($survivor));
+    }
+
+    public function test_refuses_output_that_is_the_build(): void
+    {
+        $this->assertNotSame(0, $this->export(['--force' => true], $this->build));
+        $this->assertFileExists($this->build.'/manifest.json');
+    }
+
+    public function test_refuses_output_that_contains_the_build(): void
+    {
+        $outer = $this->base.'/outer';
+        File::copyDirectory($this->build, $outer.'/build');
+        File::put($outer.'/sentinel.txt', 'keep');
+
+        $this->assertNotSame(0, $this->export(['--force' => true], $outer, $outer.'/build'));
+        $this->assertFileExists($outer.'/sentinel.txt');
+        $this->assertFileExists($outer.'/build/manifest.json');
+    }
+
+    public function test_refuses_output_inside_the_build(): void
+    {
+        $this->assertNotSame(0, $this->export(['--force' => true], $this->build.'/out'));
+        $this->assertFileDoesNotExist($this->build.'/out');
+    }
+
+    public function test_refuses_a_symlinked_output(): void
+    {
+        $target = $this->base.'/target';
+        File::ensureDirectoryExists($target);
+        File::put($target.'/sentinel.txt', 'keep');
+        symlink($target, $this->base.'/link');
+
+        $this->assertNotSame(0, $this->export(['--force' => true], $this->base.'/link'));
+        $this->assertFileExists($target.'/sentinel.txt');
+    }
+
+    public function test_accepts_a_relative_folder_inside_storage(): void
+    {
+        $this->assertSame(0, $this->export([], 'storage/'.basename($this->base).'/relative-out'));
+        $this->assertFileExists($this->base.'/relative-out/index.html');
     }
 }

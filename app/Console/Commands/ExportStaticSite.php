@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Vite;
 use RuntimeException;
@@ -43,6 +44,14 @@ class ExportStaticSite extends Command
         $out = $this->absolute((string) $this->argument('out'));
         $build = $this->absolute((string) ($this->option('build') ?: public_path('build')));
 
+        // The output folder is emptied with --force, so it may only ever be a folder of its own
+        // inside storage/: never the project, public/, storage/ itself or the build.
+        if ($problem = $this->unsafeOutput((string) $this->argument('out'), $out, $build)) {
+            $this->error("Refusing to export to {$out}: {$problem}");
+
+            return self::FAILURE;
+        }
+
         if (! File::isFile($build.'/manifest.json')) {
             $this->error("No manifest.json in {$build}.");
 
@@ -64,6 +73,7 @@ class ExportStaticSite extends Command
         File::copyDirectory($build, $out.'/build');
         $this->copyPublicFiles($out);
         foreach (File::allFiles(resource_path('static-site'), true) as $file) {
+            File::ensureDirectoryExists(dirname($out.'/'.$file->getRelativePathname()));
             File::copy($file->getPathname(), $out.'/'.$file->getRelativePathname());
         }
 
@@ -75,7 +85,8 @@ class ExportStaticSite extends Command
     /**
      * Renders each page through the HTTP kernel as the production comordo.com site, with Vite
      * reading the given build, then puts the app's environment, config, public path and Vite
-     * asset URLs back (the app sets no asset path resolver of its own).
+     * asset URLs back (the app sets no asset path resolver of its own) and drops the array
+     * session and cache stores it used.
      */
     private function renderPages(string $out, string $build): void
     {
@@ -95,10 +106,11 @@ class ExportStaticSite extends Command
         // Vite resolves the manifest at public_path('build/manifest.json'): a temporary public
         // folder whose build/ is the given build makes it emit /build/assets/... URLs.
         $publicDir = storage_path('framework/static-export-'.bin2hex(random_bytes(6)));
-        File::ensureDirectoryExists($publicDir);
-        File::link($build, $publicDir.'/build');
 
         try {
+            File::ensureDirectoryExists($publicDir);
+            File::link($build, $publicDir.'/build');
+
             config($overrides);
             $this->laravel['env'] = 'production';
             $this->laravel->usePublicPath($publicDir);
@@ -128,32 +140,85 @@ class ExportStaticSite extends Command
             $this->laravel->usePublicPath($originalPublic);
             $this->laravel['env'] = $originalEnv;
             config($originalConfig);
-            unlink($publicDir.'/build');
-            File::deleteDirectory($publicDir);
+            foreach (['session', 'session.store', 'cache', 'cache.store'] as $service) {
+                $this->laravel->forgetInstance($service);
+            }
+            Facade::clearResolvedInstance('session');
+            Facade::clearResolvedInstance('cache');
+
+            if (is_link($publicDir.'/build')) {
+                unlink($publicDir.'/build');
+            }
+            if (File::isDirectory($publicDir)) {
+                File::deleteDirectory($publicDir);
+            }
         }
     }
 
-    /** Copies public/ minus Laravel's front controller, the build, dev files and dotfiles. */
+    /** Copies public/ minus Laravel's front controller, the build, dev files and dotfiles (at any depth). */
     private function copyPublicFiles(string $out): void
     {
-        foreach (File::files(public_path(), true) as $file) {
-            $name = $file->getFilename();
-            if (! str_starts_with($name, '.') && ! in_array($name, self::PUBLIC_EXCLUDED, true)) {
-                File::copy($file->getPathname(), $out.'/'.$name);
+        foreach (File::allFiles(public_path()) as $file) {
+            $relative = $file->getRelativePathname();
+            if (in_array(explode('/', $relative)[0], self::PUBLIC_EXCLUDED, true)) {
+                continue;
             }
-        }
-        foreach (File::directories(public_path()) as $dir) {
-            $name = basename($dir);
-            if (! str_starts_with($name, '.') && ! in_array($name, self::PUBLIC_EXCLUDED, true)) {
-                File::copyDirectory($dir, $out.'/'.$name);
-            }
+            File::ensureDirectoryExists(dirname($out.'/'.$relative));
+            File::copy($file->getPathname(), $out.'/'.$relative);
         }
     }
 
-    private function absolute(string $path): string
+    /** Why the output folder is unsafe to write (and empty), or null when it is a folder inside storage/. */
+    private function unsafeOutput(string $given, string $out, string $build): ?string
+    {
+        $storage = $this->absolute(storage_path());
+
+        if (! str_starts_with($out, $storage.'/')) {
+            return "the output folder must be a folder inside {$storage} (not storage itself).";
+        }
+        if (is_link($this->lexical($given)) || is_link($out)) {
+            return 'the output folder must not be a symlink.';
+        }
+        if (file_exists($out) && ! is_dir($out)) {
+            return 'the output path is a file.';
+        }
+        if ($out === $build || str_starts_with($build, $out.'/') || str_starts_with($out, $build.'/')) {
+            return 'the output folder must not be, contain or sit inside the build folder.';
+        }
+
+        return null;
+    }
+
+    /** The absolute path with "." and ".." collapsed, without resolving symlinks. */
+    private function lexical(string $path): string
     {
         $path = str_starts_with($path, '/') ? $path : base_path($path);
+        $parts = [];
+        foreach (explode('/', $path) as $segment) {
+            if ($segment === '..') {
+                array_pop($parts);
+            } elseif ($segment !== '' && $segment !== '.') {
+                $parts[] = $segment;
+            }
+        }
 
-        return rtrim(realpath($path) ?: $path, '/');
+        return '/'.implode('/', $parts);
+    }
+
+    /**
+     * The real absolute path: symlinks resolved for the part that exists, the rest
+     * (folders still to be created) appended.
+     */
+    private function absolute(string $path): string
+    {
+        $existing = $this->lexical($path);
+        $rest = [];
+        while ($existing !== '/' && ! file_exists($existing)) {
+            array_unshift($rest, basename($existing));
+            $existing = dirname($existing);
+        }
+        $real = rtrim(realpath($existing) ?: $existing, '/');
+
+        return ($real.($rest ? '/'.implode('/', $rest) : '')) ?: '/';
     }
 }
