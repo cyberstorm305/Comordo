@@ -1,6 +1,8 @@
 <script setup>
-import { identityLoginHref } from '@/identity.js'
+import { identityLoginHref, identityDashboardHref } from '@/identity.js'
+import { useSite } from '@/site.js'
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
+const { isComordo } = useSite()
 const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cookie-settings'))
 </script>
 
@@ -9,13 +11,20 @@ const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cooki
     <div class="container-site py-10 pb-7 flex flex-wrap items-center justify-between gap-6">
       <div class="flex flex-wrap items-center gap-2.5">
         <img :src="logoSrc" alt="Comordo" class="h-[30px] w-auto block">
-        <div class="text-base text-stone ml-2">ImageSafe is a Comordo product.</div>
+        <div v-if="isComordo" class="text-base text-stone ml-2">Comordo Ltd &middot; Digital assurance for schools and trusts</div>
+        <div v-else class="text-base text-stone ml-2">ImageSafe is a Comordo product.</div>
       </div>
-      <nav class="flex flex-wrap gap-x-6 gap-y-4 text-[13px]">
+      <nav v-if="isComordo" class="flex flex-wrap gap-x-6 gap-y-4 text-[13px]">
+        <Link href="/imagesafe" class="text-stone hover:text-navy">ImageSafe</Link>
+        <Link href="/contact" class="text-stone hover:text-navy">Contact</Link>
+        <Link href="/privacy" class="text-stone hover:text-navy">Privacy</Link>
+        <Link href="/terms" class="text-stone hover:text-navy">Terms</Link>
+        <button type="button" class="text-stone hover:text-navy" @click="openCookieSettings">Cookie settings</button>
+        <a :href="identityDashboardHref" class="text-stone hover:text-navy">Sign in</a>
+      </nav>
+      <nav v-else class="flex flex-wrap gap-x-6 gap-y-4 text-[13px]">
         <Link href="/" class="text-stone hover:text-navy">ImageSafe</Link>
         <Link href="/pricing" class="text-stone hover:text-navy">Pricing</Link>
-        <!-- Hidden while ImageSafe is the homepage; restore for the joint marketing site (see BACKLOG.md). -->
-        <!-- <Link href="/compli" class="text-stone hover:text-navy">Compli</Link> -->
         <Link href="/privacy" class="text-stone hover:text-navy">Privacy</Link>
         <Link href="/terms" class="text-stone hover:text-navy">Terms</Link>
         <Link href="/contact" class="text-stone hover:text-navy">Contact</Link>

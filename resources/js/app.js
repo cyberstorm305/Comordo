@@ -5,7 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
 import CookieBanner from './Components/CookieBanner.vue';
 
-// Titles come from config/seo.php (shared as props.seo), the same place as the server-rendered
+// Titles come from config/seo.php or seo-comordo.php (shared as props.seo), the same place as the server-rendered
 // title and link-preview tags, so pages don't set their own.
 router.on('navigate', (event) => {
     const title = event.detail.page.props.seo?.title;
@@ -22,8 +22,12 @@ document.addEventListener('click', (event) => {
     }
 }, true);
 
+// The site name for pages with no title, from the initial page props (set server-side from SITE).
+const initialPage = document.querySelector('script[data-page="app"]');
+const fallbackTitle = JSON.parse(initialPage?.textContent || '{}').props?.site === 'comordo' ? 'Comordo' : 'ImageSafe';
+
 createInertiaApp({
-    title: title => title || 'ImageSafe',
+    title: title => title || fallbackTitle,
     resolve: name => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
         createApp({ render: () => [h(App, props), h(CookieBanner)] })

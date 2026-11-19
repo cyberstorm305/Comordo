@@ -5,33 +5,40 @@ namespace App\Support;
 use Illuminate\Http\Request;
 
 /**
- * The SEO and link-preview details for the current page, from config/seo.php.
+ * The SEO and link-preview details for the current page, from config/seo.php
+ * (imagesafe.co.uk) or config/seo-comordo.php (comordo.com).
  * Used by app.blade.php (server-rendered tags) and shared with the front end
  * (the tab title on Inertia navigation), so both always agree.
  */
 class Seo
 {
+    /** Reads a setting from the current site's SEO config (seo.* or seo-comordo.*). */
+    public static function config(string $key, mixed $default = null): mixed
+    {
+        return config((Site::is('comordo') ? 'seo-comordo.' : 'seo.').$key, $default);
+    }
+
     /**
      * @return array{site_name: string, title: string, description: string, canonical: string, image: string, image_alt: string, robots: string, theme_color: string, twitter: string}
      */
     public static function for(Request $request): array
     {
-        $page = config('seo.pages.'.($request->route()?->getName() ?? ''), []);
+        $page = self::config('pages.'.($request->route()?->getName() ?? ''), []);
         $base = rtrim((string) config('app.url'), '/');
         $path = '/'.ltrim($request->path(), '/');
 
         return [
-            'site_name' => config('seo.site_name'),
-            'title' => $page['title'] ?? config('seo.title'),
-            'description' => $page['description'] ?? config('seo.description'),
+            'site_name' => self::config('site_name'),
+            'title' => $page['title'] ?? self::config('title'),
+            'description' => $page['description'] ?? self::config('description'),
             // Always the canonical host (no www, no query string).
             'canonical' => $base.($path === '/' ? '/' : $path),
-            'image' => $base.config('seo.image'),
-            'image_alt' => config('seo.image_alt'),
+            'image' => $base.self::config('image'),
+            'image_alt' => self::config('image_alt'),
             // Only production is indexed: staging (marketing.comordo.com) and local never are.
             'robots' => app()->isProduction() ? ($page['robots'] ?? 'index, follow, max-image-preview:large') : 'noindex, nofollow',
-            'theme_color' => config('seo.theme_color'),
-            'twitter' => config('seo.twitter'),
+            'theme_color' => self::config('theme_color'),
+            'twitter' => self::config('twitter'),
         ];
     }
 
@@ -44,6 +51,10 @@ class Seo
     {
         $base = rtrim((string) config('app.url'), '/');
         $organisation = $base.'/#organization';
+
+        if (Site::is('comordo')) {
+            return self::comordoStructuredData($base, $organisation);
+        }
 
         return [
             '@context' => 'https://schema.org',
@@ -66,17 +77,17 @@ class Seo
                     '@type' => 'WebSite',
                     '@id' => $base.'/#website',
                     'url' => $base.'/',
-                    'name' => config('seo.site_name'),
+                    'name' => self::config('site_name'),
                     'inLanguage' => 'en-GB',
                     'publisher' => ['@id' => $organisation],
                 ],
                 [
                     '@type' => 'SoftwareApplication',
-                    'name' => config('seo.site_name'),
+                    'name' => self::config('site_name'),
                     'applicationCategory' => 'BusinessApplication',
                     'operatingSystem' => 'Web',
                     'url' => $base.'/',
-                    'description' => config('seo.description'),
+                    'description' => self::config('description'),
                     'publisher' => ['@id' => $organisation],
                 ],
             ],
@@ -92,7 +103,7 @@ class Seo
     {
         $base = rtrim((string) config('app.url'), '/');
 
-        return collect(config('seo.pages'))
+        return collect(self::config('pages'))
             ->filter(fn (array $page) => isset($page['sitemap']))
             ->map(fn (array $page, string $name) => [
                 'loc' => $base.route($name, [], false),
@@ -101,5 +112,48 @@ class Seo
             ])
             ->values()
             ->all();
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    private static function comordoStructuredData(string $base, string $organisation): array
+    {
+        return [
+            '@context' => 'https://schema.org',
+            '@graph' => [
+                [
+                    '@type' => 'Organization',
+                    '@id' => $organisation,
+                    'name' => 'Comordo Ltd',
+                    'url' => $base.'/',
+                    'logo' => $base.'/icon-512.png',
+                    'email' => 'hello@comordo.com',
+                    'sameAs' => [
+                        'https://www.linkedin.com/company/comordoapp',
+                        'https://www.facebook.com/comordoapp',
+                        'https://www.instagram.com/comordoapp',
+                        'https://x.com/comordoapp',
+                    ],
+                ],
+                [
+                    '@type' => 'WebSite',
+                    '@id' => $base.'/#website',
+                    'url' => $base.'/',
+                    'name' => self::config('site_name'),
+                    'inLanguage' => 'en-GB',
+                    'publisher' => ['@id' => $organisation],
+                ],
+                [
+                    '@type' => 'SoftwareApplication',
+                    'name' => 'ImageSafe',
+                    'applicationCategory' => 'BusinessApplication',
+                    'operatingSystem' => 'Web',
+                    'url' => 'https://imagesafe.co.uk/',
+                    'description' => config('seo.description'),
+                    'publisher' => ['@id' => $organisation],
+                ],
+            ],
+        ];
     }
 }
