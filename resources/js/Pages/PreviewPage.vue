@@ -5,7 +5,6 @@
 -->
 <script setup>
 import { computed, onBeforeUnmount, onMounted, provide, reactive, ref, watch as vueWatch } from 'vue'
-import { Head } from '@inertiajs/vue3'
 import { identityStartHref } from '@/identity.js'
 import { usePreview } from '@/usePreview.js'
 import AppShell from '../Components/ImageSafePreview/AppShell.vue'
@@ -199,10 +198,6 @@ onBeforeUnmount(() => window.removeEventListener('keydown', onKey))
 </script>
 
 <template>
-  <Head title="Your ImageSafe preview">
-    <meta name="robots" content="noindex, nofollow">
-  </Head>
-
   <AppShell :host="host">
     <!-- ERROR STATES -->
     <!-- The scan failed, or the app's display rules couldn't be loaded from ImageSafe. -->

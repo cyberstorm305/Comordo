@@ -1,5 +1,6 @@
 <?php
 
+use App\Support\Seo;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
@@ -17,6 +18,13 @@ Route::get('/terms', fn () => Inertia::render('TermsPage'))->name('terms');
 // A live website preview, shown as an ImageSafe dashboard. The id comes from ImageSafe's preview API.
 Route::get('/preview/{id}', fn (string $id) => Inertia::render('PreviewPage', ['id' => $id]))
     ->whereUuid('id')->name('preview');
+
+// Search engines: only production is indexed; staging and local tell every crawler to stay out.
+Route::get('/robots.txt', fn () => response(app()->isProduction()
+    ? "User-agent: *\nDisallow: /preview/\n\nSitemap: ".rtrim((string) config('app.url'), '/')."/sitemap.xml\n"
+    : "User-agent: *\nDisallow: /\n", 200, ['Content-Type' => 'text/plain; charset=UTF-8']))->name('robots');
+Route::get('/sitemap.xml', fn () => response()->view('sitemap', ['pages' => Seo::sitemap()])
+    ->header('Content-Type', 'application/xml; charset=UTF-8'))->name('sitemap');
 
 Route::redirect('/login', config('services.comordo.identity_url').'/login?product=imagesafe')->name('login');
 Route::redirect('/signup', config('services.comordo.identity_url').'/start?product=imagesafe')->name('signup');

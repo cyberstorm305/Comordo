@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Support\Seo;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 
@@ -21,6 +22,8 @@ class HandleInertiaRequests extends Middleware
             'flash' => [
                 'status' => $request->session()->get('status'),
             ],
+            // The tab title on Inertia navigation; the server-rendered tags come from the same place.
+            'seo' => fn () => ['title' => Seo::for($request)['title']],
         ];
     }
 }

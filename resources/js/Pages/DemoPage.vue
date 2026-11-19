@@ -2,7 +2,6 @@
 // Book a demo. Laid out with the ImageSafe homepage's hero, bands and buttons, and the
 // free preview form's fields (PreviewBand.vue). Styles stay inline, as on the homepage.
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { Head } from '@inertiajs/vue3'
 import SiteFooter from '../Components/SiteFooter.vue'
 import SiteHeader from '../Components/SiteHeader.vue'
 
@@ -38,7 +37,6 @@ const field = 'font-family:Satoshi,sans-serif;font-size:16px;letter-spacing:0;te
 </script>
 
 <template>
-  <Head title="Book a demo — ImageSafe by Comordo" />
   <div ref="root" style="position:relative;min-height:100vh;background:#F8F6F1;color:#4A5468;overflow-x:clip">
     <div aria-hidden="true" style="position:absolute;inset:0 0 auto 0;height:816px;background:radial-gradient(70% 60% at 50% 0%,rgba(231,201,168,.35),transparent 70%);pointer-events:none"></div>
 

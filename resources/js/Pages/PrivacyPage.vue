@@ -13,6 +13,7 @@ const sections = [
   { t: 'Retention', p: ['Service data is retained while your subscription is active and made available for export for 30 days after termination, then deleted. Audit histories follow the same schedule unless you ask us to remove them sooner.'] },
   { t: 'Your rights', p: ['Individuals have the usual UK GDPR rights — access, rectification, erasure, restriction, portability and objection. Requests about school-controlled data should go to the school or trust; we support controllers in responding.'] },
   { t: 'Security', p: ['Access to service data is role-based and logged. We review access, encryption and infrastructure controls regularly, and we\u2019re happy to walk data protection teams through the detail on a call.'] },
+  { id: 'cookies', t: 'Cookies and analytics', p: ['This website uses cookies that it needs to work, such as keeping forms secure. These are always on.', 'With your permission, we also use Google Analytics, loaded through Google Tag Manager, to understand how people use the site so we can improve it. Analytics cookies are only set if you choose “Accept analytics”; if you reject them or make no choice, they are not set. Google processes this data on our behalf.', 'You can change your choice at any time with “Cookie settings” at the bottom of every page.'] },
   { t: 'Contact', p: ['Privacy questions: hello@comordo.com. You can also complain to the ICO, though we\u2019d welcome the chance to resolve concerns first.'] },
 ]
 </script>
@@ -27,7 +28,7 @@ const sections = [
           <h1 class="text-[clamp(30px,5vw,44px)] font-bold tracking-[-0.025em] m-0">Privacy Policy</h1>
           <p class="font-mono text-xs text-mist m-0">Template copy · last updated August 2026 · review with your DPO before launch</p>
         </div>
-        <div v-for="(s, i) in sections" :key="s.t" class="flex flex-col gap-3 border-t border-sand pt-8">
+        <div v-for="(s, i) in sections" :id="s.id" :key="s.t" class="flex flex-col gap-3 border-t border-sand pt-8 scroll-mt-24">
           <span class="font-mono text-xs text-copper">{{ String(i + 1).padStart(2, '0') }}</span>
           <h2 class="text-[clamp(20px,3vw,25px)] font-bold tracking-[-0.02em] m-0">{{ s.t }}</h2>
           <p v-for="(para, j) in s.p" :key="j" class="text-[15px] leading-relaxed text-slate m-0 text-pretty">{{ para }}</p>

@@ -3,7 +3,6 @@
 // with the ImageSafe homepage's bands, type, cards and buttons (ImageSafePage.vue).
 // Styles stay inline, as on the homepage, so values can be checked against it one to one.
 import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
-import { Head } from '@inertiajs/vue3'
 import { identityStartHref } from '@/identity.js'
 import PreviewBand from '../Components/PreviewBand.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
@@ -93,7 +92,6 @@ const segWrap = 'display:flex;gap:4px;background:#fff;border:1px solid #C9C2B2;b
 </script>
 
 <template>
-  <Head title="Pricing — ImageSafe by Comordo" />
   <div ref="root" style="position:relative;min-height:100vh;background:#F8F6F1;color:#4A5468;overflow-x:clip">
     <div aria-hidden="true" style="position:absolute;inset:0 0 auto 0;height:816px;background:radial-gradient(70% 60% at 50% 0%,rgba(231,201,168,.35),transparent 70%);pointer-events:none"></div>
 

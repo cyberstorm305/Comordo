@@ -1,6 +1,7 @@
 <script setup>
 import { identityLoginHref } from '@/identity.js'
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
+const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cookie-settings'))
 </script>
 
 <template>
@@ -18,6 +19,7 @@ const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
         <Link href="/privacy" class="text-stone hover:text-navy">Privacy</Link>
         <Link href="/terms" class="text-stone hover:text-navy">Terms</Link>
         <Link href="/contact" class="text-stone hover:text-navy">Contact</Link>
+        <button type="button" class="text-stone hover:text-navy" @click="openCookieSettings">Cookie settings</button>
         <a :href="identityLoginHref" class="text-stone hover:text-navy">Sign in</a>
       </nav>
     </div>

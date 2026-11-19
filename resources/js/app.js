@@ -1,8 +1,18 @@
 import '../css/app.css';
 
-import { createInertiaApp, Link } from '@inertiajs/vue3';
+import { createInertiaApp, Link, router } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createApp, h } from 'vue';
+import CookieBanner from './Components/CookieBanner.vue';
+
+// Titles come from config/seo.php (shared as props.seo), the same place as the server-rendered
+// title and link-preview tags, so pages don't set their own.
+router.on('navigate', (event) => {
+    const title = event.detail.page.props.seo?.title;
+    if (title) {
+        document.title = title;
+    }
+});
 
 // Glide to in-page links such as #estimate. The attribute only has to last until the scroll starts.
 document.addEventListener('click', (event) => {
@@ -13,10 +23,10 @@ document.addEventListener('click', (event) => {
 }, true);
 
 createInertiaApp({
-    title: title => (title ? `${title} · Comordo` : 'Comordo'),
+    title: title => title || 'ImageSafe',
     resolve: name => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
-        createApp({ render: () => h(App, props) })
+        createApp({ render: () => [h(App, props), h(CookieBanner)] })
             .use(plugin)
             .component('Link', Link)
             .mount(el);

@@ -1,0 +1,13 @@
+{
+  "name": "ImageSafe",
+  "short_name": "ImageSafe",
+  "description": "Image safeguarding for schools and trusts",
+  "start_url": "/",
+  "display": "browser",
+  "background_color": "#F8F6F1",
+  "theme_color": "#1B2536",
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

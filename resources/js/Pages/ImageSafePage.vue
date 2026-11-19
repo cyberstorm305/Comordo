@@ -3,7 +3,6 @@
 // Styles stay inline, as in the handoff, so values can be checked against the design one to one.
 import { identityStartHref } from '@/identity.js'
 import { onBeforeUnmount, onMounted, ref } from 'vue'
-import { Head } from '@inertiajs/vue3'
 import PreviewBand from '../Components/PreviewBand.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
 import SiteHeader from '../Components/SiteHeader.vue'
@@ -175,7 +174,6 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
 </script>
 
 <template>
-  <Head title="ImageSafe by Comordo — Image safeguarding for schools and trusts" />
   <div ref="root" data-root="" style="position:relative;min-height:100vh;background:#F8F6F1;color:#4A5468;overflow-x:clip">
     <div aria-hidden="true" style="position:absolute;inset:0 0 auto 0;height:816px;background:radial-gradient(70% 60% at 50% 0%,rgba(231,201,168,.35),transparent 70%);pointer-events:none"></div>
 
