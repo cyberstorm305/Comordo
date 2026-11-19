@@ -83,4 +83,28 @@ class ContactFormTest extends TestCase
         config(['site.key' => 'imagesafe']);
         $this->assertSame('Contact form (imagesafe.co.uk): ImageSafe', (new ContactMessage($this->valid()))->envelope()->subject);
     }
+
+    public function test_an_invalid_topic_is_rejected(): void
+    {
+        Mail::fake();
+
+        $this->post('/contact', $this->valid(['topic' => 'Something else']))
+            ->assertSessionHasErrors(['topic']);
+
+        Mail::assertNothingSent();
+    }
+
+    public function test_text_email_is_not_html_escaped(): void
+    {
+        $mailable = new ContactMessage($this->valid([
+            'name' => "Sinéad O'Brien",
+            'topic' => 'Data protection & security',
+            'message' => '<b>&</b>',
+        ]));
+
+        $mailable->assertSeeInText("Sinéad O'Brien");
+        $mailable->assertSeeInText('Topic: Data protection & security');
+        $mailable->assertSeeInText('<b>&</b>');
+        $this->assertSame('Contact form (imagesafe.co.uk): Data protection & security', $mailable->envelope()->subject);
+    }
 }
