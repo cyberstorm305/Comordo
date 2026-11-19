@@ -2,7 +2,7 @@
 import { computed, ref } from 'vue'
 import { useForm, usePage } from '@inertiajs/vue3'
 import PageHeader from '../Components/PageHeader.vue'
-import { useSite } from '@/site.js'
+import { useSite, imagesafeSiteUrl } from '@/site.js'
 import SiteFooter from '../Components/SiteFooter.vue'
 
 const { isComordo } = useSite()
@@ -29,7 +29,7 @@ const topics = ['General enquiry', 'ImageSafe', 'Data protection & security', 'B
           <p class="text-[16px] leading-relaxed text-slate text-pretty m-0">Whether it&rsquo;s ImageSafe, a question about data handling or anything else — we&rsquo;ll come back to you within one working day.</p>
           <ul class="flex flex-col gap-3 text-[14.5px] font-medium mt-1.5">
             <li class="flex gap-3 items-baseline"><span class="font-mono text-xs text-copper">→</span>hello@comordo.com</li>
-            <li class="flex gap-3 items-baseline"><span class="font-mono text-xs text-copper">→</span>Prefer a walkthrough? <a v-if="isComordo" href="https://imagesafe.co.uk/demo" class="text-copper">Book a demo</a><Link v-else href="/demo" class="text-copper">Book a demo</Link></li>
+            <li class="flex gap-3 items-baseline"><span class="font-mono text-xs text-copper">→</span>Prefer a walkthrough? <a v-if="isComordo" :href="`${imagesafeSiteUrl}/demo`" class="text-copper">Book a demo</a><Link v-else href="/demo" class="text-copper">Book a demo</Link></li>
           </ul>
         </div>
         <div class="bg-white border border-sand-dark rounded-xl p-[clamp(24px,4vw,40px)]">

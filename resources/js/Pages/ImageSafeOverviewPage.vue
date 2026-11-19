@@ -1,11 +1,12 @@
 <script setup>
 // ImageSafe summary on comordo.com. Copy is drawn from ImageSafePage.vue; the full story lives on imagesafe.co.uk.
 import { identityStartHref } from '@/identity.js'
+import { imagesafeSiteUrl } from '@/site.js'
 import SiteNav from '../Components/SiteNav.vue'
 import SiteFooter from '../Components/SiteFooter.vue'
 
-const imagesafeHref = 'https://imagesafe.co.uk'
-const pricingHref = 'https://imagesafe.co.uk/pricing'
+const imagesafeHref = imagesafeSiteUrl
+const pricingHref = `${imagesafeSiteUrl}/pricing`
 
 const risks = [
   { title: 'Hard to keep track of', body: "Photos are scattered across your website and documents, with no simple way to see them all or know who's in them." },
