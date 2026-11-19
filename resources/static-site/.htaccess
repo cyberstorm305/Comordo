@@ -1,0 +1,10 @@
+DirectorySlash Off
+
+RewriteEngine On
+RewriteRule ^(imagesafe|contact|privacy|terms)/?$ $1/index.html [L]
+
+ErrorDocument 404 /404.html
+
+<Files "_lib.php">
+    Require all denied
+</Files>
