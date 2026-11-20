@@ -2,7 +2,7 @@
 import { identityLoginHref, identityDashboardHref } from '@/identity.js'
 import { comordoSiteUrl, imagesafeSiteUrl, useSite } from '@/site.js'
 import NewsletterForm from './NewsletterForm.vue'
-const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
+const logoSrc = '/comordo.svg'
 const { isComordo } = useSite()
 const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cookie-settings'))
 </script>
@@ -16,7 +16,7 @@ const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cooki
     </div>
     <div class="container-site py-10 pb-7 flex flex-wrap items-center justify-between gap-6">
       <div class="flex flex-wrap items-center gap-2.5">
-        <img :src="logoSrc" alt="Comordo" class="h-[30px] w-auto block">
+        <img :src="logoSrc" width="633" height="133" alt="Comordo" class="h-[30px] w-auto block">
         <div v-if="isComordo" class="text-base text-stone ml-2">Comordo Ltd &middot; Digital assurance for schools and trusts</div>
         <div v-else class="text-base text-stone ml-2">ImageSafe is a <a :href="comordoSiteUrl" class="text-stone underline decoration-sand underline-offset-4 hover:text-navy">Comordo</a> product.</div>
       </div>

@@ -8,7 +8,10 @@ import SiteFooter from '../Components/SiteFooter.vue'
 import SiteHeader from '../Components/SiteHeader.vue'
 
 const trialHref = identityStartHref
-const photo = n => `/images/home/photo-${n}.jpg`
+// WebP variants of public/images/home/photo-N.jpg: full 1200w, 800w, and a 128x96 thumb for the small tiles.
+const photo = n => `/images/home/photo-${n}.webp`
+const photoSet = n => `/images/home/photo-${n}-800.webp 800w, /images/home/photo-${n}.webp 1200w`
+const thumb = n => `/images/home/photo-${n}-thumb.webp`
 
 // --- Testimonials and partner logos ---
 // The band only shows once there are real quotes. Never ship placeholder quotes or sample logos.
@@ -209,7 +212,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
                   </div>
                   <ul style="list-style:none;margin:0;padding:8px;display:flex;flex-direction:column;gap:2px;font-size:12px">
                     <li v-for="item in queue" :key="item.name" :style="'display:flex;gap:10px;align-items:center;padding:8px' + (item.selected ? ';border-radius:8px;background:#FBE9E7;border:1px solid #F3CFC9' : '')">
-                      <span :style="`width:38px;height:38px;border-radius:6px;background:url('${photo(item.img)}') center/cover;flex-shrink:0`"></span>
+                      <span :style="`width:38px;height:38px;border-radius:6px;background:url('${thumb(item.img)}') center/cover;flex-shrink:0`"></span>
                       <span style="min-width:0"><span :style="mono + ';display:block;color:#1B2536;white-space:nowrap;overflow:hidden;text-overflow:ellipsis'">{{ item.name }}</span><span style="color:#8A8474">● {{ item.untagged }} untagged</span></span>
                     </li>
                   </ul>
@@ -218,7 +221,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
                 <div style="background:#fff;border:1px solid #E7E2D6;border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0">
                   <div style="display:flex;align-items:center;gap:12px;padding:10px 14px;background:#C42E22;color:#fff;font-size:13px"><span :style="mono + ';background:rgba(255,255,255,.2);padding:2px 8px;border-radius:999px;font-size:11px'">HIGH</span><span :style="mono + ';opacity:.8;white-space:nowrap'">1 / 97</span><span :style="mono + ';font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'">prospectus.pdf (page 23)</span></div>
                   <div style="position:relative;margin:14px;aspect-ratio:16/10;border-radius:10px;overflow:hidden;background:#d9cfbf">
-                    <img :src="photo(2)" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 45%">
+                    <img :src="photo(2)" :srcset="photoSet(2)" sizes="(max-width: 900px) 92vw, 600px" width="1200" height="900" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 45%">
                     <div v-for="f in heroFaces" :key="f.left" :style="`position:absolute;left:${f.left};top:${f.top};width:${f.width};aspect-ratio:3/4;border:2px solid ${faceTone[f.tone] || '#fff'};border-radius:6px;box-shadow:0 0 0 1px rgba(27,37,54,.5)`"><span :style="`position:absolute;left:50%;top:-22px;transform:translateX(-50%);background:${faceTone[f.tone] || '#1B2536'};color:#fff;font-size:10px;padding:2px 7px;border-radius:4px;white-space:nowrap`">{{ f.label }}</span></div>
                     <span style="position:absolute;left:12px;bottom:12px;background:#1B2536;color:#fff;font-size:12px;padding:6px 10px;border-radius:7px">4 faces</span>
                   </div>
@@ -300,7 +303,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
               <div data-row-inv="" :style="mono + ';padding:10px 16px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#8A8474;border-bottom:1px solid #E7E2D6'"><span>Image</span><span>Appears on</span><span>People</span><span>Safeguarding checks</span></div>
               <div data-clip="" style="display:flex;flex-direction:column;font-size:12px;flex:1;min-height:0;overflow:hidden">
                 <div v-for="row in inventory" :key="row.name" data-row-inv="" style="padding:8px 16px;border-bottom:1px solid #F1EDE3">
-                  <span style="display:flex;align-items:center;gap:8px;min-width:0"><span :style="`width:28px;height:28px;border-radius:5px;background:url('${photo(row.img)}') center/cover;flex-shrink:0`"></span><span :style="`${mono};background:${riskColour[row.risk]};color:#fff;font-size:9px;padding:2px 5px;border-radius:4px`">{{ row.risk }}</span><span :style="mono + ';color:#1B2536;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'">{{ row.name }}</span></span>
+                  <span style="display:flex;align-items:center;gap:8px;min-width:0"><span :style="`width:28px;height:28px;border-radius:5px;background:url('${thumb(row.img)}') center/cover;flex-shrink:0`"></span><span :style="`${mono};background:${riskColour[row.risk]};color:#fff;font-size:9px;padding:2px 5px;border-radius:4px`">{{ row.risk }}</span><span :style="mono + ';color:#1B2536;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'">{{ row.name }}</span></span>
                   <span :style="row.link ? 'color:#B4702F' : 'color:#8A8474'">{{ row.on }}</span>
                   <span style="display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:#F1EDE3;color:#1B2536">{{ row.people }}</span>
                   <span style="display:flex;flex-wrap:wrap;gap:4px"><span v-for="[tone, text] in row.checks" :key="text" :style="`${chip[tone]};padding:2px 7px;border-radius:4px;font-size:11px`">{{ text }}</span></span>
@@ -314,7 +317,7 @@ const panelStyle = 'grid-area:1/1;aspect-ratio:16/9;background:#fff;border:1px s
               <div style="display:flex;align-items:center;gap:12px;padding:11px 16px;background:#C42E22;color:#fff;font-size:13px"><span :style="mono + ';background:rgba(255,255,255,.2);padding:2px 8px;border-radius:999px;font-size:11px'">HIGH</span><span :style="mono + ';font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap'">prospectus-2026.pdf (page 19)</span><span data-hide-sm="" style="opacity:.85;font-size:12px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">linked from /about-us/prospectus/</span><span style="margin-left:auto;border:1px solid rgba(255,255,255,.5);padding:4px 10px;border-radius:6px;font-size:12px;white-space:nowrap">Check again</span></div>
               <div data-cols="" style="display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:14px;padding:14px;flex:1;min-height:0">
                 <div style="position:relative;border-radius:10px;overflow:hidden;background:#d9cfbf;min-height:200px">
-                  <img :src="photo(1)" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 45%">
+                  <img :src="photo(1)" :srcset="photoSet(1)" sizes="(max-width: 900px) 92vw, 600px" width="1200" height="900" alt="" style="position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 45%">
                   <div v-for="f in detailFaces" :key="f.left" :style="`position:absolute;left:${f.left};top:${f.top};width:${f.width};aspect-ratio:3/4;border:2px solid ${faceTone[f.tone] || '#fff'};border-radius:6px;box-shadow:0 0 0 1px rgba(27,37,54,.5)`"><span :style="`position:absolute;left:50%;top:-22px;transform:translateX(-50%);background:${faceTone[f.tone] || '#1B2536'};color:#fff;font-size:10px;padding:2px 7px;border-radius:4px;white-space:nowrap`">{{ f.label }}</span></div>
                   <span style="position:absolute;left:12px;bottom:12px;background:#1B2536;color:#fff;font-size:12px;padding:6px 10px;border-radius:7px">6 faces</span>
                   <span :style="mono + ';position:absolute;right:12px;bottom:12px;background:#1B2536;color:#fff;font-size:12px;padding:6px 10px;border-radius:7px'">− 100% +</span>

@@ -1,13 +1,13 @@
 <script setup>
 import { identityLoginHref } from '@/identity.js'
-const logoSrc = new URL('../../../public/comordo-light.svg', import.meta.url).href
+const logoSrc = '/comordo-light.svg'
 </script>
 
 <template>
   <div class="min-h-screen flex items-center justify-center px-5">
     <div class="max-w-[620px] w-full bg-white border border-sand-dark rounded-xl p-[clamp(28px,5vw,48px)] flex flex-col gap-5">
       <div class="flex items-center gap-2.5">
-        <img :src="logoSrc" alt="Comordo" class="h-[30px] w-auto block">
+        <img :src="logoSrc" width="633" height="133" alt="Comordo" class="h-[30px] w-auto block">
         <span class="font-mono text-[11px] tracking-[0.08em] uppercase text-stone">Identity</span>
       </div>
       <div class="flex flex-col gap-2">

@@ -3,7 +3,7 @@ import { identityBase, identityLoginHref } from '@/identity.js'
 import { ref } from 'vue'
 
 const identityDashboardHref = `${identityBase}/dashboard`
-const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
+const logoSrc = '/comordo.svg'
 const compliRegistered = ref(true)
 const addClicked = ref(false)
 const stripeClicked = ref(false)
@@ -29,7 +29,7 @@ const schools = [
     <header class="bg-white border-b border-sand">
       <div class="max-w-[1100px] mx-auto flex items-center justify-between gap-4 px-5 sm:px-8 py-3.5">
         <div class="flex items-center gap-3.5">
-          <Link href="/"><img :src="logoSrc" alt="Comordo" class="h-[26px] w-auto block"></Link>
+          <Link href="/"><img :src="logoSrc" width="633" height="133" alt="Comordo" class="h-[26px] w-auto block"></Link>
           <i class="w-px h-5 bg-sand"></i>
           <span class="font-mono text-[11px] tracking-[0.08em] uppercase text-stone">Account</span>
         </div>

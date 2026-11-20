@@ -4,7 +4,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { identityStartHref, identityLoginHref } from '@/identity.js'
 
-const logoSrc = new URL('../../../public/imagesafe.svg', import.meta.url).href
+const logoSrc = '/imagesafe.svg'
 const header = ref(null)
 let raf = 0
 
@@ -31,7 +31,7 @@ onBeforeUnmount(() => {
   <header ref="header" data-header="">
     <div data-header-inner="">
       <Link href="/" class="flex items-center">
-        <img data-header-logo="" :src="logoSrc" alt="ImageSafe">
+        <img data-header-logo="" :src="logoSrc" width="659" height="128" alt="ImageSafe">
       </Link>
       <div class="ml-auto flex items-center gap-2.5">
         <Link href="/pricing" data-header-btn="" data-link="">Pricing</Link>
