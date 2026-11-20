@@ -15,7 +15,7 @@ const logoSrc = '/comordo.svg'
   <header class="sticky top-0 z-50 border-b border-sand bg-cream/95 backdrop-blur-sm">
     <div class="container-site flex items-center justify-between py-3.5">
       <Link href="/" class="flex items-center gap-2.5">
-        <img :src="logoSrc" alt="Comordo" class="h-7 w-auto block">
+        <img :src="logoSrc" width="633" height="133" alt="Comordo" class="h-7 w-auto block">
       </Link>
       <nav class="hidden lg:flex items-center gap-7 text-sm font-medium">
         <div class="relative" @mouseenter="productsOpen = true" @mouseleave="productsOpen = false" @focusout="$event.currentTarget.contains($event.relatedTarget) || (productsOpen = false)">

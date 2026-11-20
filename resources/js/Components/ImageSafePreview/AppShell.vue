@@ -30,7 +30,7 @@ const tabs = [
       <div class="flex h-14 w-full items-center gap-3.5 px-4 sm:px-7 wide:grid wide:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]">
         <div class="flex min-w-0 flex-1 items-center gap-3.5">
           <a href="/" class="flex flex-none items-center gap-2.5 text-navy no-underline" aria-label="ImageSafe by Comordo — back to the homepage">
-            <img :src="logoSrc" alt="ImageSafe" class="block h-7 w-auto">
+            <img :src="logoSrc" width="659" height="128" alt="ImageSafe" class="block h-7 w-auto">
           </a>
 
           <nav class="hidden min-w-0 items-center gap-0.5 overflow-x-auto lg:flex" aria-label="ImageSafe">

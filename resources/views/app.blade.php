@@ -66,11 +66,9 @@
         <script type="application/ld+json">{!! json_encode(\App\Support\Seo::structuredData(), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
         @endif
 
-        <link rel="preconnect" href="https://api.fontshare.com">
-        <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&display=swap" rel="stylesheet">
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+        {{-- Self-hosted (resources/css/fonts.css). Preload the two weights the first screen uses. --}}
+        <link rel="preload" href="/fonts/satoshi-400.woff2" as="font" type="font/woff2" crossorigin>
+        <link rel="preload" href="/fonts/satoshi-700.woff2" as="font" type="font/woff2" crossorigin>
 
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         @inertiaHead

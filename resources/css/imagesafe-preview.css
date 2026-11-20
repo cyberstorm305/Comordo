@@ -3,7 +3,7 @@
  * Tokens from the ImageSafe design handoff (Designs/Imagesafe/app.css) and the
  * real app's Tailwind config. The colours the marketing theme doesn't already
  * have only resolve inside the .isp wrapper, so they can't leak into the rest
- * of the site. Satoshi and IBM Plex Mono are loaded by PreviewPage.vue only.
+ * of the site. Satoshi and IBM Plex Mono come from fonts.css.
  */
 
 /* Classes the app's faceTagClass returns at runtime (appReview.js), which Tailwind can't find in this repo's source. */
