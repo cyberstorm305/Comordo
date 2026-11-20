@@ -105,6 +105,8 @@ class ExportStaticSiteTest extends TestCase
             $this->assertFileExists($this->out.'/'.$present);
         }
         $this->assertStringContainsString('ErrorDocument 404 /404.html', File::get($this->out.'/.htaccess'));
+        // A 404 must never be cached: a file missing mid-deploy would stay "missing" in browsers.
+        $this->assertMatchesRegularExpression('/Header always set Cache-Control "no-store" "expr=%\{REQUEST_STATUS\} == 404/', File::get($this->out.'/.htaccess'));
         $this->assertSame(File::get(resource_path('static-site/contact.php')), File::get($this->out.'/contact.php'));
     }
 
