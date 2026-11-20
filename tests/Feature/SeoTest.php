@@ -39,10 +39,10 @@ class SeoTest extends TestCase
 
         $html = $this->get('/pricing?utm_source=x')->assertOk()->getContent();
 
-        $this->assertStringContainsString('<title>Pricing · ImageSafe</title>', $html);
+        $this->assertStringContainsString('<title>Pricing for schools and trusts · ImageSafe</title>', $html);
         $this->assertStringContainsString('<meta name="description" content="ImageSafe pricing for schools and trusts', $html);
         $this->assertStringContainsString('<link rel="canonical" href="https://imagesafe.co.uk/pricing">', $html);
-        $this->get('/pricing')->assertInertia(fn ($page) => $page->where('seo.title', 'Pricing · ImageSafe'));
+        $this->get('/pricing')->assertInertia(fn ($page) => $page->where('seo.title', 'Pricing for schools and trusts · ImageSafe'));
     }
 
     public function test_icons_manifest_and_structured_data_are_linked(): void
@@ -56,7 +56,9 @@ class SeoTest extends TestCase
             $this->assertFileExists(public_path(ltrim($file, '/')));
         }
         $this->assertFileExists(public_path('images/og-image.png'));
-        $this->assertStringContainsString('"@type":"SoftwareApplication","name":"ImageSafe"', $html);
+        $this->assertStringContainsString('"@type":"SoftwareApplication","@id":"https://imagesafe.co.uk/#software","name":"ImageSafe"', $html);
+        // One company behind both sites: the Organization is comordo.com's, with the same @id there.
+        $this->assertStringContainsString('"@type":"Organization","@id":"https://comordo.com/#organization","name":"Comordo Ltd","url":"https://comordo.com/"', $html);
         $this->assertStringNotContainsString('application/ld+json', $this->get('/pricing')->getContent());
     }
 

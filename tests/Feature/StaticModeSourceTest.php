@@ -14,7 +14,7 @@ class StaticModeSourceTest extends TestCase
     public function test_static_mode_is_off_unless_the_build_flag_is_set(): void
     {
         $this->assertMatchesRegularExpression("/isStaticExport\s*=\s*import\.meta\.env\.VITE_STATIC_EXPORT\s*===\s*'1'/", $this->js('site.js'));
-        $this->assertMatchesRegularExpression('/isStaticExport\s*\?\s*StaticLink\s*:\s*Link/', $this->js('app.js'));
+        $this->assertMatchesRegularExpression('/isStaticExport\s*\?\s*StaticLink\s*:\s*InertiaLink/', $this->js('pages.js'));
     }
 
     public function test_contact_page_posts_to_contact_php_in_static_mode(): void

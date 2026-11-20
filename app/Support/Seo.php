@@ -50,10 +50,13 @@ class Seo
     public static function structuredData(): array
     {
         $base = rtrim((string) config('app.url'), '/');
-        $organisation = $base.'/#organization';
+        // Both sites describe the same company with the same @id, so search engines join
+        // imagesafe.co.uk and comordo.com up as one organisation and its product.
+        $company = rtrim((string) self::config('organisation_url', 'https://comordo.com'), '/');
+        $organisation = $company.'/#organization';
 
         if (Site::is('comordo')) {
-            return self::comordoStructuredData($base, $organisation);
+            return self::comordoStructuredData($base, $company, $organisation);
         }
 
         return [
@@ -63,8 +66,8 @@ class Seo
                     '@type' => 'Organization',
                     '@id' => $organisation,
                     'name' => 'Comordo Ltd',
-                    'url' => $base.'/',
-                    'logo' => $base.'/icon-512.png',
+                    'url' => $company.'/',
+                    'logo' => $company.'/icon-512.png',
                     'email' => 'hello@comordo.com',
                     'sameAs' => [
                         'https://www.linkedin.com/company/comordoapp',
@@ -83,6 +86,7 @@ class Seo
                 ],
                 [
                     '@type' => 'SoftwareApplication',
+                    '@id' => $base.'/#software',
                     'name' => self::config('site_name'),
                     'applicationCategory' => 'BusinessApplication',
                     'operatingSystem' => 'Web',
@@ -117,7 +121,7 @@ class Seo
     /**
      * @return array<string, mixed>
      */
-    private static function comordoStructuredData(string $base, string $organisation): array
+    private static function comordoStructuredData(string $base, string $company, string $organisation): array
     {
         return [
             '@context' => 'https://schema.org',
@@ -126,8 +130,8 @@ class Seo
                     '@type' => 'Organization',
                     '@id' => $organisation,
                     'name' => 'Comordo Ltd',
-                    'url' => $base.'/',
-                    'logo' => $base.'/icon-512.png',
+                    'url' => $company.'/',
+                    'logo' => $company.'/icon-512.png',
                     'email' => 'hello@comordo.com',
                     'sameAs' => [
                         'https://www.linkedin.com/company/comordoapp',
@@ -149,6 +153,7 @@ class Seo
                     'name' => 'ImageSafe',
                     'applicationCategory' => 'BusinessApplication',
                     'operatingSystem' => 'Web',
+                    '@id' => 'https://imagesafe.co.uk/#software',
                     'url' => 'https://imagesafe.co.uk/',
                     'description' => config('seo.description'),
                     'publisher' => ['@id' => $organisation],

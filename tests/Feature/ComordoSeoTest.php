@@ -33,7 +33,7 @@ class ComordoSeoTest extends TestCase
 
         $html = $this->get('/imagesafe')->assertOk()->getContent();
 
-        $this->assertStringContainsString('<title>ImageSafe · Comordo</title>', $html);
+        $this->assertStringContainsString('<title>ImageSafe: image safeguarding for schools · Comordo</title>', $html);
         $this->assertStringContainsString('<link rel="canonical" href="https://comordo.com/imagesafe">', $html);
     }
 

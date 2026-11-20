@@ -8,7 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Facade;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Vite;
+use Inertia\Ssr\SsrState;
 use RuntimeException;
+use Symfony\Component\Process\Process;
 
 /**
  * Renders the comordo.com site to a folder of static files for shared hosting (no Laravel there):
@@ -20,7 +22,9 @@ class ExportStaticSite extends Command
     protected $signature = 'site:export
         {out : The folder to write the site into}
         {--build= : The Vite build folder (manifest.json + assets/) to use; defaults to public/build}
-        {--force : Empty the output folder first if it is not empty}';
+        {--force : Empty the output folder first if it is not empty}
+        {--require-ssr : Fail unless every page was server-rendered (the SSR server must be running)}
+        {--ssr-bundle= : An SSR bundle (vite build --ssr) to run for the export; implies --require-ssr}';
 
     protected $description = 'Render the comordo.com site to static files';
 
@@ -68,7 +72,21 @@ class ExportStaticSite extends Command
         }
         File::ensureDirectoryExists($out);
 
-        $this->renderPages($out, $build);
+        $ssr = null;
+        if ($bundle = $this->option('ssr-bundle')) {
+            if (! File::isFile($bundle = $this->absolute((string) $bundle))) {
+                $this->error("No SSR bundle at {$bundle}.");
+
+                return self::FAILURE;
+            }
+            $ssr = $this->startSsrServer($bundle);
+        }
+
+        try {
+            $this->renderPages($out, $build, $ssr !== null);
+        } finally {
+            $ssr?->stop();
+        }
 
         File::copyDirectory($build, $out.'/build');
         $this->copyPublicFiles($out);
@@ -88,9 +106,14 @@ class ExportStaticSite extends Command
      * asset URLs back (the app sets no asset path resolver of its own) and drops the array
      * session and cache stores it used.
      */
-    private function renderPages(string $out, string $build): void
+    private function renderPages(string $out, string $build, bool $ownSsr = false): void
     {
-        $overrides = [
+        $overrides = $ownSsr ? [
+            'inertia.ssr.enabled' => true,
+            'inertia.ssr.url' => 'http://127.0.0.1:'.$this->ssrPort,
+            'inertia.ssr.bundle' => $this->ssrBundle,
+        ] : [];
+        $overrides += [
             'site.key' => 'comordo',
             'app.url' => 'https://comordo.com',
             'session.driver' => 'array',
@@ -119,9 +142,19 @@ class ExportStaticSite extends Command
 
             $kernel = $this->laravel->make(Kernel::class);
             foreach (self::PAGES as $path => [$file, $status]) {
+                // Inertia keeps one SSR result per request in SsrState; every page here is a new
+                // request in the same process, so start each with a fresh one.
+                $this->laravel->forgetInstance(SsrState::class);
+
                 $request = Request::create('https://comordo.com'.$path);
                 $response = $kernel->handle($request);
                 $kernel->terminate($request, $response);
+
+                // The Inertia pages (the 404 page is plain Blade, already complete HTML).
+                $isPage = $status === 200 && str_contains((string) $response->headers->get('Content-Type'), 'text/html');
+                if ($isPage && ($ownSsr || $this->option('require-ssr')) && $this->laravel->make(SsrState::class)->response === null) {
+                    throw new RuntimeException("{$path} was not server-rendered: is the SSR server running (node bootstrap/ssr/ssr.js)?");
+                }
 
                 if ($response->getStatusCode() !== $status) {
                     throw new RuntimeException("{$path} returned {$response->getStatusCode()}, expected {$status}.");
@@ -153,6 +186,38 @@ class ExportStaticSite extends Command
                 File::deleteDirectory($publicDir);
             }
         }
+    }
+
+    private int $ssrPort = 0;
+
+    private ?string $ssrBundle = null;
+
+    /** Runs the SSR bundle on a free local port until the export is done, or throws. */
+    private function startSsrServer(string $bundle): Process
+    {
+        $socket = stream_socket_server('tcp://127.0.0.1:0');
+        $this->ssrPort = (int) substr(strrchr(stream_socket_get_name($socket, false), ':'), 1);
+        fclose($socket);
+        $this->ssrBundle = $bundle;
+
+        $process = new Process(['node', $bundle], null, ['INERTIA_SSR_PORT' => (string) $this->ssrPort]);
+        $process->setTimeout(null);
+        $process->start();
+
+        for ($i = 0; $i < 50; $i++) {
+            if (! $process->isRunning()) {
+                throw new RuntimeException('The SSR server stopped: '.trim($process->getErrorOutput() ?: $process->getOutput()));
+            }
+            if (@file_get_contents('http://127.0.0.1:'.$this->ssrPort.'/health') !== false) {
+                $this->line("  SSR server on port {$this->ssrPort}");
+
+                return $process;
+            }
+            usleep(100_000);
+        }
+        $process->stop();
+
+        throw new RuntimeException('The SSR server did not start within 5 seconds.');
     }
 
     /** Copies public/ minus Laravel's front controller, the build, dev files and dotfiles (at any depth). */

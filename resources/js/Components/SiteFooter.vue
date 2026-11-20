@@ -1,6 +1,6 @@
 <script setup>
 import { identityLoginHref, identityDashboardHref } from '@/identity.js'
-import { useSite } from '@/site.js'
+import { comordoSiteUrl, imagesafeSiteUrl, useSite } from '@/site.js'
 import NewsletterForm from './NewsletterForm.vue'
 const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
 const { isComordo } = useSite()
@@ -18,10 +18,11 @@ const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cooki
       <div class="flex flex-wrap items-center gap-2.5">
         <img :src="logoSrc" alt="Comordo" class="h-[30px] w-auto block">
         <div v-if="isComordo" class="text-base text-stone ml-2">Comordo Ltd &middot; Digital assurance for schools and trusts</div>
-        <div v-else class="text-base text-stone ml-2">ImageSafe is a Comordo product.</div>
+        <div v-else class="text-base text-stone ml-2">ImageSafe is a <a :href="comordoSiteUrl" class="text-stone underline decoration-sand underline-offset-4 hover:text-navy">Comordo</a> product.</div>
       </div>
       <nav v-if="isComordo" class="flex flex-wrap gap-x-6 gap-y-4 text-[13px]">
         <Link href="/imagesafe" class="text-stone hover:text-navy">ImageSafe</Link>
+        <a :href="imagesafeSiteUrl" class="text-stone hover:text-navy">imagesafe.co.uk</a>
         <Link href="/contact" class="text-stone hover:text-navy">Contact</Link>
         <Link href="/privacy" class="text-stone hover:text-navy">Privacy</Link>
         <Link href="/terms" class="text-stone hover:text-navy">Terms</Link>
