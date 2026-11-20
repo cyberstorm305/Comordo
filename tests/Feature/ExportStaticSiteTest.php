@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Http;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Tests\TestCase;
 
@@ -222,5 +223,35 @@ class ExportStaticSiteTest extends TestCase
     {
         $this->assertSame(0, $this->export([], 'storage/'.basename($this->base).'/relative-out'));
         $this->assertFileExists($this->base.'/relative-out/index.html');
+    }
+
+    public function test_require_ssr_fails_when_a_page_is_not_server_rendered(): void
+    {
+        config(['inertia.ssr.enabled' => true, 'inertia.ssr.bundle' => base_path('package.json')]);
+        Http::fake(['*' => Http::response('down', 500)]);
+
+        $this->expectExceptionMessage('/ was not server-rendered');
+        $this->export(options: ['--require-ssr' => true]);
+    }
+
+    public function test_require_ssr_passes_and_writes_each_pages_own_html(): void
+    {
+        config(['inertia.ssr.enabled' => true, 'inertia.ssr.bundle' => base_path('package.json')]);
+        // Each page gets its own render (Inertia keeps one SSR result per request).
+        Http::fake(fn ($request) => Http::response([
+            'head' => ['<title data-inertia="">'.$request['props']['seo']['title'].'</title>'],
+            'body' => '<div id="app"><h1>'.$request['component'].'</h1></div>',
+        ]));
+
+        $this->assertSame(0, $this->export(options: ['--require-ssr' => true]));
+
+        $this->assertStringContainsString('<h1>HomePage</h1>', File::get($this->out.'/index.html'));
+        $this->assertStringContainsString('<h1>ContactPage</h1>', File::get($this->out.'/contact/index.html'));
+        $this->assertSame(1, substr_count(File::get($this->out.'/contact/index.html'), '<title'));
+    }
+
+    public function test_ssr_bundle_must_exist(): void
+    {
+        $this->assertSame(1, $this->export(options: ['--ssr-bundle' => $this->base.'/missing-ssr.js']));
     }
 }

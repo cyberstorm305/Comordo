@@ -25,6 +25,23 @@ SITE=comordo SESSION_DRIVER=file CACHE_STORE=file APP_URL=http://127.0.0.1:8099 
 
 Deploy notes for comordo.com are in `docs/production-checklist.md` in the workspace repo.
 
+## Server-side rendering
+
+Both sites render each page on the server (Inertia SSR), so search engines, AI search and link
+previews see the full content without running JavaScript. `resources/js/ssr.js` is the server
+entry, `resources/js/pages.js` the setup it shares with the browser, and `npm run build` builds
+both bundles (`public/build` and `bootstrap/ssr/ssr.js`).
+
+- **imagesafe.co.uk / staging:** `deploy.sh` ships `bootstrap/ssr/ssr.js` and restarts the
+  `comordo-marketing-ssr` systemd unit (`deploy/systemd/` in the workspace repo). If it is down,
+  pages still work: Inertia falls back to rendering in the browser.
+- **comordo.com:** `site:export --ssr-bundle=...` runs the bundle itself while it exports and
+  fails if any page comes out empty, so the static host needs no Node.
+- **Locally:** run `node bootstrap/ssr/ssr.js` in DDEV after a build. Tests run with SSR off
+  (`phpunit.xml`); `SsrTest` fakes the SSR server.
+- Page titles come only from `config/seo.php` / `seo-comordo.php` (`titleFor()` in pages.js), so
+  the server's `<title>`, the browser tab and Google's rendered view always agree.
+
 ## About Laravel
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:

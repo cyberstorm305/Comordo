@@ -27,7 +27,12 @@
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','{{ \App\Support\Seo::config('gtm_id') }}');</script>
         @endif
 
+        {{-- With server-side rendering the title comes from @inertiaHead (same seo title, via <Head>
+             in pages.js); without it (SSR down), from here. Never both. --}}
+        @php($ssrHead = app(\Inertia\Ssr\SsrState::class)->setPage($page)->dispatch()?->head ?? '')
+        @unless (str_contains($ssrHead, '<title'))
         <title>{{ $seo['title'] }}</title>
+        @endunless
         <meta name="description" content="{{ $seo['description'] }}">
         <meta name="robots" content="{{ $seo['robots'] }}">
         <link rel="canonical" href="{{ $seo['canonical'] }}">

@@ -10,6 +10,7 @@ export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
+            ssr: 'resources/js/ssr.js',
             refresh: true,
         }),
         tailwindcss(),
@@ -26,6 +27,10 @@ export default defineConfig({
         watch: {
             ignored: ['**/storage/framework/views/**'],
         },
+    },
+    // The server bundle carries its dependencies, so the server needs Node but no node_modules.
+    ssr: {
+        noExternal: true,
     },
     resolve: {
         alias: {
