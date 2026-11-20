@@ -8,7 +8,7 @@ defineProps({
 })
 const open = ref(false)
 const productsOpen = ref(false)
-const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
+const logoSrc = '/comordo.svg'
 </script>
 
 <template>

@@ -1,6 +1,6 @@
 <script setup>
 import { identityLoginHref } from '@/identity.js'
-const logoSrc = new URL('../../../public/comordo-light.svg', import.meta.url).href
+const logoSrc = '/comordo-light.svg'
 </script>
 
 <template>

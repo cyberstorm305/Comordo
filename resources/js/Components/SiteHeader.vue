@@ -4,7 +4,7 @@
 import { onBeforeUnmount, onMounted, ref } from 'vue'
 import { identityStartHref, identityLoginHref } from '@/identity.js'
 
-const logoSrc = new URL('../../../public/imagesafe.svg', import.meta.url).href
+const logoSrc = '/imagesafe.svg'
 const header = ref(null)
 let raf = 0
 

@@ -3,7 +3,7 @@ import { identityBase, identityLoginHref } from '@/identity.js'
 import { ref } from 'vue'
 
 const identityDashboardHref = `${identityBase}/dashboard`
-const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
+const logoSrc = '/comordo.svg'
 const compliRegistered = ref(true)
 const addClicked = ref(false)
 const stripeClicked = ref(false)

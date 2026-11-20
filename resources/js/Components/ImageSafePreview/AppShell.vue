@@ -6,7 +6,7 @@
   "Start your 7-day free trial" links to Identity's sign-up.
 -->
 <script setup>
-const logoSrc = new URL('../../../../public/imagesafe.svg', import.meta.url).href
+const logoSrc = '/imagesafe.svg'
 import { inject } from 'vue'
 import { identityStartHref } from '@/identity.js'
 

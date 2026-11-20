@@ -2,7 +2,7 @@
 import { identityLoginHref, identityDashboardHref } from '@/identity.js'
 import { comordoSiteUrl, imagesafeSiteUrl, useSite } from '@/site.js'
 import NewsletterForm from './NewsletterForm.vue'
-const logoSrc = new URL('../../../public/comordo.svg', import.meta.url).href
+const logoSrc = '/comordo.svg'
 const { isComordo } = useSite()
 const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cookie-settings'))
 </script>
