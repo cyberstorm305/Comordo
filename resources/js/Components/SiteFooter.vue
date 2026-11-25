@@ -20,22 +20,22 @@ const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cooki
         <div v-if="isComordo" class="text-base text-stone ml-2">Comordo Ltd &middot; Digital assurance for schools and trusts</div>
         <div v-else class="text-base text-stone ml-2">ImageSafe is a <a :href="comordoSiteUrl" class="text-stone underline decoration-sand underline-offset-4 hover:text-navy">Comordo</a> product.</div>
       </div>
-      <nav v-if="isComordo" class="flex flex-wrap gap-x-6 gap-y-4 text-[13px]">
+      <nav v-if="isComordo" class="grid grid-cols-2 gap-x-6 gap-y-4 text-[13px] sm:flex sm:flex-wrap">
         <Link href="/imagesafe" class="text-stone hover:text-navy">ImageSafe</Link>
         <a :href="imagesafeSiteUrl" class="text-stone hover:text-navy">imagesafe.co.uk</a>
         <Link href="/contact" class="text-stone hover:text-navy">Contact</Link>
         <Link href="/privacy" class="text-stone hover:text-navy">Privacy</Link>
         <Link href="/terms" class="text-stone hover:text-navy">Terms</Link>
-        <button type="button" class="text-stone hover:text-navy" @click="openCookieSettings">Cookie settings</button>
+        <button type="button" class="text-left text-stone hover:text-navy" @click="openCookieSettings">Cookie settings</button>
         <a :href="identityDashboardHref" class="text-stone hover:text-navy">Sign in</a>
       </nav>
-      <nav v-else class="flex flex-wrap gap-x-6 gap-y-4 text-[13px]">
+      <nav v-else class="grid grid-cols-2 gap-x-6 gap-y-4 text-[13px] sm:flex sm:flex-wrap">
         <Link href="/" class="text-stone hover:text-navy">ImageSafe</Link>
         <Link href="/pricing" class="text-stone hover:text-navy">Pricing</Link>
         <Link href="/privacy" class="text-stone hover:text-navy">Privacy</Link>
         <Link href="/terms" class="text-stone hover:text-navy">Terms</Link>
         <Link href="/contact" class="text-stone hover:text-navy">Contact</Link>
-        <button type="button" class="text-stone hover:text-navy" @click="openCookieSettings">Cookie settings</button>
+        <button type="button" class="text-left text-stone hover:text-navy" @click="openCookieSettings">Cookie settings</button>
         <a :href="identityLoginHref" class="text-stone hover:text-navy">Sign in</a>
       </nav>
     </div>
