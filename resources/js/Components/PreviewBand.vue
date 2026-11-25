@@ -31,6 +31,7 @@ const previewEmail = ref('')
 const previewEmailError = ref(false)
 const previewConfirmed = ref(false)
 const previewNeedsConfirm = ref(false)
+const previewMarketing = ref(false) // optional; never required to scan
 const previewStarting = ref(false)
 const previewFailure = ref(null) // blocked | limited | busy
 const errorCopy = {
@@ -51,7 +52,7 @@ async function requestPreview() {
   previewNeedsConfirm.value = false
   previewFailure.value = null
   previewStarting.value = true
-  const res = await createPreview(u, email)
+  const res = await createPreview(u, email, previewMarketing.value)
   if (res.id) {
     // The preview page shows this as "Viewing …"; the API doesn't return it.
     const host = u.replace(/^[a-z][a-z0-9+.-]*:\/\//i, '').replace(/^www\./i, '').split(/[/?#]/)[0]
@@ -97,13 +98,17 @@ onBeforeUnmount(() => reveal?.disconnect())
           <input v-model="previewUrl" data-preview-input="" type="text" inputmode="url" autocomplete="url" placeholder="www.yourschool.org.uk" style="font-family:Satoshi,sans-serif;font-size:16px;letter-spacing:0;text-transform:none;color:#1B2536;background:#fff;border:1px solid #C9C2B2;border-radius:8px;padding:13px 14px;width:100%">
         </label>
         <label :style="mono + ';display:flex;flex-direction:column;gap:8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8A8474'">Work email
-          <input v-model="previewEmail" data-preview-input="" type="email" autocomplete="email" placeholder="you@yourschool.org.uk" style="font-family:Satoshi,sans-serif;font-size:16px;letter-spacing:0;text-transform:none;color:#1B2536;background:#fff;border:1px solid #C9C2B2;border-radius:8px;padding:13px 14px;width:100%">
+          <input v-model="previewEmail" data-preview-input="" type="email" autocomplete="email" placeholder="you@yourschool.org.uk" aria-describedby="preview-email-help" style="font-family:Satoshi,sans-serif;font-size:16px;letter-spacing:0;text-transform:none;color:#1B2536;background:#fff;border:1px solid #C9C2B2;border-radius:8px;padding:13px 14px;width:100%">
+          <span id="preview-email-help" style="font-family:Satoshi,sans-serif;font-size:13px;letter-spacing:0;text-transform:none;line-height:1.5;color:#8A8474">Your results show on screen straight away. We'll email you a link to keep them if you ask, and may follow up about the findings.</span>
         </label>
-        <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5;color:#4A5468;cursor:pointer"><input v-model="previewConfirmed" type="checkbox" style="margin-top:3px;accent-color:#B4702F;width:16px;height:16px;flex-shrink:0"><!-- If this wording changes, change PreviewLead::CONSENT_VERSION in ImageSafe. -->
-          <span>I work for this school or trust and have permission to have its website scanned. I agree that Comordo may contact me at this email address about ImageSafe and its other products, and I've read the <a href="/privacy" target="_blank" rel="noopener" style="font-weight:500">privacy policy</a>. You can opt out at any time.</span></label>
+        <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5;color:#4A5468;cursor:pointer"><input v-model="previewConfirmed" type="checkbox" required style="margin-top:3px;accent-color:#B4702F;width:16px;height:16px;flex-shrink:0"><!-- If this wording changes, change PreviewLead::CONSENT_VERSION in ImageSafe. -->
+          <span>I confirm I'm authorised to request a scan of this school website.</span></label>
+        <label style="display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.5;color:#4A5468;cursor:pointer"><input v-model="previewMarketing" type="checkbox" style="margin-top:3px;accent-color:#B4702F;width:16px;height:16px;flex-shrink:0"><!-- Optional. If this wording changes, change PreviewLead::MARKETING_CONSENT_VERSION in ImageSafe. -->
+          <span>I'd like to receive emails from Comordo about ImageSafe, including demo invitations and product updates. <span style="color:#8A8474">(Optional)</span></span></label>
+        <p style="margin:0;font-size:13px;color:#8A8474;line-height:1.5">See our <a href="/privacy" target="_blank" rel="noopener" style="font-weight:500">privacy policy</a> for how we use your details.</p>
         <p v-if="previewError" role="alert" data-preview-error="">Please enter a full school website address, like <b>www.yourschool.org.uk</b>.</p>
         <p v-if="previewEmailError" role="alert" data-preview-error="">{{ errorCopy.email }}</p>
-        <p v-if="previewNeedsConfirm" role="alert" data-preview-error="">Please tick the box to agree before we scan this website.</p>
+        <p v-if="previewNeedsConfirm" role="alert" data-preview-error="">Please confirm you're authorised to request a scan of this school website.</p>
         <p v-if="previewFailure" role="alert" data-preview-error="">{{ errorCopy[previewFailure] }}</p>
         <button type="submit" data-btn="" :disabled="previewStarting" :style="`font-family:Satoshi,sans-serif;background:#B4702F;color:#fff;border:1px solid transparent;border-radius:10px;padding:15px 20px;font-size:16px;font-weight:500;cursor:${previewStarting ? 'progress' : 'pointer'};margin-top:4px`">{{ previewStarting ? 'Scanning your first pages…' : 'Scan my website now →' }}</button>
         <p style="margin:0;font-size:13px;color:#8A8474;line-height:1.5">Already have an account? <a :href="signInHref" style="font-weight:500">Sign in</a> to run a full scan of your school. Prefer a conversation? <Link href="/demo" style="font-weight:500">Book a demo</Link></p>

@@ -21,13 +21,14 @@ async function fetchJson(url, options = {}) {
   }
 }
 
-// Starts a preview. Resolves to { id, lead } or { error: 'email' | 'blocked' | 'limited' | 'busy' }.
-export async function createPreview(url, email) {
+// Starts a preview. `confirmed` is the required scan authorisation; `marketing` is the separate,
+// optional opt-in to marketing emails. Resolves to { id, lead } or { error: 'email' | 'blocked' | 'limited' | 'busy' }.
+export async function createPreview(url, email, marketing = false) {
   try {
     const res = await fetchJson(`${imagesafeBase}/api/v1/previews`, {
       method: 'POST',
       headers: json,
-      body: JSON.stringify({ url, email, confirmed: true }),
+      body: JSON.stringify({ url, email, confirmed: true, marketing: marketing === true }),
     })
     if (res.status === 429) return { error: 'limited' }
     if (res.status === 422) return { error: res.data?.errors?.email ? 'email' : 'blocked' }
