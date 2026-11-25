@@ -59,7 +59,9 @@ const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cooki
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.2 2.5h3.3l-7.2 8.2L23 21.5h-6.6l-5.2-6.8-6 6.8H1.9l7.7-8.8L1.3 2.5H8l4.7 6.2 5.5-6.2Zm-1.2 17h1.8L7.1 4.4H5.2L17 19.5Z"/></svg>
             </a>
           </div>
-          <div>UK English · UK statutory requirements</div>
+          <div>
+            <span class="block sm:inline">UK English</span><span class="hidden sm:inline"> · </span><span class="block sm:inline">UK statutory requirements</span>
+          </div>
         </div>
       </div>
     </div>
