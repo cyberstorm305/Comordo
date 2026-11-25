@@ -40,9 +40,9 @@ const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cooki
       </nav>
     </div>
     <div class="border-t border-sand">
-      <div class="container-site py-4 flex flex-wrap justify-between gap-3 font-mono text-[11.5px] text-mist">
+      <div class="container-site py-4 flex flex-col gap-3 font-mono text-[11.5px] text-mist sm:flex-row sm:flex-wrap sm:justify-between">
         <div>© 2026 Comordo Ltd · Registered in England and Wales · Company no. 1729746</div>
-        <div class="flex items-center gap-5">
+        <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
           <div class="flex items-center gap-3.5">
             <a href="https://www.linkedin.com/company/comordoapp" target="_blank" rel="noopener" aria-label="Comordo on LinkedIn" class="inline-flex text-mist hover:text-navy">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.36-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
