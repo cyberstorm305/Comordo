@@ -41,7 +41,9 @@ const openCookieSettings = () => window.dispatchEvent(new Event('imagesafe:cooki
     </div>
     <div class="border-t border-sand">
       <div class="container-site py-4 flex flex-col gap-3 font-mono text-[11.5px] text-mist sm:flex-row sm:flex-wrap sm:justify-between">
-        <div>© 2026 Comordo Ltd · Registered in England and Wales · Company no. 1729746</div>
+        <div>
+          <span class="block sm:inline">© 2026 Comordo Ltd</span><span class="hidden sm:inline"> · </span><span class="block sm:inline">Registered in England and Wales</span><span class="hidden sm:inline"> · </span><span class="block sm:inline">Company no. 1729746</span>
+        </div>
         <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:gap-5">
           <div class="flex items-center gap-3.5">
             <a href="https://www.linkedin.com/company/comordoapp" target="_blank" rel="noopener" aria-label="Comordo on LinkedIn" class="inline-flex text-mist hover:text-navy">
